@@ -6,7 +6,7 @@ export interface LoginRequest {
     password: string;
 }
 
-// 백엔드에서 받을 데이터 타입 (토큰)
+// 백엔드에서 받을 데이터 타입
 export interface LoginResponse {
     access_token: string;
     refresh_token: string;

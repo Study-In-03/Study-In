@@ -93,14 +93,14 @@ const ActivityTabs = () => {
 
       {/* 로딩 상태 */}
       {isLoading && (
-        <div className="flex justify-center py-16 text-gray-400 text-sm">
+        <div className="flex justify-center py-16 text-gray-500 text-sm">
           불러오는 중...
         </div>
       )}
 
       {/* 에러 상태 */}
       {!isLoading && error && (
-        <div className="flex justify-center py-16 text-red-400 text-sm">
+        <div className="flex justify-center py-16 text-error text-sm">
           {error}
         </div>
       )}
@@ -124,7 +124,7 @@ const ActivityTabs = () => {
             {studies.map((study) => (
               <div
                 key={study.id}
-                className="border border-gray-200 flex flex-col cursor-pointer"
+                className="border border-gray-100 flex flex-col cursor-pointer"
                 onClick={() => navigate(`/study/${study.id}`)}
               >
                 {/* 카드 상단 - 모집상태 + 온/오프라인 */}

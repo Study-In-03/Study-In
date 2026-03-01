@@ -1,4 +1,3 @@
-// src/pages/ResetPassword.tsx
 import { useLocation, Navigate } from 'react-router-dom';
 import PasswordResetForm from '@/features/auth/components/PasswordResetForm';
 

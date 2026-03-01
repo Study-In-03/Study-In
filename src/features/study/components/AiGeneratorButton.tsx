@@ -45,13 +45,13 @@ export default function AiGeneratorButton({
         type="button"
         onClick={handleClick}
         disabled={isLoading}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#4F7BF7] text-[#4F7BF7] text-xs font-medium transition-colors hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-[6px] px-3 py-[6px] rounded-lg border border-primary text-primary text-xs font-medium transition-colors hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           /* 로딩 스피너 */
           <>
             <span
-              className="w-3.5 h-3.5 rounded-full border-2 border-[#4F7BF7] border-t-transparent animate-spin"
+              className="w-3.5 h-3.5 rounded-full border-2 border-primary border-t-transparent animate-spin"
               aria-hidden="true"
             />
             생성 중...
@@ -83,20 +83,20 @@ export default function AiGeneratorButton({
           <p className="text-xs text-gray-700 mb-3 leading-relaxed">
             기존 내용을 AI가 생성한 내용으로
             <br />
-            <span className="font-semibold text-gray-900">덮어쓸까요?</span>
+            <span className="font-bold text-gray-900">덮어쓸까요?</span>
           </p>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={handleCancel}
-              className="flex-1 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-[6px] rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-gray-100 transition-colors"
             >
               취소
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 py-1.5 rounded-lg bg-[#4F7BF7] text-xs text-background font-medium hover:bg-[#3d68e0] transition-colors"
+              className="flex-1 py-[6px] rounded-lg bg-primary text-xs text-background font-medium hover:bg-primary-light transition-colors"
             >
               덮어쓰기
             </button>

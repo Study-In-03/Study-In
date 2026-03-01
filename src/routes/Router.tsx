@@ -1,23 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import StudyDetail from "../pages/StudyDetail";
-import Profile from "../pages/Profile";
-import ProfileEdit from "../pages/ProfileEdit";
-import MyStudy from "../pages/Mystudy";
+import Home from "@/pages/Home";
+import StudyDetail from "@/pages/StudyDetail";
+import Profile from "@/pages/Profile";
+import ProfileEdit from "@/pages/ProfileEdit";
+import MyStudy from "@/pages/Mystudy";
 import StudyCreate from "@/pages/StudyCreate";
 import Layout from '@/components/layout/Layout';
 import AuthLayout from '@/components/layout/AuthLayout';
 import Login from '@/pages/Login';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword'
-import Notification from "../pages/Notification";
+import Notification from "@/pages/Notification";
 
 export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
         
-        {/* 1. 공통 레이아웃 (헤더와 푸터가 있는 페이지들) */}
+        {/* 공통 레이아웃 (헤더 + 푸터) */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/study/:studyId" element={<StudyDetail />} />
@@ -29,10 +29,10 @@ export default function Router() {
           <Route path="/notification" element={<Notification />} />
         </Route>
         
-        {/* 2. 스터디 만들기 (독립 페이지) */}
+        {/* 스터디 */}
         <Route path="/study/create" element={<StudyCreate />} />
 
-        {/* 3. 인증 관련 레이아웃 */}
+        {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<div>회원가입 화면 준비 중...</div>} />

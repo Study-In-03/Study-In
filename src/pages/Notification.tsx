@@ -36,12 +36,12 @@ const Notification = () => {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className="flex items-start gap-3 border border-gray-200 rounded-lg px-4 py-3"
+            className="flex items-start gap-3 border border-gray-300 rounded-lg px-4 py-3"
           >
             {/* 미확인 빨간 점 */}
             <div className="mt-1 shrink-0">
               {!notification.isRead ? (
-                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <div className="w-2 h-2 rounded-full bg-error" />
               ) : (
                 <div className="w-2 h-2" />
               )}
@@ -67,7 +67,7 @@ const Notification = () => {
       {/* 페이지네이션 */}
       <div className="flex justify-center items-center gap-4 mt-2">
         <button className="text-gray-500">{'<'}</button>
-        <span className="w-8 h-8 rounded-full bg-primary text-white text-sm flex items-center justify-center">1</span>
+        <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">1</span>
         <button className="text-gray-500">{'>'}</button>
       </div>
 

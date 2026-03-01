@@ -107,14 +107,14 @@ const ProfileEditForm = () => {
             }}
             className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
               nickname && !isNicknameValid
-                ? 'border-red-400 focus:border-red-400'
-                : 'border-gray-300 focus:border-primary'
+                ? 'border-error'
+                : 'border-gray-300 focus:border-primary-light'
             }`}
           />
           <button
             onClick={() => setIsNicknameChecked(true)}
             disabled={!isNicknameValid}
-            className={`px-3 py-2 text-white text-base rounded-lg ${
+            className={`px-3 py-2 text-background text-base rounded-lg ${
               isNicknameValid ? 'bg-primary' : 'bg-gray-300 cursor-not-allowed'
             }`}
           >
@@ -123,7 +123,7 @@ const ProfileEditForm = () => {
         </div>
         {/* 닉네임 오류 메시지 */}
         {nickname && !isNicknameValid && (
-          <p className="text-sm text-red-400">닉네임은 2자 이상 입력해주세요!</p>
+          <p className="text-sm text-error">닉네임은 2자 이상 입력해주세요!</p>
         )}
         {/* 중복확인 완료 메시지 */}
         {isNicknameChecked && (
@@ -139,7 +139,7 @@ const ProfileEditForm = () => {
           value={bio}
           maxLength={MAX_BIO_LENGTH}
           onChange={(e) => setBio(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:border-primary"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:border-primary-light"
         />
         {/* 글자수 표시 */}
         <p className="text-xs text-gray-500 text-right">{bio.length}/{MAX_BIO_LENGTH}자</p>
@@ -153,7 +153,7 @@ const ProfileEditForm = () => {
           placeholder="지역 입력"
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
         />
       </div>
 
@@ -167,13 +167,13 @@ const ProfileEditForm = () => {
           onChange={(e) => setGithub(e.target.value)}
           className={`border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
             github && !isGithubValid
-              ? 'border-red-400 focus:border-red-400'
+              ? 'border-error'
               : 'border-gray-300 focus:border-primary'
           }`}
         />
         {/* GitHub 오류 메시지 */}
         {github && !isGithubValid && (
-          <p className="text-sm text-red-400">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
+          <p className="text-sm text-error">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
         )}
       </div>
 
@@ -202,8 +202,8 @@ const ProfileEditForm = () => {
         disabled={!isSaveEnabled}
         className={`mt-4 w-full py-2 rounded-lg text-base ${
           isSaveEnabled
-            ? 'bg-primary text-white cursor-pointer'
-            : 'bg-gray-300 text-white cursor-not-allowed'
+            ? 'bg-primary text-background cursor-pointer'
+            : 'bg-gray-300 text-background cursor-not-allowed'
         }`}
       >
         저장하기

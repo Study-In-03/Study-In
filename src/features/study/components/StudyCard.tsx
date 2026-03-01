@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 👈 1. 이동 함수를 가져옵니다.
+import { useNavigate } from 'react-router-dom';
 import type { Study } from '../../../types/study';
 
 interface StudyCardProps {
@@ -7,13 +7,12 @@ interface StudyCardProps {
 }
 
 const StudyCard = ({ study }: StudyCardProps) => {
-  const navigate = useNavigate(); // 👈 2. 이동 기능을 사용할 준비를 합니다.
+  const navigate = useNavigate();
 
   return (
     <div 
-      // 3. 클릭하면 상세 주소(/study/아이디)로 이동하게 설정합니다.
+      // 클릭 시 상세 주소(/study/아이디)로 이동
       onClick={() => navigate(`/study/${study.id}`)} 
-      // 4. 마우스를 올렸을 때 손가락 모양(cursor-pointer)이 나오도록 추가했습니다.
       className="bg-background rounded-[20px] border border-gray-100 overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="relative aspect-16/10">

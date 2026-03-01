@@ -5,7 +5,7 @@ export type AiField = "introduction" | "schedule" | "leaderIntro";
 export function useAiStream() {
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO: AI API 연동 시 스트리밍 로직으로 교체
+  // AI API 연동 시 스트리밍 로직으로 교체
   const trigger = useCallback((field: AiField) => {
     console.log(`[useAiStream] trigger → field: ${field}`);
 

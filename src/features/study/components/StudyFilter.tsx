@@ -1,15 +1,13 @@
-import React from 'react';
-
-// 1. Home에서 보내주는 데이터들의 타입을 정의합니다.
+// Home에서 보내주는 데이터들의 타입 정의
 interface StudyFilterProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  searchTerm: string;         // 👈 이거 추가!
-  onSearchChange: (value: string) => void; // 👈 이것도 추가!
+  searchTerm: string;       
+  onSearchChange: (value: string) => void; 
 }
 
 const CATEGORIES = [
-  { id: "all", label: "전체", icon: "🌐" }, // 👈 '전체' 카테고리 추가
+  { id: "all", label: "전체", icon: "🌐" }, 
   { id: "lecture", label: "특강", icon: "🎓" },
   { id: "concept", label: "개념학습", icon: "📖" },
   { id: "apply", label: "응용/활용", icon: "💻" },
@@ -23,7 +21,7 @@ const CATEGORIES = [
 const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchChange }: StudyFilterProps) => {
   return (
   <div className="space-y-8 mb-10">
-    {/* 1. 검색창 영역 (절대 사라지면 안 되죠!) */}
+    {/* 검색창 영역 */}
     <div className="relative max-w-2xl mx-auto">
       <input
         type="text"
@@ -37,10 +35,10 @@ const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchC
       </button>
     </div>
 
-    {/* 2. 카테고리 영역: 전체(왼쪽) + 나머지 8개(오른쪽 그리드) */}
+    {/* 카테고리 영역: 전체(왼쪽) + 나머지 8개(오른쪽 그리드) */}
     <div className="flex justify-center items-start gap-6 md:gap-10">
       
-      {/* 왼쪽: '전체' 버튼 (혼자서 왼쪽 공간 차지) */}
+      {/* '전체' 버튼 */}
       <div className="flex flex-col items-center pt-1">
         <button
           onClick={() => onCategoryChange('all')}
@@ -61,7 +59,7 @@ const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchC
         </button>
       </div>
 
-      {/* 오른쪽: 나머지 8개 버튼 (4열 2단 그리드) */}
+      {/* 오른쪽: 나머지 8개 버튼 */}
       <div className="grid grid-cols-4 gap-x-4 gap-y-6">
         {CATEGORIES.filter(cat => cat.id !== 'all').map((cat) => (
           <button
@@ -80,7 +78,7 @@ const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchC
               <span className="text-2xl">{cat.icon}</span>
             </div>
             <span className={`text-sm font-medium transition-colors ${
-              selectedCategory === cat.id ? "text-primary" : "text-gray-700 group-hover:text-primary"
+              selectedCategory === cat.id ? "text-primary" : "text-gray-700 group-hover:text-primary-light"
             }`}>
               {cat.label}
             </span>

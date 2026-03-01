@@ -52,8 +52,8 @@ export default function Footer() {
 
       {/* 데스크탑 풀 푸터 - 비로그인 (lg 이상) */}
       {!isLoggedIn && (
-        <div className="hidden lg:block min-h-83.5 py-10">
-          <div className="max-w-247.5 mx-auto px-4">
+        <div className="hidden lg:block min-h-[334px] py-10">
+          <div className="max-w-[990px] mx-auto px-4">
 
             {/* 상단: 링크 컬럼 + 소셜 아이콘 */}
             <div className="flex justify-between items-start mb-10">

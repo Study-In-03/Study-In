@@ -1,7 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useUpload from '@/hooks/useUpload'
 import { getFullUrl } from '@/api/upload'
+import { getProfile, updateProfile } from '@/api/profile'
+import { storage } from '@/utils/storage'
 import PersonIcon from '@/assets/base/icon-person.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
 import CloseIcon from '@/assets/base/icon-X.svg?react'
@@ -14,6 +16,7 @@ const ProfileEditForm = () => {
   const { uploading, handleImageUpload } = useUpload()
 
   const [profileImg, setProfileImg] = useState<string | null>(null)
+  const [profileImgPath, setProfileImgPath] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [nickname, setNickname] = useState('')
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
@@ -24,6 +27,36 @@ const ProfileEditForm = () => {
   const [github, setGithub] = useState('')
   const [selectedTags, setSelectedTags] = useState<Array<{ id: number; name: string }>>([])
   const [tagInput, setTagInput] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const userId = storage.getUserId()
+      if (!userId) return
+      try {
+        const data = await getProfile(userId)
+        setNickname(data.nickname)
+        setName(data.name ?? '')
+        setPhone(data.phone ?? '')
+        setBio(data.introduction ?? '')
+        setRegion(data.preferred_region?.location ?? '')
+        setGithub(data.github_username ?? '')
+        setSelectedTags(data.tag ?? [])
+        if (data.profile_img) {
+          setProfileImg(getFullUrl(data.profile_img))
+          setProfileImgPath(data.profile_img)
+        }
+        setIsNicknameChecked(true)
+      } catch {
+        setApiError('프로필을 불러오는 데 실패했어요.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProfile()
+  }, [])
 
   const isNicknameValid = nickname.length >= 2
   const isGithubValid = github === '' || /^[a-zA-Z0-9-]+$/.test(github)
@@ -53,7 +86,41 @@ const ProfileEditForm = () => {
     const file = e.target.files?.[0]
     if (!file) return
     const url = await handleImageUpload(file)
-    if (url) setProfileImg(getFullUrl(url))
+    if (url) {
+      setProfileImgPath(url)
+      setProfileImg(getFullUrl(url))
+    }
+  }
+
+  const handleSave = async () => {
+    const userId = storage.getUserId()
+    if (!userId) return
+    setIsSaving(true)
+    setApiError(null)
+    try {
+      await updateProfile(userId, {
+        nickname,
+        name,
+        phone,
+        introduction: bio,
+        github_username: github,
+        profile_img: profileImgPath ?? undefined,
+        tag: selectedTags,
+      })
+      navigate('/profile')
+    } catch {
+      setApiError('저장에 실패했어요. 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16 text-gray-500 text-sm">
+        불러오는 중...
+      </div>
+    )
   }
 
   return (
@@ -241,15 +308,20 @@ const ProfileEditForm = () => {
         </div>
       </div>
 
+      {apiError && (
+        <p className="text-sm text-error text-center">{apiError}</p>
+      )}
+
       <button
-        disabled={!isSaveEnabled}
+        onClick={handleSave}
+        disabled={!isSaveEnabled || isSaving}
         className={`mt-4 w-full py-2 rounded-lg text-base ${
-          isSaveEnabled
+          isSaveEnabled && !isSaving
             ? 'bg-primary text-background'
             : 'bg-gray-300 text-background cursor-not-allowed'
         }`}
       >
-        저장하기
+        {isSaving ? '저장 중...' : '저장하기'}
       </button>
 
       <a

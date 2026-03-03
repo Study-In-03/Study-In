@@ -65,7 +65,7 @@ function buildStudyPayload(
   };
 
   // 오프라인이고 지역 ID가 있을 때만 포함
-  // TODO: 프로필 API 연동 시 사용자 인증 지역 ID(preferred_region.id)로 교체
+  // 프로필 API 연동 시 사용자 인증 지역 ID(preferred_region.id)로 교체
   if (form.studyType === 'offline' && locationId != null) {
     payload.study_location = { id: locationId };
   }
@@ -88,14 +88,14 @@ export async function createStudy(
 }
 
 /**
- * 스터디를 삭제한다.
+ * 스터디 삭제
  */
 export async function deleteStudy(studyId: number): Promise<void> {
   await axiosInstance.delete(`/study/${studyId}/`);
 }
 
 /**
- * 스터디를 수정한다. partial update 지원 — 변경할 필드만 포함해도 됨.
+ * 스터디 수정, partial update 지원 — 변경할 필드만 포함해도 됨.
  * @param studyId  수정할 스터디 ID
  * @param locationId 오프라인 스터디의 지역 ID (프로필 API 연동 시 실제 값으로 주입)
  */

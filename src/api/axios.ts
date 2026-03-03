@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
 
-// 1. 기본 설정이 적용된 Axios 인스턴스 생성
+// 기본 설정이 적용된 Axios 인스턴스 생성
 export const axiosInstance = axios.create({
     // .env 파일에 VITE_API_BASE_URL이 있으면 그걸 쓰고, 없으면 임시로 localhost:8080 사용
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',

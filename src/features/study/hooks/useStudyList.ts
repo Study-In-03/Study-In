@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../api/axios";
 import { Study } from "../../../types/study";
 
-// 1. searchTerm(검색어) 매개변수를 추가합니다.
+// searchTerm(검색어) 매개변수 추가
 export const useStudyList = (category: string, searchTerm: string = "") => {
   const [studies, setStudies] = useState<Study[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +14,7 @@ export const useStudyList = (category: string, searchTerm: string = "") => {
         setIsLoading(true);
         setError(null); // 새로운 요청 시 에러 초기화
 
-        // 2. 카테고리와 검색어를 함께 파라미터로 보냅니다.
+        // 카테고리와 검색어를 함께 파라미터 전송
         const response = await axiosInstance.get("/study/", {
           params: { 
             category: category !== "all" ? category : undefined,
@@ -22,7 +22,7 @@ export const useStudyList = (category: string, searchTerm: string = "") => {
           },
         });
 
-        // 3. 서버 응답 구조가 { results: [...] } 인지 확인 후 저장
+        // 서버 응답 구조가 { results: [...] } 인지 확인 후 저장
         // 만약 results가 없다면 response.data를 바로 사용하도록 안전장치 추가
         const data = response.data.results || response.data;
         setStudies(Array.isArray(data) ? data : []); 
@@ -35,10 +35,9 @@ export const useStudyList = (category: string, searchTerm: string = "") => {
       }
     };
 
-    // 4. 검색 시 너무 잦은 요청을 막기 위해 약간의 지연(Debounce)을 줄 수도 있지만, 
-    // 지금은 우선 직관적으로 category와 searchTerm이 바뀔 때마다 실행되게 합니다.
+    // 지금은 우선 직관적으로 category와 searchTerm이 바뀔 때마다 실행
     fetchStudies();
-  }, [category, searchTerm]); // 의존성 배열에 searchTerm 추가!
+  }, [category, searchTerm]); // 의존성 배열에 searchTerm 추가
 
   return { studies, isLoading, error };
 };

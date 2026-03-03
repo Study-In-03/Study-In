@@ -129,14 +129,14 @@ function SelectPicker({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center justify-between h-10 bg-background border rounded-lg pl-[14px] pr-[10px] transition-colors ${
-          open ? "border-[#4F7BF7]" : "border-gray-300"
+          open ? "border-primary" : "border-gray-300"
         }`}
       >
-        <span className={`text-[14px] font-normal ${value ? "text-gray-900" : "text-gray-500"}`}>
+        <span className={`text-[14px] font-regular ${value ? "text-gray-900" : "text-gray-500"}`}>
           {value || placeholder}
         </span>
         <svg
-          className={`w-4 h-4 shrink-0 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 shrink-0 text-gray-300 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -146,7 +146,7 @@ function SelectPicker({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-20 w-full bg-background border border-gray-200 rounded-lg shadow-md overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 z-20 w-full bg-background border border-gray-300 rounded-lg shadow-md overflow-hidden">
           <div className="max-h-48 overflow-y-auto">
             {options.map((opt) => (
               <button
@@ -159,8 +159,8 @@ function SelectPicker({
                 }}
                 className={`w-full px-[14px] py-2.5 text-[14px] text-left transition-colors ${
                   opt === value
-                    ? "bg-[#4F7BF7] text-background"
-                    : "text-gray-900 hover:bg-gray-50"
+                    ? "bg-primary text-background"
+                    : "text-gray-900 hover:bg-gray-100"
                 }`}
               >
                 {opt}
@@ -204,15 +204,15 @@ function TimePicker({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center justify-between h-10 bg-background border rounded-lg pl-[14px] pr-[10px] transition-colors ${
-          open ? "border-[#4F7BF7]" : "border-gray-300"
+          open ? "border-primary" : "border-gray-300"
         }`}
       >
-        <span className="text-[14px] font-normal text-gray-900">{hour} : {minute}</span>
+        <span className="text-base font-normal text-gray-900">{hour} : {minute}</span>
         <img src={iconClock} alt="" className="w-5 h-5 shrink-0" />
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-20 bg-background border border-gray-200 rounded-lg shadow-md flex overflow-hidden w-full">
+        <div className="absolute top-full left-0 mt-1 z-20 bg-background border border-gray-300 rounded-lg shadow-md flex overflow-hidden w-full">
           {/* 시 */}
           <div className="flex-1 h-44 overflow-y-auto">
             {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((hv) => (
@@ -225,8 +225,8 @@ function TimePicker({
                 }}
                 className={`w-full py-2 text-sm text-center transition-colors ${
                   hv === hour
-                    ? "bg-[#4F7BF7] text-background"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-primary text-background"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 {hv}
@@ -246,8 +246,8 @@ function TimePicker({
                 }}
                 className={`w-full py-2 text-sm text-center transition-colors ${
                   mv === minute
-                    ? "bg-[#4F7BF7] text-background"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-primary text-background"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 {mv}
@@ -315,7 +315,7 @@ export default function StudyForm({
   return (
     <form id="study-create-form" onSubmit={handleSubmit} noValidate>
       {/* ── 카드: 대표이미지 ~ 모집인원 ── */}
-      <div className="mx-4 mt-10 rounded-2xl border border-gray-200 overflow-hidden bg-background lg:mx-0 lg:flex lg:flex-row lg:min-h-[390px]">
+      <div className="mx-4 mt-10 rounded-2xl border border-gray-300 overflow-hidden bg-background lg:mx-0 lg:flex lg:flex-row lg:min-h-[390px]">
         {/* 대표 이미지 */}
         <label
           htmlFor="thumbnail-input"
@@ -329,10 +329,10 @@ export default function StudyForm({
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-              <p className="text-sm font-normal text-gray-400">
+              <p className="text-sm font-regular text-gray-500">
                 대표 이미지 삽입
               </p>
-              <p className="text-xs text-gray-400">(권장 사이즈 1200*1200px)</p>
+              <p className="text-xs text-gray-500">(권장 사이즈 1200*1200px)</p>
             </div>
           )}
           {!form.thumbnailPreview && (
@@ -350,15 +350,15 @@ export default function StudyForm({
           />
         </label>
         {errors.thumbnail && (
-          <p className="px-4 pt-1.5 text-xs text-red-500">{errors.thumbnail}</p>
+          <p className="px-4 pt-1.5 text-xs text-error">{errors.thumbnail}</p>
         )}
 
         {/* 스터디 제목 / 유형 / 지역 / 모집인원 */}
-        <div className="px-4 pt-5 pb-5 space-y-5 lg:space-y-0 lg:flex-1 lg:px-[30px] lg:flex lg:flex-col lg:pb-[64px]">
+        <div className="px-4 pt-5 pb-5 space-y-5 lg:space-y-0 lg:flex-1 lg:px-3xl lg:flex lg:flex-col lg:pb-[64px]">
           {/* 스터디 제목 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 lg:text-[16px] lg:font-bold">
-              스터디 제목 <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-gray-700 mb-2 lg:text-lg lg:font-bold">
+              스터디 제목 <span className="text-error">*</span>
             </label>
             <textarea
               maxLength={MAX_TITLE}
@@ -366,27 +366,27 @@ export default function StudyForm({
               onChange={(e) => updateField("title", e.target.value)}
               onBlur={() => handleBlurField("title")}
               placeholder="스터디 제목 입력"
-              className="w-full h-[100px] lg:h-[50px] overflow-hidden border border-gray-200 rounded-lg px-3 py-[13px] text-sm lg:text-[16px] focus:outline-none focus:border-[#4F7BF7] transition-colors resize-none"
+              className="w-full h-[100px] lg:h-[50px] overflow-hidden border border-gray-100 rounded-lg px-3 py-[13px] text-sm lg:text-lg focus:outline-none focus:border-primary-light transition-colors resize-none"
             />
             <div className="flex justify-between mt-1">
               {errors.title ? (
-                <p className="text-xs text-red-500">{errors.title}</p>
+                <p className="text-xs text-error">{errors.title}</p>
               ) : (
                 <span />
               )}
-              <span className="text-xs lg:text-sm text-gray-400 ml-auto">
+              <span className="text-xs lg:text-sm text-gray-500 ml-auto">
                 {form.title.length}/{MAX_TITLE}
               </span>
             </div>
           </div>
 
           {/* 구분선 */}
-          <div className="-mx-4 lg:-mx-[30px] border-t border-gray-200 lg:!mt-[30px]" />
+          <div className="-mx-4 lg:-mx-[30px] border-t border-gray-100 lg:!mt-[30px]" />
 
           {/* 스터디 유형 */}
           <div className="flex items-start gap-4 lg:gap-0 lg:!mt-[30px] lg:grid lg:grid-cols-[140px_1fr] lg:items-start">
-            <span className="shrink-0 text-sm font-normal text-gray-700 lg:text-[16px] lg:font-bold lg:pt-0.5">
-              스터디 유형 <span className="text-red-500">*</span>
+            <span className="shrink-0 text-sm font-normal text-gray-700 lg:text-lg lg:font-bold lg:pt-0.5">
+              스터디 유형 <span className="text-error">*</span>
             </span>
             <div>
               <div className="flex gap-5">
@@ -401,21 +401,21 @@ export default function StudyForm({
                       alt={form.studyType === value ? "선택됨" : "선택 안됨"}
                       className="w-[18px] h-[18px] shrink-0"
                     />
-                    <span className="text-sm lg:text-[16px] text-gray-700">
+                    <span className="text-sm lg:text-lg text-gray-700">
                       {label}
                     </span>
                   </label>
                 ))}
               </div>
               {form.studyType === "offline" && (
-                <p className="mt-2 text-sm lg:text-[14px] flex items-center gap-1">
+                <p className="mt-2 text-sm lg:text-base flex items-center gap-1">
                   <img src={iconLocation} alt="" className="w-3.5 h-3.5" />
-                  <span className="text-[#4F7BF7]">{userLocation ?? "내 지역"}</span>
+                  <span className="text-primary">{userLocation ?? "내 지역"}</span>
                   <span className="text-gray-700">에서 스터디원을 모집합니다.</span>
                 </p>
               )}
               {errors.studyType && (
-                <p className="mt-1 text-xs text-red-500">{errors.studyType}</p>
+                <p className="mt-1 text-xs text-error">{errors.studyType}</p>
               )}
             </div>
           </div>
@@ -425,8 +425,8 @@ export default function StudyForm({
 
           {/* 모집 인원 */}
           <div className="mt-4 flex items-center gap-4 lg:gap-0 lg:mt-0 lg:grid lg:grid-cols-[140px_1fr] lg:items-center">
-            <span className="shrink-0 text-sm font-medium text-gray-700 lg:text-[16px] lg:font-bold whitespace-nowrap">
-              모집 인원 <span className="text-red-500">*</span>
+            <span className="shrink-0 text-sm font-medium text-gray-700 lg:text-lg lg:font-bold whitespace-nowrap">
+              모집 인원 <span className="text-error">*</span>
               <img src={iconHelpCircle} alt="도움말" className="ml-1 w-4 h-4 inline-block" />
             </span>
             <div>
@@ -439,12 +439,12 @@ export default function StudyForm({
                   onChange={(e) => updateField("maxMembers", e.target.value)}
                   onBlur={() => handleBlurField("maxMembers")}
                   placeholder="3"
-                  className="w-[60px] lg:w-16 border-0 border-b border-gray-400 px-1 py-1 text-sm lg:text-[16px] text-center focus:outline-none focus:border-[#4F7BF7] transition-colors bg-transparent"
+                  className="w-[60px] lg:w-16 border-0 border-b border-gray-500 px-1 py-1 text-sm lg:text-lg text-center focus:outline-none focus:border-primary-light transition-colors bg-transparent"
                 />
-                <span className="text-sm lg:text-[16px] text-gray-600">명</span>
+                <span className="text-sm lg:text-lg text-gray-700">명</span>
               </div>
               {errors.maxMembers && (
-                <p className="mt-1 text-xs text-red-500">{errors.maxMembers}</p>
+                <p className="mt-1 text-xs text-error">{errors.maxMembers}</p>
               )}
             </div>
           </div>
@@ -457,7 +457,7 @@ export default function StudyForm({
 
         {/* 스터디 소개 */}
         <div>
-          <label className="block text-lg font-medium text-gray-700 mb-2 lg:text-[30px] lg:font-bold lg:mb-4">
+          <label className="block text-lg font-medium text-gray-700 mb-2 lg:text-3xl lg:font-bold lg:mb-4">
             스터디 소개
           </label>
           <textarea
@@ -465,16 +465,16 @@ export default function StudyForm({
             value={form.introduction}
             onChange={(e) => updateField("introduction", e.target.value)}
             placeholder="스터디 소개를 입력해 주세요."
-            className="w-full min-h-[288px] lg:min-h-[340px] border border-gray-200 rounded-xl px-4 py-2.5 text-sm lg:text-[14px] focus:outline-none focus:border-[#4F7BF7] transition-colors resize-none"
+            className="w-full min-h-[288px] lg:min-h-[340px] border border-gray-300 rounded-xl px-4 py-2.5 text-sm lg:text-base focus:outline-none focus:border-primary-light transition-colors resize-none"
           />
-          <p className="text-xs lg:text-[14px] text-gray-400 text-right mt-1">
+          <p className="text-xs lg:text-base text-gray-300 text-right mt-1">
             {form.introduction.length}/{MAX_INTRO}
           </p>
         </div>
 
         {/* 스터디 일정 */}
         <div>
-          <label className="block text-lg font-medium text-gray-700 mb-2 lg:text-[30px] lg:font-bold lg:mb-4">
+          <label className="block text-lg font-medium text-gray-700 mb-2 lg:text-3xl lg:font-bold lg:mb-4">
             스터디 일정
           </label>
           <textarea
@@ -482,23 +482,23 @@ export default function StudyForm({
             value={form.schedule}
             onChange={(e) => updateField("schedule", e.target.value)}
             placeholder="스터디 일정을 입력해 주세요."
-            className="w-full min-h-[288px] lg:min-h-[196px] border border-gray-200 rounded-xl px-4 py-2.5 text-sm lg:text-[14px] focus:outline-none focus:border-[#4F7BF7] transition-colors resize-none"
+            className="w-full min-h-[288px] lg:min-h-[196px] border border-gray-300 rounded-xl px-4 py-2.5 text-sm lg:text-base focus:outline-none focus:border-primary-light transition-colors resize-none"
           />
-          <p className="text-xs lg:text-[14px] text-gray-400 text-right mt-1">
+          <p className="text-xs lg:text-base text-gray-500 text-right mt-1">
             {form.schedule.length}/{MAX_SCHEDULE}
           </p>
         </div>
 
         {/* 모바일 전용 구분선 */}
-        <div className="border-t border-gray-200 lg:hidden" />
+        <div className="border-t border-gray-300 lg:hidden" />
 
         {/* ── 상세 일정 ── */}
         <div className="space-y-5 lg:space-y-[44px] lg:max-w-[500px]">
-        <h2 className="text-xl font-bold text-gray-900 text-center lg:text-[30px] lg:text-left lg:mb-2">상세 일정</h2>
+        <h2 className="text-xl font-bold text-gray-900 text-center lg:text-3xl lg:text-left lg:mb-2">상세 일정</h2>
 
         {/* 스터디 요일 */}
         <div className="flex items-start gap-4 lg:gap-[46px]">
-          <span className="w-24 shrink-0 text-[14px] lg:text-[16px] font-medium text-gray-700 pt-1 whitespace-nowrap">
+          <span className="w-24 shrink-0 text-base lg:text-lg font-medium text-gray-700 pt-1 whitespace-nowrap">
             스터디 요일
           </span>
           <div className="flex flex-wrap gap-2">
@@ -509,8 +509,8 @@ export default function StudyForm({
                 onClick={() => handleDayToggle(day)}
                 className={`w-[40px] h-[40px] rounded-full text-sm font-normal border transition-colors ${
                   form.days.includes(day)
-                    ? "bg-[#4F7BF7] border-[#4F7BF7] text-background"
-                    : "bg-background border-gray-300 text-gray-600"
+                    ? "bg-primary text-background"
+                    : "bg-background border-gray-300 text-gray-700"
                 }`}
               >
                 {day}
@@ -521,14 +521,14 @@ export default function StudyForm({
 
         {/* 스터디 시작일 */}
         <div className="flex items-center gap-4 lg:gap-[46px]">
-          <span className="w-24 shrink-0 text-[14px] lg:text-[16px] font-medium text-gray-700 whitespace-nowrap">
-            스터디 시작일 <span className="text-red-500">*</span>
+          <span className="w-24 shrink-0 text-base lg:text-lg font-medium text-gray-700 whitespace-nowrap">
+            스터디 시작일 <span className="text-error">*</span>
           </span>
           <div className="flex-1 lg:max-w-[240px]">
             <div ref={dateContainerRef} className="relative w-full">
               {/* 보이는 표시 — 클릭 시 showPicker() 호출 */}
               <div
-                className={`w-full h-10 bg-background border rounded-lg pl-[14px] pr-[10px] text-[14px] flex items-center justify-between cursor-pointer transition-colors ${isDateOpen ? "border-[#4F7BF7]" : "border-gray-200"}`}
+                className={`w-full h-10 bg-background border rounded-lg pl-[14px] pr-[10px] text-base flex items-center justify-between cursor-pointer transition-colors ${isDateOpen ? "border-primary" : "border-gray-300"}`}
                 onClick={() => {
                   setIsDateOpen(true);
                   (dateInputRef.current as HTMLInputElement & { showPicker?: () => void })?.showPicker?.();
@@ -550,15 +550,15 @@ export default function StudyForm({
               />
             </div>
             {errors.startDate && (
-              <p className="mt-1 text-xs text-red-500">{errors.startDate}</p>
+              <p className="mt-1 text-xs text-error">{errors.startDate}</p>
             )}
           </div>
         </div>
 
         {/* 스터디 기간 */}
         <div className="flex items-center gap-4 lg:gap-[46px]">
-          <span className="w-24 shrink-0 text-[14px] lg:text-[16px] font-medium text-gray-700 whitespace-nowrap">
-            스터디 기간 <span className="text-red-500">*</span>
+          <span className="w-24 shrink-0 text-base lg:text-lg font-medium text-gray-700 whitespace-nowrap">
+            스터디 기간 <span className="text-error">*</span>
           </span>
           <div className="flex-1 lg:max-w-[240px]">
             <SelectPicker
@@ -568,15 +568,15 @@ export default function StudyForm({
               placeholder="스터디 기간 선택"
             />
             {errors.durationWeeks && (
-              <p className="mt-1 text-xs text-red-500">{errors.durationWeeks}</p>
+              <p className="mt-1 text-xs text-error">{errors.durationWeeks}</p>
             )}
           </div>
         </div>
 
         {/* 스터디 시간 */}
         <div className="flex items-start gap-4 lg:gap-[46px]">
-          <span className="w-24 shrink-0 text-[14px] lg:text-[16px] font-medium text-gray-700 pt-2.5 whitespace-nowrap">
-            스터디 시간 <span className="text-red-500">*</span>
+          <span className="w-24 shrink-0 text-base lg:text-lg font-medium text-gray-700 pt-2.5 whitespace-nowrap">
+            스터디 시간 <span className="text-error">*</span>
           </span>
           <div className="flex-1 min-w-0 lg:max-w-[360px]">
             <div className="flex items-center gap-2">
@@ -585,7 +585,7 @@ export default function StudyForm({
                 onChange={(v) => updateField("startTime", v)}
                 className="w-[110px] flex-none"
               />
-              <span className="text-gray-400 text-sm shrink-0">~</span>
+              <span className="text-gray-500 text-sm shrink-0">~</span>
               <TimePicker
                 value={form.endTime}
                 onChange={(v) => updateField("endTime", v)}
@@ -593,13 +593,13 @@ export default function StudyForm({
               />
             </div>
             {errors.startTime && (
-              <p className="mt-1 text-xs text-red-500">{errors.startTime}</p>
+              <p className="mt-1 text-xs text-error">{errors.startTime}</p>
             )}
             {errors.endTime && (
-              <p className="mt-1 text-xs text-red-500">{errors.endTime}</p>
+              <p className="mt-1 text-xs text-error">{errors.endTime}</p>
             )}
             {errors.timeRange && (
-              <p className="mt-1 text-xs text-red-500">{errors.timeRange}</p>
+              <p className="mt-1 text-xs text-error">{errors.timeRange}</p>
             )}
           </div>
         </div>
@@ -607,15 +607,15 @@ export default function StudyForm({
 
 
         {/* 모바일 전용 구분선 */}
-        <div className="border-t border-gray-200 lg:hidden" />
+        <div className="border-t border-gray-300 lg:hidden" />
 
         {/* ── 스터디 태그 설정 ── */}
-        <h2 className="text-xl font-bold text-gray-900 text-center lg:text-[30px] lg:text-left lg:mb-2">스터디 태그 설정</h2>
+        <h2 className="text-xl font-bold text-gray-900 text-center lg:text-3xl lg:text-left lg:mb-2">스터디 태그 설정</h2>
 
         {/* 스터디 주제 */}
         <div className="lg:flex lg:items-start lg:gap-12">
-          <label className="block text-[14px] font-medium text-gray-700 mb-2 lg:shrink-0 lg:text-[16px] lg:font-bold lg:mb-0 lg:pt-[10px] lg:w-24 whitespace-nowrap">
-            스터디 주제 <span className="text-red-500">*</span>
+          <label className="block text-base font-medium text-gray-700 mb-2 lg:shrink-0 lg:text-lg lg:font-bold lg:mb-0 lg:pt-[10px] lg:w-24 whitespace-nowrap">
+            스터디 주제 <span className="text-error">*</span>
           </label>
           <div>
             <div className="flex flex-wrap gap-2">
@@ -624,10 +624,10 @@ export default function StudyForm({
                   key={s}
                   type="button"
                   onClick={() => updateField("subject", s)}
-                  className={`px-3 py-1.5 lg:px-4 lg:py-[10px] rounded-full text-[14px] lg:text-[16px] font-normal border transition-colors ${
+                  className={`px-3 py-1.5 lg:px-4 lg:py-[10px] rounded-full text-base lg:text-lg font-normal border transition-colors ${
                     form.subject === s
-                      ? "bg-[#4F7BF7] border-[#4F7BF7] text-background"
-                      : "bg-gray-100 border-gray-100 text-gray-700"
+                      ? "bg-primary text-background"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   {s}
@@ -635,15 +635,15 @@ export default function StudyForm({
               ))}
             </div>
             {errors.subject && (
-              <p className="mt-1 text-xs text-red-500">{errors.subject}</p>
+              <p className="mt-1 text-xs text-error">{errors.subject}</p>
             )}
           </div>
         </div>
 
         {/* 스터디 난이도 */}
         <div className="lg:flex lg:items-start lg:gap-12">
-          <label className="block text-[14px] font-medium text-gray-700 mb-2 lg:shrink-0 lg:text-[16px] lg:font-bold lg:mb-0 lg:pt-[10px] lg:w-24 whitespace-nowrap">
-            스터디 난이도 <span className="text-red-500">*</span>
+          <label className="block text-base font-medium text-gray-700 mb-2 lg:shrink-0 lg:text-lg lg:font-bold lg:mb-0 lg:pt-[10px] lg:w-24 whitespace-nowrap">
+            스터디 난이도 <span className="text-error">*</span>
           </label>
           <div>
             <div className="flex gap-2">
@@ -652,10 +652,10 @@ export default function StudyForm({
                   key={value}
                   type="button"
                   onClick={() => updateField("difficulty", value)}
-                  className={`px-3 py-1.5 lg:px-4 lg:py-[10px] rounded-full text-[14px] lg:text-[16px] font-normal border transition-colors ${
+                  className={`px-3 py-1.5 lg:px-4 lg:py-[10px] rounded-full text-base lg:text-lg font-normal border transition-colors ${
                     form.difficulty === value
-                      ? "bg-[#4F7BF7] border-[#4F7BF7] text-background"
-                      : "bg-gray-100 border-gray-100 text-gray-700"
+                      ? "bg-primary text-background"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   {label}
@@ -663,16 +663,16 @@ export default function StudyForm({
               ))}
             </div>
             {errors.difficulty && (
-              <p className="mt-1 text-xs text-red-500">{errors.difficulty}</p>
+              <p className="mt-1 text-xs text-error">{errors.difficulty}</p>
             )}
           </div>
         </div>
 
         {/* 검색 태그 */}
         <div>
-          <label className="block text-[14px] font-medium text-gray-700 mb-2 lg:text-[16px] lg:font-bold">
-            검색 태그 <span className="text-red-500">*</span>
-            <span className="ml-1.5 text-xs text-gray-400 font-normal">
+          <label className="block text-base font-medium text-gray-700 mb-2 lg:text-lg lg:font-bold">
+            검색 태그 <span className="text-error">*</span>
+            <span className="ml-1.5 text-xs text-gray-500 font-normal">
               ({form.tags.length}/{MAX_TAGS})
             </span>
           </label>
@@ -687,11 +687,11 @@ export default function StudyForm({
                 onBlur={() => setIsTagFocused(false)}
                 placeholder="태그 입력 (최대5개)"
                 disabled={form.tags.length >= MAX_TAGS}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 lg:py-5 text-[14px] focus:outline-none focus:border-[#4F7BF7] transition-colors disabled:bg-gray-50 disabled:text-gray-400"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 lg:py-5 text-base focus:outline-none focus:border-primary-light transition-colors disabled:bg-gray-100 disabled:text-gray-300"
               />
             </div>
             {showTagDropdown && (
-              <ul className="absolute z-10 left-0 right-0 mt-1 bg-background border border-gray-200 rounded-lg shadow-md max-h-48 overflow-y-auto">
+              <ul className="absolute z-10 left-0 right-0 mt-1 bg-background border border-gray-300 rounded-lg shadow-md max-h-48 overflow-y-auto">
                 {filteredTagOptions.map((option) => (
                   <li
                     key={option}
@@ -699,7 +699,7 @@ export default function StudyForm({
                       e.preventDefault();
                       handleAddTagDirect(option);
                     }}
-                    className="px-3 py-2 text-sm font-normal text-gray-700 hover:bg-blue-50 hover:text-[#4F7BF7] cursor-pointer transition-colors"
+                    className="px-3 py-2 text-sm font-regular text-gray-700 hover:bg-primary-light hover:text-background cursor-pointer transition-colors"
                   >
                     {option}
                   </li>
@@ -712,7 +712,7 @@ export default function StudyForm({
               {form.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-2 px-2.5 py-1 bg-gray-100 text-gray-700 text-[14px] rounded-full"
+                  className="inline-flex items-center gap-2 px-2.5 py-1 bg-gray-100 text-gray-700 text-base rounded-full"
                 >
                   {tag}
                   <button
@@ -728,7 +728,7 @@ export default function StudyForm({
             </div>
           )}
           {errors.tags && (
-            <p className="mt-1.5 text-xs text-red-500">{errors.tags}</p>
+            <p className="mt-1.5 text-xs text-error">{errors.tags}</p>
           )}
         </div>
       </div>

@@ -6,7 +6,7 @@ export default function Login() {
     return (
         <div className="flex flex-col items-center justify-center w-full px-4 py-12">
 
-            <h2 className="text-2xl font-bold text-gray-900 text-left leading-[1.6] mt-[25px] mb-5">
+            <h2 className="text-2xl font-bold text-gray-900 text-left leading-[1.6] mt-[52px] mb-5">
                 SNS계정으로 간편하게<br />
                 회원가입/로그인 하세요! :)
             </h2>

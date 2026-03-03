@@ -1,4 +1,4 @@
-import ActivityTabs from '../features/profile/components/ActivityTabs'
+import ActivityTabs from '@/features/profile/components/ActivityTabs'
 
 // 마이 스터디 페이지
 const MyStudy = () => {

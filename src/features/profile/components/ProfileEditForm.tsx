@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useUpload from '@/hooks/useUpload'
 import { getFullUrl } from '@/api/upload'
-import { getProfile, updateProfile } from '@/api/profile'
+import { getProfile, updateProfile, checkNickname } from '@/api/profile'
 import { storage } from '@/utils/storage'
 import PersonIcon from '@/assets/base/icon-person.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
@@ -20,6 +20,8 @@ const ProfileEditForm = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [nickname, setNickname] = useState('')
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
+  const [nicknameMessage, setNicknameMessage] = useState<string | null>(null)
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [bio, setBio] = useState('')
@@ -49,6 +51,7 @@ const ProfileEditForm = () => {
           setProfileImgPath(data.profile_img)
         }
         setIsNicknameChecked(true)
+        setIsNicknameAvailable(true)
       } catch {
         setApiError('프로필을 불러오는 데 실패했어요.')
       } finally {
@@ -60,7 +63,14 @@ const ProfileEditForm = () => {
 
   const isNicknameValid = nickname.length >= 2
   const isGithubValid = github === '' || /^[a-zA-Z0-9-]+$/.test(github)
-  const isSaveEnabled = isNicknameValid && isNicknameChecked && isGithubValid && name !== '' && phone !== ''
+  const isSaveEnabled = isNicknameValid && isNicknameChecked && isNicknameAvailable && isGithubValid && name !== '' && phone !== ''
+
+  const handleCheckNickname = async () => {
+    const result = await checkNickname(nickname)
+    setIsNicknameChecked(true)
+    setIsNicknameAvailable(result.available)
+    setNicknameMessage(result.message)
+  }
 
   const toggleTag = (tag: string) => {
     const exists = selectedTags.find((t) => t.name === tag)
@@ -104,7 +114,6 @@ const ProfileEditForm = () => {
         phone,
         introduction: bio,
         github_username: github,
-        profile_img: profileImgPath ?? undefined,
         tag: selectedTags,
       })
       navigate('/profile')
@@ -168,6 +177,8 @@ const ProfileEditForm = () => {
             onChange={(e) => {
               setNickname(e.target.value)
               setIsNicknameChecked(false)
+              setIsNicknameAvailable(false)
+              setNicknameMessage(null)
             }}
             className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
               nickname && !isNicknameValid
@@ -176,7 +187,7 @@ const ProfileEditForm = () => {
             }`}
           />
           <button
-            onClick={() => setIsNicknameChecked(true)}
+            onClick={handleCheckNickname}
             disabled={!isNicknameValid}
             className={`px-3 py-2 text-background text-base rounded-lg ${
               isNicknameValid ? 'bg-primary' : 'bg-gray-300 cursor-not-allowed'
@@ -188,8 +199,10 @@ const ProfileEditForm = () => {
         {nickname && !isNicknameValid && (
           <p className="text-sm text-error">닉네임은 2자 이상 입력해주세요!</p>
         )}
-        {isNicknameChecked && (
-          <p className="text-sm text-primary">사용 가능한 닉네임입니다!</p>
+        {nicknameMessage && (
+          <p className={`text-sm ${isNicknameAvailable ? 'text-primary' : 'text-error'}`}>
+            {nicknameMessage}
+          </p>
         )}
       </div>
 

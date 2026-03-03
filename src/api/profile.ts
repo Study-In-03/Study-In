@@ -42,11 +42,12 @@ export async function updateProfile(userId: number, data: UpdateProfileRequest):
   return res.data;
 }
 
-export async function checkNickname(nickname: string): Promise<boolean> {
+export async function checkNickname(nickname: string): Promise<{ available: boolean; message: string }> {
   try {
-    await axiosInstance.get(`/accounts/check-nickname/?nickname=${nickname}`);
-    return true;
-  } catch {
-    return false;
+    const res = await axiosInstance.get(`/accounts/nicknames/?nickname=${nickname}`)
+    return { available: true, message: res.data.data }
+  } catch (error: any) {
+    const message = error.response?.data?.error ?? '닉네임 확인에 실패했어요.'
+    return { available: false, message }
   }
 }

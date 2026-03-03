@@ -36,3 +36,24 @@ export const resetPasswordConfirm = async (email: string, new_password: string) 
     });
     return response.data;
 };
+
+// 이메일 중복 확인 API
+export const checkEmailDuplicate = async (email: string) => {
+    const response = await axiosInstance.get(`/accounts/emails/check/?email=${email}`);
+    return response.data;
+};
+
+// 회원가입 용 이메일 발송 API
+export const sendRegisterEmail = async (email: string) => {
+    const response = await axiosInstance.post('/accounts/email-verifications/', { email });
+    return response.data;
+};
+
+// 회원가입 인증 코드 체크 API
+export const verifyRegisterCode = async (email: string, verification_number: string) => {
+    const response = await axiosInstance.post('/accounts/email-verifications/verify/', {
+        email,
+        verification_number 
+    });
+    return response.data;
+};

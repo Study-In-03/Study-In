@@ -11,6 +11,7 @@ import Login from '@/pages/Login';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword'
 import Notification from "@/pages/Notification";
+import Register from '@/pages/Register';
 
 export default function Router() {
   return (
@@ -35,7 +36,7 @@ export default function Router() {
         {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<div>회원가입 화면 준비 중...</div>} />
+          <Route path="/register" element={<Register/>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
         </Route>

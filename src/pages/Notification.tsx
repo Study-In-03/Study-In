@@ -1,75 +1,159 @@
-import { useState } from 'react'
-import closeIcon from '@/assets/base/icon-X.svg'
+import { useState, useEffect } from 'react'
+import CloseIcon from '@/assets/base/icon-X.svg?react'
+import LeftIcon from '@/assets/base/icon-left.svg?react'
+import RightIcon from '@/assets/base/icon-right.svg?react'
+import {
+  getNotifications,
+  deleteNotification,
+  readNotification,
+  Notification as NotificationType,
+} from '@/api/notification'
 
-// 임시 알림 데이터 - 실제 API 연동 시 교체 필요
-const mockNotifications = [
-  { id: 1, message: '[크롬 확장 프로그램 함께 구현 해보실 분 찾습니다.] 스터디에 댓글이 달렸어요.', time: '3분 전', isRead: false },
-  { id: 2, message: '[크롬 확장 프로그램 함께 구현 해보실 분 찾습니다.] 스터디에 새로운 유저가 참가했어요.', time: '30분 전', isRead: false },
-  { id: 3, message: '관심있는 [자바스크립트 공부 인증 스터디] 스터디가 곧 모집이 마감됩니다.', time: '30분 전', isRead: false },
-  { id: 4, message: '축하드립니다! <은잔디> 등급으로 승급하셨습니다. 🎉', time: '2022.04.01', isRead: true },
-  { id: 5, message: '관심있는 [춤추면서 파이썬 공부] 스터디가 곧 모집이 마감됩니다.', time: '2022.03.16', isRead: true },
-  { id: 6, message: '관심있는 [으라차차 파이썬 정복하기] 스터디가 곧 모집이 마감됩니다.', time: '2022.03.05', isRead: true },
-]
+const PAGE_SIZE = 10
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState<NotificationType[]>([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // 알림 삭제
-  const deleteNotification = (id: number) => {
-    setNotifications(notifications.filter((n) => n.id !== id))
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const unreadCount = notifications.filter((n) => !n.checked).length
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setIsLoading(true)
+      try {
+        const data = await getNotifications()
+        setNotifications(data.results)
+        setTotalCount(data.count)
+      } catch {
+        setError('알림을 불러오는 데 실패했어요.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchNotifications()
+  }, [currentPage])
+
+  const handleDelete = async (notificationId: number) => {
+    try {
+      await deleteNotification(notificationId)
+      setNotifications((prev) => prev.filter((n) => n.notification_id !== notificationId))
+      setTotalCount((prev) => prev - 1)
+    } catch {
+      setError('알림 삭제에 실패했어요.')
+    }
   }
 
-  // 미확인 알림 개수
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const handleRead = async (notificationId: number) => {
+    try {
+      await readNotification(notificationId)
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.notification_id === notificationId ? { ...n, checked: true } : n
+        )
+      )
+    } catch {
+      setError('알림 읽음 처리에 실패했어요.')
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60)
+    if (diff < 1) return '방금 전'
+    if (diff < 60) return `${diff}분 전`
+    if (diff < 60 * 24) return `${Math.floor(diff / 60)}시간 전`
+    return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16 text-gray-500 text-sm">
+        불러오는 중...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center py-16 text-error text-sm">
+        {error}
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 flex flex-col gap-4">
 
-      {/* 미확인 알림 개수 */}
       <h2 className="text-base font-medium text-gray-900 text-center">
         확인하지 않은 알림{' '}
         <span className="text-primary font-bold">{unreadCount}개</span>
       </h2>
 
-      {/* 알림 목록 */}
-      <div className="flex flex-col gap-2">
-        {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className="flex items-start gap-3 border border-gray-300 rounded-lg px-4 py-3"
-          >
-            {/* 미확인 빨간 점 */}
-            <div className="mt-1 shrink-0">
-              {!notification.isRead ? (
-                <div className="w-2 h-2 rounded-full bg-error" />
-              ) : (
-                <div className="w-2 h-2" />
-              )}
-            </div>
-
-            {/* 알림 내용 + 시간 */}
-            <div className="flex-1 flex flex-col gap-1">
-              <p className="text-sm text-gray-900">{notification.message}</p>
-              <p className="text-xs text-primary">{notification.time}</p>
-            </div>
-
-            {/* X 버튼 */}
-            <button
-              onClick={() => deleteNotification(notification.id)}
-              className="shrink-0"
+      {notifications.length === 0 ? (
+        <div className="flex justify-center py-16 text-gray-500 text-sm">
+          알림이 없어요.
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {notifications.map((notification) => (
+            <div
+              key={notification.notification_id}
+              onClick={() => !notification.checked && handleRead(notification.notification_id)}
+              className="flex items-start gap-3 border border-gray-300 rounded-lg px-4 py-3 cursor-pointer"
             >
-              <img src={closeIcon} alt="삭제" className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
-      </div>
+              <div className="mt-1 shrink-0">
+                {!notification.checked ? (
+                  <div className="w-2 h-2 rounded-full bg-error" />
+                ) : (
+                  <div className="w-2 h-2" />
+                )}
+              </div>
 
-      {/* 페이지네이션 */}
-      <div className="flex justify-center items-center gap-4 mt-2">
-        <button className="text-gray-500">{'<'}</button>
-        <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">1</span>
-        <button className="text-gray-500">{'>'}</button>
-      </div>
+              <div className="flex-1 flex flex-col gap-1">
+                <p className="text-sm text-gray-900">{notification.content}</p>
+                <p className="text-xs text-primary">{formatDate(notification.created)}</p>
+              </div>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleDelete(notification.notification_id)
+                }}
+                className="shrink-0"
+              >
+                <CloseIcon className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="text-gray-500"
+          >
+            <LeftIcon className="w-4 h-4 text-gray-500" />
+          </button>
+          <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">
+            {currentPage}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="text-gray-500"
+          >
+            <RightIcon className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+      )}
 
     </div>
   )

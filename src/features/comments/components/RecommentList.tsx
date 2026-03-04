@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { Recomment } from "@/api/comment";
-import { isNormalUser } from "@/api/comment";
+//
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
+import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
+import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 
 interface TaggedUser {
   id: number;
@@ -75,20 +77,26 @@ const RecommentList = ({
     <div className="mt-2">
       {recomments.map((recomment) => {
         const isAuthor =
-          isNormalUser(recomment.user) && recomment.user.is_author;
+          !isWithdrawnUser(recomment.user) &&
+          isNormalUser(recomment.user) &&
+          recomment.user.is_author;
         const isSecretOther = recomment.is_secret && !isAuthor;
 
         // 닉네임 추출
-        const nickname = isNormalUser(recomment.user)
-          ? recomment.user.profile.nickname
-          : recomment.user.profile.nickname;
+
+        const nickname = isWithdrawnUser(recomment.user)
+          ? "탈퇴한 회원"
+          : isNormalUser(recomment.user)
+            ? recomment.user.profile.nickname
+            : recomment.user.profile.nickname;
 
         // 프로필 이미지 추출
-        const profileImg = isNormalUser(recomment.user)
-          ? getFullUrl(recomment.user.profile.profile_img) ||
-            "/default-profile.png"
-          : "/default-profile.png";
-
+        const profileImg = isWithdrawnUser(recomment.user)
+          ? withdrawnProfileImg
+          : isNormalUser(recomment.user)
+            ? getFullUrl(recomment.user.profile.profile_img) ||
+              "/default-profile.png"
+            : "/default-profile.png";
         return (
           <div key={recomment.recomment_id} className="flex gap-2 mt-2">
             {/* 화살표 아이콘 */}
@@ -97,12 +105,15 @@ const RecommentList = ({
             <div className="flex-1 min-w-0">
               <div className="flex gap-2">
                 {/* 프로필 이미지 */}
-                <img
-                  src={profileImg}
-                  alt={nickname}
-                  className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-300"
-                />
-
+                {recomment.is_secret && !isAuthor ? (
+                  <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
+                ) : (
+                  <img
+                    src={profileImg}
+                    alt={nickname}
+                    className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-300"
+                  />
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-1">
                     <div>

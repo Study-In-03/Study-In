@@ -248,11 +248,29 @@ export function useStudyForm(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        handleAddTag();
+        
+        const trimmed = tagInput.trim();
+        if (!trimmed || form.tags.includes(trimmed) || form.tags.length >= 5) {
+          setTagInput("");
+          return;
+        }
+
+        setForm((prev: StudyFormState) => ({
+          ...prev,
+          tags: [...prev.tags, trimmed],
+        }));
+        
+        setTagInput("");
+        setErrors((prev: StudyFormErrors) => {
+          const next = { ...prev };
+          delete next.tags;
+          return next;
+        });
+        setIsDirty(true);
       }
     },
-    [handleAddTag],
-  );
+    [tagInput, form.tags]
+  ); 
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
@@ -264,7 +282,7 @@ export function useStudyForm(
       }
       onSubmit?.(form);
     },
-    [form, onSubmit],
+    [form, onSubmit]
   );
 
   const handleReset = useCallback(() => {

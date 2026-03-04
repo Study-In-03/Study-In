@@ -44,14 +44,20 @@ const CommentWritePage = () => {
       {/* 하단 고정 바 */}
       <div className="fixed bottom-0 left-0 right-0 flex items-center border-t border-gray-300 bg-background">
         <label className="flex items-center gap-2 flex-1 px-4 py-3 cursor-pointer">
-          <button onClick={() => setIsSecret((prev) => !prev)}>
-            {isSecret ? (
-              <IconSquareCheckFill className="w-5 h-5 text-primary flex-shrink-0" />
-            ) : (
-              <IconSquareCheck className="w-5 h-5 text-gray-300 flex-shrink-0" />
-            )}
-          </button>
-          <span className={`text-base font-medium ${isSecret ? "text-primary" : "text-gray-500"}`}>
+          <input
+            type="checkbox"
+            checked={isSecret}
+            onChange={(e) => setIsSecret(e.target.checked)}
+            className="hidden"
+          />
+          {isSecret ? (
+            <IconSquareCheckFill className="w-5 h-5 text-primary flex-shrink-0" />
+          ) : (
+            <IconSquareCheck className="w-5 h-5 text-gray-300 flex-shrink-0" />
+          )}
+          <span
+            className={`text-base font-medium ${isSecret ? "text-primary" : "text-gray-500"}`}
+          >
             비밀댓글
           </span>
         </label>

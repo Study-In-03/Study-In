@@ -1,10 +1,11 @@
 import { useState } from "react";
 import type { Comment } from "@/api/comment";
-import { isNormalUser } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
 import RecommentList from "./RecommentList";
+import { isNormalUser, isWithdrawnUser } from "@/api/comment";
+import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
 
 interface CommentItemProps {
   comment: Comment;
@@ -52,21 +53,26 @@ const CommentItem = ({
 
   const isDeleted = !!comment.is_delete;
   const isAuthor =
-    !!comment.user && isNormalUser(comment.user) && comment.user.is_author;
-  const isSecretOther = !!comment.is_secret && !isAuthor;
+    !!comment.user &&
+    !isWithdrawnUser(comment.user) &&
+    isNormalUser(comment.user) &&
+    comment.user.is_author;
 
   // 닉네임 추출
   const nickname = comment.user
-    ? isNormalUser(comment.user)
-      ? comment.user.profile.nickname
-      : comment.user.profile.nickname
+    ? isWithdrawnUser(comment.user)
+      ? "탈퇴한 회원"
+      : isNormalUser(comment.user)
+        ? comment.user.profile.nickname
+        : comment.user.profile.nickname
     : "익명";
 
-  // 프로필 이미지 추출
   const profileImg =
-    comment.user && isNormalUser(comment.user)
+    comment.user && !isWithdrawnUser(comment.user) && isNormalUser(comment.user)
       ? getFullUrl(comment.user.profile.profile_img) || "/default-profile.png"
-      : "/default-profile.png";
+      : comment.user && isWithdrawnUser(comment.user)
+        ? withdrawnProfileImg
+        : "/default-profile.png";
 
   const handleUpdate = () => {
     if (!editContent.trim()) return;
@@ -77,11 +83,15 @@ const CommentItem = ({
   return (
     <div className="py-4 border-b border-gray-300 last:border-0">
       <div className="flex gap-3">
-        <img
-          src={profileImg}
-          alt={nickname}
-          className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-300"
-        />
+        {comment.is_secret && !isAuthor ? (
+          <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
+        ) : (
+          <img
+            src={profileImg}
+            alt={nickname}
+            className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-300"
+          />
+        )}
 
         <div className="flex-1 min-w-0">
           {/* 모바일 */}
@@ -90,7 +100,7 @@ const CommentItem = ({
               <span
                 className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
               >
-                {isSecretOther ? "익명" : nickname}
+                {nickname}
               </span>
               {isAuthor && (
                 <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
@@ -120,7 +130,7 @@ const CommentItem = ({
               <span
                 className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
               >
-                {isSecretOther ? "익명" : nickname}
+                {nickname}
               </span>
               {isAuthor && (
                 <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
@@ -204,17 +214,11 @@ const CommentItem = ({
             </div>
           ) : (
             <div className="flex items-center gap-2 mt-1">
-              {comment.is_secret && !isSecretOther && (
+              {comment.is_secret && isAuthor && (
                 <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
               )}
-              <p
-                className={`text-base break-all ${isSecretOther ? "text-gray-500" : "text-gray-700"}`}
-              >
-                {isDeleted
-                  ? "삭제된 댓글입니다."
-                  : isSecretOther
-                    ? "비밀 댓글입니다."
-                    : comment.content}
+              <p className="text-base break-all text-gray-700">
+                {isDeleted ? "삭제된 댓글입니다." : comment.content}
               </p>
             </div>
           )}

@@ -684,7 +684,7 @@ export default function StudyForm({
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInputKeyDown}
                 onFocus={() => setIsTagFocused(true)}
-                onBlur={() => setIsTagFocused(false)}
+                onBlur={() => setTimeout(() => setIsTagFocused(false), 200)}
                 placeholder="태그 입력 (최대5개)"
                 disabled={form.tags.length >= MAX_TAGS}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 lg:py-5 text-base focus:outline-none focus:border-primary-light transition-colors disabled:bg-gray-100 disabled:text-gray-300"
@@ -698,6 +698,7 @@ export default function StudyForm({
                     onMouseDown={(e) => {
                       e.preventDefault();
                       handleAddTagDirect(option);
+                      (document.activeElement as HTMLElement)?.blur();
                     }}
                     className="px-3 py-2 text-sm font-regular text-gray-700 hover:bg-primary-light hover:text-background cursor-pointer transition-colors"
                   >

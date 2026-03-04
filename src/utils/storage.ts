@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_ID_KEY } from '../constants/auth';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_ID_KEY, USER_EMAIL_KEY } from '../constants/auth';
 
 export const storage = {
     // Access Token 관리
@@ -24,5 +24,12 @@ export const storage = {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(USER_ID_KEY);
+        localStorage.removeItem(USER_EMAIL_KEY);
     },
+
+    // 이메일 관리
+    getEmail: () => localStorage.getItem(USER_EMAIL_KEY),   
+    setEmail: (email: string) => localStorage.setItem(USER_EMAIL_KEY, email),
+    removeEmail: () => localStorage.removeItem(USER_EMAIL_KEY),
+
 };

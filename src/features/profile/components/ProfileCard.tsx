@@ -20,7 +20,6 @@ const ProfileCard = () => {
       try {
         const data = await getProfile(userId)
         setProfile(data)
-        // 내 userId랑 프로필 userId 비교해서 내 프로필인지 판단
         setIsMyProfile(data.user === userId)
       } catch {
         setError('프로필을 불러오는 데 실패했어요.')
@@ -48,103 +47,104 @@ const ProfileCard = () => {
   }
 
   return (
-    <div className="flex flex-col items-center px-4 py-6 gap-4 bg-background">
+    <div className="flex flex-col px-4 py-6 gap-4 bg-background">
 
-      <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
-        {profile.profile_img ? (
-          <img
-            src={getFullUrl(profile.profile_img)}
-            alt="프로필 이미지"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <PersonIcon className="w-14 h-14 text-gray-300" />
-        )}
-      </div>
+      {/* 상단 + 하단 카드 붙이기 */}
+      <div className="flex flex-col border border-gray-300 rounded-xl overflow-hidden">
 
-      <h2 className="text-lg font-bold text-gray-900">{profile.nickname}</h2>
-
-      <span className="text-sm text-primary font-medium">Lv. {profile.grade}</span>
-
-      <p className="text-base text-gray-500 text-center bg-gray-100 rounded-lg px-4 py-3 w-full">
-        {profile.introduction || '소개글이 없어요.'}
-      </p>
-
-      <div className="w-full border-t border-gray-300" />
-
-      <div className="w-full flex flex-col gap-4">
-
-        {/* 내 프로필일 때만 이름 표시 (API에서 다른 사람 프로필엔 name 필드 없음) */}
-        {isMyProfile && profile.name && (
-          <div className="flex justify-between items-center">
-            <span className="text-base font-medium text-gray-900 w-28">이름</span>
-            <span className="text-base text-gray-700 flex-1 text-right">{profile.name}</span>
-          </div>
-        )}
-
-        {/* 내 프로필일 때만 전화번호 표시 (API에서 다른 사람 프로필엔 phone 필드 없음) */}
-        {isMyProfile && profile.phone && (
-          <div className="flex justify-between items-center">
-            <span className="text-base font-medium text-gray-900 w-28">전화번호</span>
-            <span className="text-base text-gray-700 flex-1 text-right">{profile.phone}</span>
-          </div>
-        )}
-
-        {profile.preferred_region && (
-          <div className="flex justify-between items-center">
-            <span className="text-base font-medium text-gray-900 w-28">내 지역</span>
-            <span className="text-base text-gray-700 flex-1 text-right">
-              {profile.preferred_region.location}
-            </span>
-          </div>
-        )}
-
-        {profile.github_username && (
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <span className="text-base font-medium text-gray-900 w-28">GitHub</span>
-              <span className="text-base text-gray-700 flex-1 text-right">
-                {profile.github_username}
-              </span>
-            </div>
-            <div className="w-full overflow-x-auto">
-              <GitHubCalendar
-                username={profile.github_username}
-                blockSize={8}
-                blockMargin={2}
-                fontSize={8}
-                colorScheme="light"
+        {/* 프로필 상단 카드 */}
+        <div className="flex flex-col items-center gap-3 px-4 py-6">
+          <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+            {profile.profile_img ? (
+              <img
+                src={getFullUrl(profile.profile_img)}
+                alt="프로필 이미지"
+                className="w-full h-full object-cover"
               />
-            </div>
+            ) : (
+              <PersonIcon className="w-14 h-14 text-gray-300" />
+            )}
           </div>
-        )}
-
-      </div>
-
-      <div className="w-full border-t border-gray-300" />
-
-      {profile.tag.length > 0 && (
-        <div className="w-full">
-          <p className="text-base font-medium text-gray-900 mb-2">관심 분야</p>
-          <div className="flex flex-wrap gap-2">
-            {profile.tag.map((tag) => (
-              <span
-                key={tag.id}
-                className="bg-activation text-primary text-sm px-3 py-1 rounded-full"
-              >
-                {tag.name}
-              </span>
-            ))}
-          </div>
+          <h2 className="text-lg font-bold text-gray-900">{profile.nickname}</h2>
+          <span className="text-sm text-primary font-medium">Lv. {profile.grade}</span>
+          <p className="text-base text-gray-500 text-center bg-gray-100 rounded-lg px-4 py-3 w-full">
+            {profile.introduction || '소개글이 없어요.'}
+          </p>
         </div>
-      )}
 
-      <div className="w-full border-t border-gray-300" />
+        <div className="w-full border-t border-gray-300" />
+
+        {/* 하단 정보 카드 */}
+        <div className="flex flex-col gap-3 px-4 py-5">
+
+          <div className="flex items-center gap-3">
+            <span className="text-base font-medium text-gray-900 w-24 shrink-0">이메일(ID)</span>
+            <span className="text-base text-gray-700">{storage.getEmail() ?? ''}</span>
+          </div>
+
+          {isMyProfile && profile.name && (
+            <div className="flex items-center gap-3">
+              <span className="text-base font-medium text-gray-900 w-24 shrink-0">이름</span>
+              <span className="text-base text-gray-700">{profile.name}</span>
+            </div>
+          )}
+
+          {isMyProfile && profile.phone && (
+            <div className="flex items-center gap-3">
+              <span className="text-base font-medium text-gray-900 w-24 shrink-0">전화번호</span>
+              <span className="text-base text-gray-700">{profile.phone}</span>
+            </div>
+          )}
+
+          {profile.preferred_region && (
+            <div className="flex items-center gap-3">
+              <span className="text-base font-medium text-gray-900 w-24 shrink-0">내 지역</span>
+              <span className="text-base text-gray-700">{profile.preferred_region.location}</span>
+            </div>
+          )}
+
+          {profile.github_username && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-base font-medium text-gray-900 w-24 shrink-0">GitHub</span>
+                <span className="text-base text-gray-700">{profile.github_username}</span>
+              </div>
+              <div className="w-full overflow-x-auto">
+                <GitHubCalendar
+                  username={profile.github_username}
+                  blockSize={8}
+                  blockMargin={2}
+                  fontSize={8}
+                  colorScheme="light"
+                />
+              </div>
+            </div>
+          )}
+
+          {profile.tag.length > 0 && (
+            <>
+              <div className="w-full border-t border-gray-300" />
+              <p className="text-base font-medium text-gray-900">관심 분야</p>
+              <div className="flex flex-wrap gap-2">
+                {profile.tag.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="bg-primary text-background text-sm px-3 py-1 rounded-full"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+        </div>
+      </div>
 
       {isMyProfile && (
         <button
           onClick={() => navigate('/profile/edit')}
-          className="w-40 py-2 border border-gray-300 rounded-lg text-base text-gray-700 hover:bg-activation"
+          className="w-40 py-2 border border-gray-300 rounded-lg text-base text-gray-700 hover:bg-activation mx-auto"
         >
           수정하기
         </button>

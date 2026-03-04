@@ -6,9 +6,11 @@ interface StudyCreateTopBarProps {
   isSubmitting?: boolean;
   onViewStudy?: () => void;
   onDeleteStudy?: () => void;
+  submitLabel?: string;
+  submittingLabel?: string;
 }
 
-export default function StudyCreateTopBar({ isValid, isSubmitting = false, onViewStudy, onDeleteStudy }: StudyCreateTopBarProps) {
+export default function StudyCreateTopBar({ isValid, isSubmitting = false, onViewStudy, onDeleteStudy, submitLabel = "스터디 만들기", submittingLabel = "생성 중..." }: StudyCreateTopBarProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDeleteHovered, setIsDeleteHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ export default function StudyCreateTopBar({ isValid, isSubmitting = false, onVie
             isValid && !isSubmitting ? "bg-primary" : "bg-gray-300"
           }`}
         >
-          {isSubmitting ? "생성 중..." : "스터디 만들기"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </button>
         {onViewStudy && (
           <div ref={dropdownRef} className="relative">

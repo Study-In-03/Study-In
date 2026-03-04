@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { deleteStudy } from "@/api/study";
+import { storage } from "@/utils/storage";
 
 type StudyDetailData = {
   id: number;
   thumbnailUrl: string;
   title: string;
-  leader: { nickname: string; profileImageUrl: string; grade?: string };
+  leader: { id: number; nickname: string; profileImageUrl: string; grade?: string };
   isOffline: boolean;
   location?: string;
   capacity: number;
@@ -22,6 +24,7 @@ type StudyDetailData = {
 
 export default function StudyDetail() {
   const { studyId } = useParams<{ studyId: string }>();
+  const navigate = useNavigate();
 
   // 좋아요 (필수: UI 토글만)
   const [liked, setLiked] = useState(false);
@@ -29,9 +32,11 @@ export default function StudyDetail() {
   // 참가 상태 (오늘은 UI 상태로 시뮬레이션)
   const [isJoined, setIsJoined] = useState(false);
 
+  // 삭제 모달
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isMember = true; // 정회원 여부
-  const isLeader = false; // 스터디장 여부(스터디장 탈퇴 불가)
   // 모집 인원 초과 여부 (참가 불가)
   const isFull = false;
 
@@ -44,6 +49,7 @@ export default function StudyDetail() {
         "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=60",
       title: "React 스터디 (주 2회) - 프로젝트 같이 해요",
       leader: {
+        id: 0,
         nickname: "StudyLeader",
         profileImageUrl:
           "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=256&q=60",
@@ -66,6 +72,20 @@ export default function StudyDetail() {
   }, [studyId]);
 
   if (!data) return <div className="p-6">잘못된 접근입니다.</div>;
+
+  const isLeader = storage.getUserId() === data.leader.id;
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await deleteStudy(data.id);
+      navigate("/");
+    } catch {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
 
   // 버튼 상태 / 문구 / 비활성 사유 계산
   const joinButtonText = isJoined ? "탈퇴하기" : "참가하기";
@@ -164,6 +184,26 @@ export default function StudyDetail() {
             )}
           </div>
 
+          {/* 스터디장 전용: 수정/삭제 버튼 */}
+          {isLeader && (
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => navigate(`/study/${studyId}/edit`)}
+                className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
+              >
+                수정하기
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                className="rounded-xl border border-error-border px-4 py-2 text-sm font-medium text-error transition hover:bg-error-light"
+              >
+                삭제하기
+              </button>
+            </div>
+          )}
+
           {/* 버튼 */}
           <div className="mt-6 flex flex-wrap gap-2">
             {/* 참가/탈퇴 버튼: 조건 UI 적용 */}
@@ -232,6 +272,37 @@ export default function StudyDetail() {
           (댓글 컴포넌트가 이 위치에 추가될 예정입니다.)
         </div>
       </section>
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl">
+            <h2 className="text-lg font-bold">스터디 삭제</h2>
+            <p className="mt-2 text-sm text-gray-700">
+              정말 이 스터디를 삭제하시겠습니까?
+              <br />이 작업은 되돌릴 수 없습니다.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="flex-1 rounded-xl border border-gray-300 py-2 text-sm font-medium transition hover:bg-gray-100 disabled:opacity-50"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex-1 rounded-xl bg-error py-2 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-50"
+              >
+                {isDeleting ? "삭제 중..." : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

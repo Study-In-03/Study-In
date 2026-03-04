@@ -1,6 +1,28 @@
 import { axiosInstance } from './axios';
 import type { StudyFormState } from '@/types/study';
 
+export interface StudyApiData {
+  id: number;
+  title: string;
+  thumbnail: string;
+  is_offline: boolean;
+  recruitment: number;
+  current_participants: number;
+  study_info: string;
+  schedule_info?: string;
+  leader_intro?: string;
+  study_day: { id: number; name: string }[];
+  start_date: string;
+  term: number;
+  start_time: string;
+  end_time: string;
+  difficulty: { id: number; name: string };
+  subject: { id: number; name: string };
+  search_tag: { name: string }[];
+  study_location?: { id: number; location: string };
+  leader: { id: number; nickname: string; profile_image?: string };
+}
+
 // 요일 이름 → API {id, name} 매핑 (백엔드 순서 기준: 월=1 ~ 일=7)
 const DAY_MAP: Record<string, number> = {
   월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6, 일: 7,
@@ -84,6 +106,14 @@ export async function createStudy(
 ): Promise<{ id: number }> {
   const payload = buildStudyPayload(form, thumbnailUrl, locationId);
   const res = await axiosInstance.post<{ id: number }>('/study/', payload);
+  return res.data;
+}
+
+/**
+ * 스터디 단건 조회
+ */
+export async function getStudy(studyId: number): Promise<StudyApiData> {
+  const res = await axiosInstance.get<StudyApiData>(`/study/${studyId}/`);
   return res.data;
 }
 

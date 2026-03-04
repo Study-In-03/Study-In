@@ -80,8 +80,6 @@ const RecommentList = ({
           !isWithdrawnUser(recomment.user) &&
           isNormalUser(recomment.user) &&
           recomment.user.is_author;
-        const isSecretOther = recomment.is_secret && !isAuthor;
-
         // 닉네임 추출
 
         const nickname = isWithdrawnUser(recomment.user)
@@ -98,12 +96,15 @@ const RecommentList = ({
               "/default-profile.png"
             : "/default-profile.png";
         return (
-          <div key={recomment.recomment_id} className="flex gap-2 mt-2">
+          <div
+            key={recomment.recomment_id}
+            className="flex gap-[12px] mt-[1px]"
+          >
             {/* 화살표 아이콘 */}
-            <CommentArrowIcon className="w-6 h-6 text-gray-300 flex-shrink-0 mt-2" />
+            <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0 mt-2" />
 
             <div className="flex-1 min-w-0">
-              <div className="flex gap-2">
+              <div className="flex gap-[10px]">
                 {/* 프로필 이미지 */}
                 {recomment.is_secret && !isAuthor ? (
                   <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
@@ -120,7 +121,7 @@ const RecommentList = ({
                       {/* 닉네임 + 날짜 */}
                       <div className="flex items-center gap-2">
                         <span className="text-base font-bold text-surface">
-                          {isSecretOther ? "익명" : nickname}
+                          {nickname}
                         </span>
                         {isAuthor && (
                           <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
@@ -128,7 +129,7 @@ const RecommentList = ({
                           </span>
                         )}
                         {/* 타인 대댓글에만 답글달기 표시 (내 댓글, 비밀댓글 제외) */}
-                        {!isAuthor && !isSecretOther && (
+                        {!isAuthor && (
                           <button
                             onClick={() =>
                               onRecommentReply?.({
@@ -144,7 +145,7 @@ const RecommentList = ({
                           </button>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 mt-[2px]">
                         {formatDate(recomment.created)}
                       </p>
                     </div>
@@ -224,8 +225,8 @@ const RecommentList = ({
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      {recomment.is_secret && !isSecretOther && (
+                    <div className="flex items-center gap-2 mt-[10px]">
+                     {recomment.is_secret && isAuthor && (
                         <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
                       )}
                       {recomment.tagged_user && (
@@ -233,10 +234,8 @@ const RecommentList = ({
                           @{recomment.tagged_user.nickname}
                         </span>
                       )}
-                      <p
-                        className={`text-base break-all ${isSecretOther ? "text-gray-500" : "text-surface"}`}
-                      >
-                        {isSecretOther ? "비밀 댓글입니다." : recomment.content}
+                      <p className="text-base break-all text-gray-700">
+                        {recomment.content}
                       </p>
                     </div>
                   )}
@@ -249,8 +248,8 @@ const RecommentList = ({
 
       {/* 답글 입력창 */}
       {showInput && (
-        <div className="flex gap-2 mt-2">
-          <CommentArrowIcon className="w-6 h-6 text-gray-300 flex-shrink-0 mt-2" />
+        <div className="flex gap-[12px] mt-[16px]">
+          <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0 mt-2" />
           <div className="flex-1 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
             {taggedUser && (
               <span className="text-primary text-base font-medium flex-shrink-0">

@@ -81,8 +81,8 @@ const CommentItem = ({
   };
 
   return (
-    <div className="py-4 border-b border-gray-300 last:border-0">
-      <div className="flex gap-3">
+    <div className="py-[10px]">
+      <div className="flex gap-[10px]">
         {comment.is_secret && !isAuthor ? (
           <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
         ) : (
@@ -96,30 +96,30 @@ const CommentItem = ({
         <div className="flex-1 min-w-0">
           {/* 모바일 */}
           <div className="md:hidden">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[10px]">
               <span
                 className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
               >
                 {nickname}
               </span>
-              {isAuthor && (
+              {/* {isAuthor && (
                 <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
                   내댓글
                 </span>
-              )}
+              )} */}
               {!isDeleted && (
                 <button
                   onClick={() => {
                     setTaggedUser(undefined);
                     setShowRecommentInput((prev) => !prev);
                   }}
-                  className="text-base font-regular text-gray-500 underline"
+                  className="text-base text-gray-500 underline"
                 >
                   답글달기
                 </button>
               )}
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-[2px]">
               {comment.created ? formatDate(comment.created) : ""}
             </p>
           </div>
@@ -213,7 +213,7 @@ const CommentItem = ({
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-[10px]">
               {comment.is_secret && isAuthor && (
                 <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
               )}

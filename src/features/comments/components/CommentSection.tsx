@@ -38,14 +38,14 @@ const CommentSection = ({ studyPk }: CommentSectionProps) => {
       {/* 모바일: 작성하기 버튼 */}
       <button
         onClick={() => navigate(`/study/${studyPk}/comment/write`)}
-        className="md:hidden w-full h-10 border border-gray-300 rounded-lg text-base font-medium text-surface text-center mb-4"
+        className="md:hidden w-full h-10 border border-gray-300 rounded-[8px] text-base font-medium text-surface text-center mb-[30px]"
       >
         작성하기
       </button>
 
       {error && <p className="text-sm text-error mt-2">{error}</p>}
 
-      <div className="mt-4">
+      <div>
         {loading ? (
           <p className="text-base text-gray-500">댓글을 불러오는 중...</p>
         ) : comments.length === 0 ? (

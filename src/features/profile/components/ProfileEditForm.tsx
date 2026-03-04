@@ -1,80 +1,155 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useUpload from '@/hooks/useUpload'
 import { getFullUrl } from '@/api/upload'
-import personIcon from '@/assets/base/icon-person.svg'
+import { getProfile, updateProfile, checkNickname } from '@/api/profile'
+import { storage } from '@/utils/storage'
+import PersonIcon from '@/assets/base/icon-person.svg?react'
+import LeftIcon from '@/assets/base/icon-left.svg?react'
+import CloseIcon from '@/assets/base/icon-X.svg?react'
 
-// 선택 가능한 전체 태그 목록
 const allTags = ['Python', 'JS', 'Java', 'React', 'Django', '크롬확장프로그램', '사이드프로젝트', '알고리즘', '취업준비']
-
-// 소개 최대 글자수
 const MAX_BIO_LENGTH = 200
 
 const ProfileEditForm = () => {
   const navigate = useNavigate()
   const { uploading, handleImageUpload } = useUpload()
 
-  // 프로필 이미지 상태
   const [profileImg, setProfileImg] = useState<string | null>(null)
-  // 파일 input 참조
+  const [profileImgPath, setProfileImgPath] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // 닉네임 입력값 상태 관리
   const [nickname, setNickname] = useState('')
-  // 닉네임 중복확인 여부 상태
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
-  // 소개 입력값 상태 관리
+  const [nicknameMessage, setNicknameMessage] = useState<string | null>(null)
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false)
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [bio, setBio] = useState('')
-  // 지역 입력값 상태 관리
   const [region, setRegion] = useState('')
-  // GitHub 입력값 상태 관리
   const [github, setGithub] = useState('')
-  // 선택된 태그 상태 관리
-  const [selectedTags, setSelectedTags] = useState<string[]>(['Python', 'JS'])
+  const [selectedTags, setSelectedTags] = useState<Array<{ id: number; name: string }>>([])
+  const [tagInput, setTagInput] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
 
-  // 닉네임 유효성 검사 - 2자 이상
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const userId = storage.getUserId()
+      if (!userId) return
+      try {
+        const data = await getProfile(userId)
+        setNickname(data.nickname)
+        setName(data.name ?? '')
+        setPhone(data.phone ?? '')
+        setBio(data.introduction ?? '')
+        setRegion(data.preferred_region?.location ?? '')
+        setGithub(data.github_username ?? '')
+        setSelectedTags(data.tag ?? [])
+        if (data.profile_img) {
+          setProfileImg(getFullUrl(data.profile_img))
+          setProfileImgPath(data.profile_img)
+        }
+        setIsNicknameChecked(true)
+        setIsNicknameAvailable(true)
+      } catch {
+        setApiError('프로필을 불러오는 데 실패했어요.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProfile()
+  }, [])
+
   const isNicknameValid = nickname.length >= 2
-  // GitHub 유효성 검사 - 영문/숫자/하이픈만 허용
   const isGithubValid = github === '' || /^[a-zA-Z0-9-]+$/.test(github)
+  const isSaveEnabled = isNicknameValid && isNicknameChecked && isNicknameAvailable && isGithubValid && name !== '' && phone !== ''
 
-  // 저장하기 버튼 활성화 조건
-  const isSaveEnabled = isNicknameValid && isNicknameChecked && isGithubValid
+  const handleCheckNickname = async () => {
+    const result = await checkNickname(nickname)
+    setIsNicknameChecked(true)
+    setIsNicknameAvailable(result.available)
+    setNicknameMessage(result.message)
+  }
 
-  // 태그 클릭시 선택/해제
   const toggleTag = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag))
+    const exists = selectedTags.find((t) => t.name === tag)
+    if (exists) {
+      setSelectedTags(selectedTags.filter((t) => t.name !== tag))
     } else {
-      setSelectedTags([...selectedTags, tag])
+      setSelectedTags([...selectedTags, { id: Date.now(), name: tag }])
     }
   }
 
-  // 이미지 파일 선택 시 업로드
+  const removeTag = (tagName: string) => {
+    setSelectedTags(selectedTags.filter((t) => t.name !== tagName))
+  }
+
+  const addCustomTag = () => {
+    if (tagInput.trim() && !selectedTags.find((t) => t.name === tagInput.trim())) {
+      setSelectedTags([...selectedTags, { id: Date.now(), name: tagInput.trim() }])
+      setTagInput('')
+    }
+  }
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const url = await handleImageUpload(file)
-    if (url) setProfileImg(getFullUrl(url))
+    if (url) {
+      setProfileImgPath(url)
+      setProfileImg(getFullUrl(url))
+    }
+  }
+
+  const handleSave = async () => {
+    const userId = storage.getUserId()
+    if (!userId) return
+    setIsSaving(true)
+    setApiError(null)
+    try {
+      await updateProfile(userId, {
+        nickname,
+        name,
+        phone,
+        introduction: bio,
+        github_username: github,
+        profile_img: profileImgPath ?? undefined,
+        tag: selectedTags,
+      })
+      navigate('/profile')
+    } catch {
+      setApiError('저장에 실패했어요. 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16 text-gray-500 text-sm">
+        불러오는 중...
+      </div>
+    )
   }
 
   return (
     <div className="flex flex-col px-4 py-6 gap-4 bg-background">
 
-      {/* 뒤로가기 버튼 */}
       <button
         onClick={() => navigate('/profile')}
         className="flex items-center gap-1 text-base text-gray-700"
       >
-        ← 뒤로가기
+        <LeftIcon className="w-4 h-4 text-gray-700" />
+        뒤로가기
       </button>
 
-      {/* 프로필 이미지 수정 */}
       <div className="flex flex-col items-center gap-2">
         <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
           {profileImg ? (
             <img src={profileImg} alt="프로필 이미지" className="w-full h-full object-cover" />
           ) : (
-            <img src={personIcon} alt="프로필 이미지" className="w-14 h-14" />
+            <PersonIcon className="w-14 h-14 text-gray-300" />
           )}
         </div>
         <input
@@ -93,7 +168,6 @@ const ProfileEditForm = () => {
         </button>
       </div>
 
-      {/* 닉네임 - 변경시 중복확인 필수 */}
       <div className="flex flex-col gap-1">
         <label className="text-base font-medium text-gray-900">닉네임</label>
         <div className="flex gap-2">
@@ -103,7 +177,9 @@ const ProfileEditForm = () => {
             value={nickname}
             onChange={(e) => {
               setNickname(e.target.value)
-              setIsNicknameChecked(false) // 닉네임 변경시 중복확인 초기화
+              setIsNicknameChecked(false)
+              setIsNicknameAvailable(false)
+              setNicknameMessage(null)
             }}
             className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
               nickname && !isNicknameValid
@@ -112,7 +188,7 @@ const ProfileEditForm = () => {
             }`}
           />
           <button
-            onClick={() => setIsNicknameChecked(true)}
+            onClick={handleCheckNickname}
             disabled={!isNicknameValid}
             className={`px-3 py-2 text-background text-base rounded-lg ${
               isNicknameValid ? 'bg-primary' : 'bg-gray-300 cursor-not-allowed'
@@ -121,17 +197,42 @@ const ProfileEditForm = () => {
             중복확인
           </button>
         </div>
-        {/* 닉네임 오류 메시지 */}
         {nickname && !isNicknameValid && (
           <p className="text-sm text-error">닉네임은 2자 이상 입력해주세요!</p>
         )}
-        {/* 중복확인 완료 메시지 */}
-        {isNicknameChecked && (
-          <p className="text-sm text-primary">사용 가능한 닉네임입니다!</p>
+        {nicknameMessage && (
+          <p className={`text-sm ${isNicknameAvailable ? 'text-primary' : 'text-error'}`}>
+            {nicknameMessage}
+          </p>
         )}
       </div>
 
-      {/* 소개 - 글자수 제한 표시 */}
+      <div className="flex flex-col gap-1">
+        <label className="text-base font-medium text-gray-900">
+          이름 <span className="text-error">*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="이름 입력"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-base font-medium text-gray-900">
+          전화번호 <span className="text-error">*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="010-0000-0000"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+        />
+      </div>
+
       <div className="flex flex-col gap-1">
         <label className="text-base font-medium text-gray-900">소개</label>
         <textarea
@@ -141,11 +242,9 @@ const ProfileEditForm = () => {
           onChange={(e) => setBio(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:border-primary-light"
         />
-        {/* 글자수 표시 */}
         <p className="text-xs text-gray-500 text-right">{bio.length}/{MAX_BIO_LENGTH}자</p>
       </div>
 
-      {/* 선호 지역 */}
       <div className="flex flex-col gap-1">
         <label className="text-base font-medium text-gray-900">내 지역</label>
         <input
@@ -157,9 +256,8 @@ const ProfileEditForm = () => {
         />
       </div>
 
-      {/* GitHub - 영문/숫자/하이픈만 허용 */}
       <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">GitHub</label>
+        <label className="text-base font-medium text-gray-900">GitHub User Name</label>
         <input
           type="text"
           placeholder="GitHub 아이디 입력 (영문/숫자/하이픈)"
@@ -168,25 +266,52 @@ const ProfileEditForm = () => {
           className={`border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
             github && !isGithubValid
               ? 'border-error'
-              : 'border-gray-300 focus:border-primary'
+              : 'border-gray-300 focus:border-primary-light'
           }`}
         />
-        {/* GitHub 오류 메시지 */}
         {github && !isGithubValid && (
           <p className="text-sm text-error">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
         )}
       </div>
 
-      {/* 관심 분야 태그 */}
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">관심 분야</label>
+      <div className="flex flex-col gap-2">
+        <label className="text-base font-medium text-gray-900">관심 분야 태그</label>
+        <div className="flex flex-wrap gap-2">
+          {selectedTags.map((tag) => (
+            <span
+              key={tag.id}
+              className="flex items-center gap-1 bg-activation text-primary text-sm px-3 py-1 rounded-full"
+            >
+              {tag.name}
+              <button onClick={() => removeTag(tag.name)}>
+                <CloseIcon className="w-3 h-3 text-primary" />
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="태그 입력 (최대 5개)"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+          />
+          <button
+            onClick={addCustomTag}
+            className="px-3 py-2 bg-primary text-background text-base rounded-lg"
+          >
+            추가
+          </button>
+        </div>
         <div className="flex flex-wrap gap-2">
           {allTags.map((tag) => (
             <button
               key={tag}
               onClick={() => toggleTag(tag)}
               className={`text-sm px-3 py-1 rounded-full ${
-                selectedTags.includes(tag)
+                selectedTags.find((t) => t.name === tag)
                   ? 'bg-activation text-primary'
                   : 'bg-gray-100 text-gray-500'
               }`}
@@ -197,17 +322,30 @@ const ProfileEditForm = () => {
         </div>
       </div>
 
-      {/* 저장하기 버튼 */}
+      {apiError && (
+        <p className="text-sm text-error text-center">{apiError}</p>
+      )}
+
       <button
-        disabled={!isSaveEnabled}
+        onClick={handleSave}
+        disabled={!isSaveEnabled || isSaving}
         className={`mt-4 w-full py-2 rounded-lg text-base ${
-          isSaveEnabled
-            ? 'bg-primary text-background cursor-pointer'
+          isSaveEnabled && !isSaving
+            ? 'bg-primary text-background'
             : 'bg-gray-300 text-background cursor-not-allowed'
         }`}
       >
-        저장하기
+        {isSaving ? '저장 중...' : '저장하기'}
       </button>
+
+      <a
+        href="https://weniv.world"
+        target="_blank"
+        rel="noreferrer"
+        className="text-sm text-gray-500 text-center underline"
+      >
+        위니브월드 알림받기
+      </a>
 
     </div>
   )

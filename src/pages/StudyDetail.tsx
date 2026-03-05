@@ -7,6 +7,7 @@ import shareIcon from "@/assets/base/icon-Share.svg";
 
 /* ========================
    TYPES
+======================== */
 
 type StudyDetailData = {
   id: number;
@@ -14,29 +15,22 @@ type StudyDetailData = {
   title: string;
   hashtags: string;
   chips: { label: string }[];
+  regionLabel: string;
 
   schedule: {
+    statusLabel: string;
+    days: string[];
     startDateLabel: string;
     startDateValue: string;
     timeLabel: string;
     timeValue: string;
+    timeSubValue: string;
     capacityLabel: string;
     capacityValue: string;
   };
 
   introTitle: string;
-  introBody1: string;
-  introBody2: string;
-
-  planTitle: string;
-  planItems: string[];
-
-  leader: {
-    nickname: string;
-    badge: string;
-    profileImageUrl: string;
-    bubble: string;
-  };
+  introBody: string;
 };
 
 type CommentItem = {
@@ -44,9 +38,7 @@ type CommentItem = {
   author: string;
   date: string;
   body: string;
-  isSecret?: boolean;
   isReply?: boolean;
-  replyTo?: string;
   leaderReply?: boolean;
 };
 
@@ -63,10 +55,6 @@ export default function StudyDetail() {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
 
-  const isMember = true;
-  const isLeader = false;
-  const isFull = false;
-
   const data: StudyDetailData | null = useMemo(() => {
     if (!studyId) return null;
 
@@ -74,209 +62,199 @@ export default function StudyDetail() {
       id: Number(studyId),
 
       thumbnailUrl:
-        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=60",
+        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
 
       title:
         "크롬 확장 프로그램 함께 구현 해보실 분 찾습니다.\n(맞춤법 검사, 번역 서비스입니다.)",
 
-      hashtags: "#Python #Google #크롬확장프로그램 #협업프로젝트",
+      hashtags: "#Python #Google #크롬확장프로그램 #구현프로젝트",
 
-      chips: [{ label: "프로젝트" }, { label: "중급" }, { label: "오프라인" }],
+      chips: [{ label: "프로젝트" }, { label: "초급" }],
+
+      regionLabel: "노형동",
 
       schedule: {
+        statusLabel: "모집 중! (D-10)",
+        days: ["수", "금", "토"],
+
         startDateLabel: "시작일",
-        startDateValue: "2026-03-03",
+        startDateValue: "2022.03.29",
+
         timeLabel: "시간",
-        timeValue: "19:00 ~ 21:00",
+        timeValue: "14:00 ~ 16:00",
+        timeSubValue: "8주 / 총 24회",
+
         capacityLabel: "모집 인원",
-        capacityValue: "8/10",
+        capacityValue: "8 / 10",
       },
 
       introTitle: "스터디 소개",
 
-      introBody1:
-        "이 스터디는 같이 만들면서 시작합니다! 자기만의 리얼트를 위해서 함께하는 스터디입니다.",
-
-      introBody2:
-        "취업용 하는 거 아니고, 같이 하니까 하는 거예요. 부담 없이 오세요.",
-
-      planTitle: "스터디 일정",
-
-      planItems: [
-        "1주차: 개발 환경 셋팅",
-        "2주차: 핵심 기능 구현",
-        "3주차: API 연동 / 상태관리",
-        "4주차: 테스트 / 리팩토링",
-      ],
-
-      leader: {
-        nickname: "파이썬 마술사",
-        badge: "노션",
-        profileImageUrl:
-          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=256&q=60",
-
-        bubble:
-          "안녕하세요! 파이썬마술사입니다.\n\n스터디는 편하게 시작하고 같이 성장하는 방식으로 운영합니다.",
-      },
+      introBody:
+        "이 스터디는 파이썬 문법을 시작하다가 포기한 여러분들을 위하여 만들어진 스터디 입니다.\n\n부담 없이 오셔서 같이 공부해요!",
     };
   }, [studyId]);
 
   const comments: CommentItem[] = [
     {
       id: 1,
-      author: "스터디왕",
-      date: "2026.03.01",
-      body: "참여하고 싶습니다! 초보도 가능할까요?",
+      author: "주커버그사촌동생",
+      date: "2022.03.23",
+      body: "주말에는 계획 없나요?",
     },
     {
       id: 2,
-      author: "파이썬 마술사",
-      date: "2026.03.01",
-      body: "네! 초보도 환영합니다 😊",
+      author: "파이썬마술사",
+      date: "2022.03.23",
+      body: "주말은 어려워요 ㅠㅠ",
       isReply: true,
-      replyTo: "스터디왕",
       leaderReply: true,
     },
   ];
 
-  const [commentList, setCommentList] = useState<CommentItem[]>(comments);
+  const [commentList, setCommentList] = useState(comments);
 
-  if (!data) return <div className="px-4 py-6">잘못된 접근입니다.</div>;
+  if (!data) return null;
 
   const primaryButtonText = isJoined ? "채팅방 가기" : "참여하기";
 
   const handleSubmitComment = () => {
-    const text = commentText.trim();
-    if (!text) return;
-
-    const today = new Date();
-    const yy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
+    if (!commentText.trim()) return;
 
     const newComment: CommentItem = {
       id: Date.now(),
       author: "나",
-      date: `${yy}.${mm}.${dd}`,
-      body: text,
+      date: "오늘",
+      body: commentText,
     };
 
     setCommentList((prev) => [newComment, ...prev]);
+
     setCommentText("");
     setIsCommentOpen(false);
   };
 
-  const primaryButtonText = isJoined ? "채팅방 가기" : "참여하기";
-
-  const handleOpenComment = () => {
-    setIsCommentOpen(true);
-  };
-
-  const handleCloseComment = () => {
-    setIsCommentOpen(false);
-    setCommentText("");
-  };
-
-  const handleSubmitComment = () => {
-    const text = commentText.trim();
-    if (!text) return;
-
-    const today = new Date();
-    const yy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-
-    const newComment: CommentItem = {
-      id: Date.now(),
-      author: "나",
-      date: `${yy}.${mm}.${dd}`,
-      body: text,
-    };
-
-    setCommentList((prev) => [newComment, ...prev]);
-    setCommentText("");
-    setIsCommentOpen(false);
-  };
+  const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
   return (
-    <div className="w-full bg-background">
-      <div className="mx-auto w-full max-w-[390px] px-4 pb-[92px] pt-4">
+    <div className="w-full bg-[#F7F8FA]">
 
-        {/* chips */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {data.chips.map((c) => (
-            <span
-              key={c.label}
-              className="rounded-full bg-gray-100 px-3 py-[6px] text-sm font-medium"
-            >
-              {c.label}
-            </span>
-          ))}
-        </div>
+      {/* CONTENT */}
+      <div className="mx-auto max-w-[390px] px-4 pb-[120px] pt-4">
 
-        {/* thumbnail */}
-        <div className="overflow-hidden rounded-2xl bg-gray-100">
+        {/* TOP CARD */}
+        <section className="rounded-[12px] border bg-white">
+
+          <div className="flex gap-2 p-4">
+            {data.chips.map((c) => (
+              <TagChip key={c.label} label={c.label} />
+            ))}
+
+            <TagChip label={data.regionLabel} />
+          </div>
+
           <img
             src={data.thumbnailUrl}
-            alt="thumbnail"
-            className="h-[190px] w-full object-cover"
+            className="h-[358px] w-full object-cover"
           />
-        </div>
 
-        <h1 className="mt-4 whitespace-pre-line text-xl font-bold">
-          {data.title}
-        </h1>
+          <div className="p-4">
 
-        <p className="mt-2 text-sm text-gray-500">{data.hashtags}</p>
+            <h1 className="whitespace-pre-line text-[18px] font-bold">
+              {data.title}
+            </h1>
 
-        {/* schedule */}
-        <section className="mt-4 rounded-2xl border p-4 bg-white">
-
-          <h2 className="text-[15px] font-bold">스터디 일정</h2>
-
-          <div className="mt-3 space-y-2 text-sm">
-
-            <div className="flex justify-between">
-              <span>{data.schedule.startDateLabel}</span>
-              <span>{data.schedule.startDateValue}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>{data.schedule.timeLabel}</span>
-              <span>{data.schedule.timeValue}</span>
-            </div>
-
-            <div className="flex justify-between font-semibold">
-              <span>{data.schedule.capacityLabel}</span>
-              <span>{data.schedule.capacityValue}</span>
-            </div>
+            <p className="mt-2 text-[14px] text-primary-light">
+              {data.hashtags}
+            </p>
 
           </div>
         </section>
 
-        {/* intro */}
-        <section className="mt-4 rounded-2xl border p-4 bg-white">
+        {/* SCHEDULE */}
+        <section className="mt-4 rounded-[12px] border bg-white">
 
-          <h2 className="font-bold">{data.introTitle}</h2>
+          <div className="bg-primary-light p-4 font-semibold text-white">
+            {data.schedule.statusLabel}
+          </div>
 
-          <p className="mt-2 whitespace-pre-line text-sm">
-            {data.introBody1}
-          </p>
+          <div className="p-5">
 
-          <p className="mt-2 whitespace-pre-line text-sm">
-            {data.introBody2}
+            <h2 className="text-center text-[18px] font-bold">
+              스터디 일정
+            </h2>
+
+            <div className="mt-4 flex justify-between">
+
+              {DAYS.map((d) => {
+
+                const active = data.schedule.days.includes(d);
+
+                return (
+                  <div
+                    key={d}
+                    className={`h-[30px] w-[30px] flex items-center justify-center rounded-full text-[13px]
+                    ${
+                      active
+                        ? "bg-primary-light text-white"
+                        : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {d}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 border-t" />
+
+            <InfoRow
+              left={data.schedule.startDateLabel}
+              right={data.schedule.startDateValue}
+            />
+
+            <div className="border-t" />
+
+            <InfoRow
+              left={data.schedule.timeLabel}
+              right={data.schedule.timeValue}
+              subRight={data.schedule.timeSubValue}
+            />
+
+            <div className="border-t" />
+
+            <InfoRow
+              left={data.schedule.capacityLabel}
+              right={data.schedule.capacityValue}
+              bold
+            />
+
+          </div>
+        </section>
+
+        {/* INTRO */}
+        <section className="mt-4 rounded-[12px] border bg-white p-4">
+
+          <h2 className="text-[18px] font-bold">
+            {data.introTitle}
+          </h2>
+
+          <p className="mt-2 whitespace-pre-line text-[14px]">
+            {data.introBody}
           </p>
 
         </section>
 
-        {/* comment */}
-        <section className="mt-4 rounded-2xl border p-4 bg-white">
+        {/* COMMENTS */}
+        <section className="mt-4 rounded-[12px] border bg-white p-4">
 
-          <h2 className="font-bold">그룹장에게 질문하기</h2>
+          <h2 className="text-[18px] font-bold">
+            그룹장에게 질문하기
+          </h2>
 
           <button
             onClick={() => setIsCommentOpen(true)}
-            className="mt-3 w-full border rounded p-2"
+            className="mt-3 w-full rounded border p-2"
           >
             작성하기
           </button>
@@ -284,39 +262,81 @@ export default function StudyDetail() {
           <div className="mt-4 space-y-4">
 
             {commentList.map((c) => (
+
               <div key={c.id}>
 
                 <p className="font-bold text-sm">
-                  {c.author} {c.leaderReply && "👑"}
+                  {c.author} {c.leaderReply ? "👑" : ""}
                 </p>
 
-                <p className="text-xs text-gray-400">{c.date}</p>
+                <p className="text-xs text-gray-400">
+                  {c.date}
+                </p>
 
-                <p className="text-sm">{c.body}</p>
+                <p className="text-sm">
+                  {c.body}
+                </p>
 
               </div>
+
             ))}
-
           </div>
-        </section>
-
         </section>
 
       </div>
 
-      {/* bottom bar */}
+      {/* COMMENT SHEET */}
+
+      {isCommentOpen && (
+
+        <div className="fixed inset-0 flex items-end bg-black/40">
+
+          <div className="mx-auto w-full max-w-[390px] rounded-t-2xl bg-white p-4">
+
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className="w-full rounded border p-2"
+            />
+
+            <div className="mt-4 flex gap-2">
+
+              <button
+                onClick={() => setIsCommentOpen(false)}
+                className="flex-1 rounded border p-2"
+              >
+                취소
+              </button>
+
+              <button
+                onClick={handleSubmitComment}
+                className="flex-1 rounded bg-primary p-2 text-white"
+              >
+                등록
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM BAR */}
+
       <div className="fixed bottom-0 left-0 right-0 border-t bg-white">
 
         <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
 
-          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded border">
+          {/* SHARE */}
+          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-[8px] border border-[#D9DBE0] bg-white text-[14px]">
             <img src={shareIcon} className="h-5 w-5" />
             공유
           </button>
 
+          {/* HEART */}
           <button
             onClick={() => setLiked((p) => !p)}
-            className="flex h-[50px] w-[50px] items-center justify-center rounded border"
+            className="flex h-[50px] w-[50px] items-center justify-center rounded-[8px] border border-[#D9DBE0]"
           >
             <img
               src={liked ? heartFillIcon : heartIcon}
@@ -324,14 +344,61 @@ export default function StudyDetail() {
             />
           </button>
 
+          {/* JOIN */}
           <button
             onClick={() => setIsJoined((p) => !p)}
-            className="h-[50px] flex-1 rounded bg-primary text-white"
+            className="h-[50px] w-[186px] rounded-[8px] bg-primary text-white"
           >
             {primaryButtonText}
           </button>
 
         </div>
+      </div>
+
+    </div>
+  );
+}
+
+/* ========================
+   UI
+======================== */
+
+function TagChip({ label }: { label: string }) {
+  return (
+    <div className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+      {label}
+    </div>
+  );
+}
+
+function InfoRow({
+  left,
+  right,
+  subRight,
+  bold,
+}: {
+  left: string;
+  right: string;
+  subRight?: string;
+  bold?: boolean;
+}) {
+  return (
+    <div className="flex justify-between py-3">
+
+      <div>{left}</div>
+
+      <div className="text-right">
+
+        <div className={bold ? "font-bold" : ""}>
+          {right}
+        </div>
+
+        {subRight && (
+          <div className="text-xs text-gray-400">
+            {subRight}
+          </div>
+        )}
+
       </div>
     </div>
   );

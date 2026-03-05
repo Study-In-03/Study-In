@@ -5,6 +5,7 @@ import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
+import IconSend from "@/assets/base/icon-Send.svg?react";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 
@@ -68,7 +69,7 @@ const RecommentList = ({
 
   const handleSubmitReply = () => {
     if (!replyInput.trim()) return;
-    onCreateRecomment(commentPk, replyInput, false, taggedUser?.id); // taggedUser?.id 추가
+    onCreateRecomment(commentPk, replyInput, false, taggedUser?.id);
     setReplyInput("");
     onCloseInput();
   };
@@ -80,7 +81,6 @@ const RecommentList = ({
           !isWithdrawnUser(recomment.user) &&
           isNormalUser(recomment.user) &&
           recomment.user.is_author;
-        // 닉네임 추출
 
         const nickname = isWithdrawnUser(recomment.user)
           ? "탈퇴한 회원"
@@ -88,7 +88,6 @@ const RecommentList = ({
             ? recomment.user.profile.nickname
             : recomment.user.profile.nickname;
 
-        // 프로필 이미지 추출
         const profileImg = isWithdrawnUser(recomment.user)
           ? withdrawnProfileImg
           : isNormalUser(recomment.user)
@@ -128,7 +127,6 @@ const RecommentList = ({
                             내댓글
                           </span>
                         )}
-                        {/* 타인 대댓글에만 답글달기 표시 (내 댓글, 비밀댓글 제외) */}
                         {!isAuthor && (
                           <button
                             onClick={() =>
@@ -226,7 +224,7 @@ const RecommentList = ({
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 mt-[10px]">
-                     {recomment.is_secret && isAuthor && (
+                      {recomment.is_secret && isAuthor && (
                         <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
                       )}
                       {recomment.tagged_user && (
@@ -246,37 +244,38 @@ const RecommentList = ({
         );
       })}
 
-      {/* 답글 입력창 */}
+      {/* 답글 입력창 - 모바일 기준 */}
       {showInput && (
-        <div className="flex gap-[12px] mt-[16px]">
-          <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0 mt-2" />
-          <div className="flex-1 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            {taggedUser && (
-              <span className="text-primary text-base font-medium flex-shrink-0">
-                @{taggedUser.nickname}
-              </span>
-            )}
-            <input
-              type="text"
-              value={replyInput}
-              onChange={(e) => setReplyInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
-              placeholder="답글을 입력하세요"
-              className="flex-1 text-base focus:outline-none"
-              autoFocus
-            />
-            <button
-              onClick={onCloseInput}
-              className="text-sm text-gray-500 underline flex-shrink-0"
-            >
-              취소
-            </button>
+        <div className="flex items-center gap-[12px] mt-[16px]">
+          <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0" />
+          <div
+            className="flex-1 flex items-center overflow-hidden"
+            style={{ height: "40px", borderRadius: "8px", outline: "1px solid #D9DBE0", outlineOffset: "-1px" }}
+          >
+            <div className="flex-1 flex items-center px-[16px] h-full min-w-0">
+              {taggedUser && (
+                <span className="text-primary text-base font-medium flex-shrink-0 mr-1">
+                  @{taggedUser.nickname}
+                </span>
+              )}
+              <input
+                type="text"
+                value={replyInput}
+                onChange={(e) => setReplyInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
+                placeholder="답글을 입력하세요"
+                className="w-full text-base focus:outline-none bg-transparent"
+                style={{ color: "#8D9299", lineHeight: "24px" }}
+                autoFocus
+              />
+            </div>
             <button
               onClick={handleSubmitReply}
               disabled={!replyInput.trim()}
-              className={`text-sm underline flex-shrink-0 ${replyInput.trim() ? "text-primary" : "text-gray-300"}`}
+              className="flex-shrink-0 flex items-center justify-center"
+              style={{ width: "50px", height: "50px", backgroundColor: "#D9DBE0" }}
             >
-              등록
+              <IconSend className="w-[26px] h-[26px] text-white" />
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@ export interface MyStudyItem {
   thumbnail: string | null;
   study_status: { id: number; name: string };
   is_offline?: boolean;
+  location?: string; 
   difficulty?: { id: number; name: string };
   subject?: { id: number; name: string };
   recruitment?: number;

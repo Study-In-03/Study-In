@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { GitHubCalendar } from 'react-github-calendar'
 import useUpload from '@/hooks/useUpload'
 import { getFullUrl } from '@/api/upload'
 import { getProfile, updateProfile, checkNickname } from '@/api/profile'
 import { storage } from '@/utils/storage'
 import PersonIcon from '@/assets/base/icon-person.svg?react'
-import LeftIcon from '@/assets/base/icon-left.svg?react'
+import ImageIcon from '@/assets/base/icon-Image.svg?react'
+import CheckIcon from '@/assets/base/icon-Check.svg?react'
 import CloseIcon from '@/assets/base/icon-X.svg?react'
 
 const allTags = ['Python', 'JS', 'Java', 'React', 'Django', '크롬확장프로그램', '사이드프로젝트', '알고리즘', '취업준비']
-const MAX_BIO_LENGTH = 200
+const MAX_BIO_LENGTH = 80
 
 const ProfileEditForm = () => {
   const navigate = useNavigate()
@@ -22,6 +24,7 @@ const ProfileEditForm = () => {
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
   const [nicknameMessage, setNicknameMessage] = useState<string | null>(null)
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false)
+  const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [bio, setBio] = useState('')
@@ -50,6 +53,8 @@ const ProfileEditForm = () => {
           setProfileImg(getFullUrl(data.profile_img))
           setProfileImgPath(data.profile_img)
         }
+        const emailFromStorage = storage.getEmail()
+        if (emailFromStorage) setEmail(emailFromStorage)
         setIsNicknameChecked(true)
         setIsNicknameAvailable(true)
       } catch {
@@ -136,200 +141,209 @@ const ProfileEditForm = () => {
   return (
     <div className="flex flex-col px-4 py-6 gap-4 bg-background">
 
-      <button
-        onClick={() => navigate('/profile')}
-        className="flex items-center gap-1 text-base text-gray-700"
-      >
-        <LeftIcon className="w-4 h-4 text-gray-700" />
-        뒤로가기
-      </button>
+      <div className="flex flex-col border border-gray-300 rounded-xl overflow-hidden">
 
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
-          {profileImg ? (
-            <img src={profileImg} alt="프로필 이미지" className="w-full h-full object-cover" />
-          ) : (
-            <PersonIcon className="w-14 h-14 text-gray-300" />
-          )}
-        </div>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageChange}
-          className="hidden"
-        />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="text-base text-primary font-medium"
-        >
-          {uploading ? '업로드 중...' : '이미지 변경'}
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">닉네임</label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="닉네임 입력 (2자 이상)"
-            value={nickname}
-            onChange={(e) => {
-              setNickname(e.target.value)
-              setIsNicknameChecked(false)
-              setIsNicknameAvailable(false)
-              setNicknameMessage(null)
-            }}
-            className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
-              nickname && !isNicknameValid
-                ? 'border-error'
-                : 'border-gray-300 focus:border-primary-light'
-            }`}
-          />
-          <button
-            onClick={handleCheckNickname}
-            disabled={!isNicknameValid}
-            className={`px-3 py-2 text-background text-base rounded-lg ${
-              isNicknameValid ? 'bg-primary' : 'bg-gray-300 cursor-not-allowed'
-            }`}
-          >
-            중복확인
-          </button>
-        </div>
-        {nickname && !isNicknameValid && (
-          <p className="text-sm text-error">닉네임은 2자 이상 입력해주세요!</p>
-        )}
-        {nicknameMessage && (
-          <p className={`text-sm ${isNicknameAvailable ? 'text-primary' : 'text-error'}`}>
-            {nicknameMessage}
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">
-          이름 <span className="text-error">*</span>
-        </label>
-        <input
-          type="text"
-          placeholder="이름 입력"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">
-          전화번호 <span className="text-error">*</span>
-        </label>
-        <input
-          type="text"
-          placeholder="010-0000-0000"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">소개</label>
-        <textarea
-          placeholder="소개를 입력해주세요"
-          value={bio}
-          maxLength={MAX_BIO_LENGTH}
-          onChange={(e) => setBio(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:border-primary-light"
-        />
-        <p className="text-xs text-gray-500 text-right">{bio.length}/{MAX_BIO_LENGTH}자</p>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">내 지역</label>
-        <input
-          type="text"
-          placeholder="지역 입력"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-base font-medium text-gray-900">GitHub User Name</label>
-        <input
-          type="text"
-          placeholder="GitHub 아이디 입력 (영문/숫자/하이픈)"
-          value={github}
-          onChange={(e) => setGithub(e.target.value)}
-          className={`border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
-            github && !isGithubValid
-              ? 'border-error'
-              : 'border-gray-300 focus:border-primary-light'
-          }`}
-        />
-        {github && !isGithubValid && (
-          <p className="text-sm text-error">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="text-base font-medium text-gray-900">관심 분야 태그</label>
-        <div className="flex flex-wrap gap-2">
-          {selectedTags.map((tag) => (
-            <span
-              key={tag.id}
-              className="flex items-center gap-1 bg-activation text-primary text-sm px-3 py-1 rounded-full"
-            >
-              {tag.name}
-              <button onClick={() => removeTag(tag.name)}>
-                <CloseIcon className="w-3 h-3 text-primary" />
-              </button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="태그 입력 (최대 5개)"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-          />
-          <button
-            onClick={addCustomTag}
-            className="px-3 py-2 bg-primary text-background text-base rounded-lg"
-          >
-            추가
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {allTags.map((tag) => (
+        <div className="flex flex-col items-center gap-3 px-4 py-6">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+              {profileImg ? (
+                <img src={profileImg} alt="프로필 이미지" className="w-full h-full object-cover" />
+              ) : (
+                <PersonIcon className="w-14 h-14 text-gray-300" />
+              )}
+            </div>
             <button
-              key={tag}
-              onClick={() => toggleTag(tag)}
-              className={`text-sm px-3 py-1 rounded-full ${
-                selectedTags.find((t) => t.name === tag)
-                  ? 'bg-activation text-primary'
-                  : 'bg-gray-100 text-gray-500'
-              }`}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute bottom-0 right-0 w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center"
             >
-              {tag}
+              <ImageIcon className="w-4 h-4 text-background" />
             </button>
-          ))}
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </div>
+          <div className="flex flex-col gap-1 items-center w-full max-w-xs">
+            <div className="flex items-center gap-2 w-full border-b border-gray-300 pb-1">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => {
+                  setNickname(e.target.value)
+                  setIsNicknameChecked(false)
+                  setIsNicknameAvailable(false)
+                  setNicknameMessage(null)
+                }}
+                className="flex-1 text-lg font-bold text-gray-900 bg-transparent focus:outline-none text-center"
+              />
+              <button
+                onClick={handleCheckNickname}
+                disabled={!isNicknameValid}
+                className="shrink-0"
+              >
+                <CheckIcon className={`w-5 h-5 ${isNicknameValid ? 'text-primary' : 'text-gray-300'}`} />
+              </button>
+            </div>
+            {nicknameMessage && (
+              <p className={`text-sm ${isNicknameAvailable ? 'text-primary' : 'text-error'}`}>
+                {nicknameMessage}
+              </p>
+            )}
+          </div>
+
+          {/* 소개 */}
+          <div className="flex flex-col gap-1 w-full">
+            <textarea
+              placeholder="소개를 입력해주세요"
+              value={bio}
+              maxLength={MAX_BIO_LENGTH}
+              onChange={(e) => setBio(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 resize-none h-24 focus:outline-none focus:border-primary-light w-full"
+            />
+            <p className="text-xs text-gray-500 text-right">{bio.length}/{MAX_BIO_LENGTH}자</p>
+          </div>
+          <div className="flex items-center gap-3 w-full">
+            <span className="text-base font-medium text-gray-900 shrink-0">이메일(ID)</span>
+            <span className="text-base text-gray-500">{email}</span>
+          </div>
+
+        </div>
+
+        <div className="w-full border-t border-gray-300" />
+        <div className="flex flex-col gap-4 px-4 py-5">
+
+          <div className="flex flex-col gap-1">
+            <label className="text-base font-medium text-gray-900">
+              이름 <span className="text-error">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="이름 입력"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-base font-medium text-gray-900">
+              전화번호 <span className="text-error">*</span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="010-0000-0000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+              />
+              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
+                인증
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-base font-medium text-gray-900">내 지역</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="지역 입력"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+              />
+              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
+                재인증
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-medium text-gray-900">GitHub User Name</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="GitHub 아이디 입력 (영문/숫자/하이픈)"
+                value={github}
+                onChange={(e) => setGithub(e.target.value)}
+                className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
+                  github && !isGithubValid ? 'border-error' : 'border-gray-300 focus:border-primary-light'
+                }`}
+              />
+              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
+                인증
+              </button>
+            </div>
+            {github && !isGithubValid && (
+              <p className="text-sm text-error">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
+            )}
+            {github && isGithubValid && (
+              <div className="w-full overflow-x-auto">
+                <GitHubCalendar
+                  username={github}
+                  blockSize={8}
+                  blockMargin={2}
+                  fontSize={8}
+                  colorScheme="light"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-medium text-gray-900">관심 분야 태그</label>
+            <input
+              type="text"
+              placeholder="태그 입력 (최대 5개)"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+            />
+            <div className="flex flex-wrap gap-2">
+              {selectedTags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="flex items-center gap-1 bg-primary text-background text-sm px-3 py-1 rounded-full"
+                >
+                  {tag.name}
+                  <button onClick={() => removeTag(tag.name)}>
+                    <CloseIcon className="w-3 h-3 text-background" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`text-sm px-3 py-1 rounded-full ${
+                    selectedTags.find((t) => t.name === tag)
+                      ? 'bg-primary text-background'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
 
       {apiError && (
         <p className="text-sm text-error text-center">{apiError}</p>
       )}
-
       <button
         onClick={handleSave}
         disabled={!isSaveEnabled || isSaving}
-        className={`mt-4 w-full py-2 rounded-lg text-base ${
+        className={`w-40 py-3 rounded-lg text-base mx-auto ${
           isSaveEnabled && !isSaving
             ? 'bg-primary text-background'
             : 'bg-gray-300 text-background cursor-not-allowed'
@@ -344,7 +358,7 @@ const ProfileEditForm = () => {
         rel="noreferrer"
         className="text-sm text-gray-500 text-center underline"
       >
-        위니브월드 알림받기
+        위니브월드 달리하기
       </a>
 
     </div>

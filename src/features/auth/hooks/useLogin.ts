@@ -20,6 +20,7 @@ export const useLogin = () => {
       storage.setAccessToken(data.access_token);
       storage.setRefreshToken(data.refresh_token);
       storage.setUserId(data.user.pk);
+      storage.setEmail(email);
 
       // 성공 시 메인 페이지로 이동
       navigate("/");

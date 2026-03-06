@@ -5,13 +5,15 @@ import Profile from "@/pages/Profile";
 import ProfileEdit from "@/pages/ProfileEdit";
 import MyStudy from "@/pages/Mystudy";
 import StudyCreate from "@/pages/StudyCreate";
+import StudyEdit from "@/pages/StudyEdit";
 import Layout from '@/components/layout/Layout';
 import AuthLayout from '@/components/layout/AuthLayout';
 import Login from '@/pages/Login';
 import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword'
-import Notification from "@/pages/Notification";
+import ResetPassword from '@/pages/ResetPassword';
+import Notification from '@/pages/Notification';
 import Register from '@/pages/Register';
+import CommentWritePage from '@/pages/CommentWritePage';
 
 export default function Router() {
   return (
@@ -32,6 +34,9 @@ export default function Router() {
         
         {/* 스터디 */}
         <Route path="/study/create" element={<StudyCreate />} />
+        <Route path="/study/:studyId/comment/write" element={<CommentWritePage />} />
+        <Route path="/study/:studyId/edit" element={<StudyEdit />} />
+
 
         {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>

@@ -4,6 +4,7 @@ import axios from "axios";
 import StudyForm from "@/features/study/components/StudyForm";
 import StudyCreateTopBar from "@/features/study/components/StudyCreateTopBar";
 import { useStudyForm } from "@/features/study/hooks/useStudyForm";
+import { useAiStream } from "@/features/study/hooks/useAiStream";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import type { StudyFormState } from "@/types/study";
@@ -90,6 +91,10 @@ export default function StudyCreate() {
     handleReset,
   } = useStudyForm(handleSubmit);
 
+  const { isLoading: aiIsLoading, trigger } = useAiStream((field, text) => {
+    updateField(field, text);
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* ── 앱 헤더 (모바일/데스크탑 공통) ── */}
@@ -103,7 +108,7 @@ export default function StudyCreate() {
       {/* ── 폼 ── */}
       <main className="max-w-[1200px] mx-auto pb-10">
         {apiError && (
-          <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-error">
+          <div className="mx-4 mt-4 p-3 bg-error-light border border-error-border rounded-lg text-sm text-error">
             {apiError}
           </div>
         )}
@@ -125,6 +130,14 @@ export default function StudyCreate() {
           handleSubmit={onSubmit}
           handleReset={handleReset}
           userLocation={userLocation}
+          onAiGenerate={() => trigger({
+            title: form.title,
+            subject: form.subject,
+            difficulty: form.difficulty,
+            durationWeeks: form.durationWeeks,
+            days: form.days,
+          }, form.schedule)}
+          aiIsLoading={aiIsLoading}
         />
       </main>
 

@@ -33,7 +33,11 @@ export default {
           light: "#5C8EF2",
         },
         activation: "#DEE8FF",
-        error: "#FF3440",
+        error: {
+          DEFAULT: "#FF3440",
+          light: "#fef2f2",
+          border: "#fecaca",
+        },
         warning: {
           DEFAULT: "#FFC533",
           light: "#FFE187",

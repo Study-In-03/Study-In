@@ -130,7 +130,7 @@ const ActivityTabs = () => {
               {pagedStudies.map((study) => (
                 <div
                   key={study.id}
-                  className="bg-background rounded-2xl shadow-md border border-gray-200 flex flex-col cursor-pointer overflow-hidden"
+                  className="bg-background rounded-2xl shadow-md border border-gray-300 flex flex-col cursor-pointer overflow-hidden"
                   onClick={() => navigate(`/study/${study.id}`)}
                 >
                   

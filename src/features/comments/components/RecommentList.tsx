@@ -265,7 +265,7 @@ const RecommentList = ({
                 onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
                 placeholder="답글을 입력하세요"
                 className="w-full text-base focus:outline-none bg-transparent"
-                style={{ color: "#8D9299", lineHeight: "24px" }}
+                style={{ color: "text-gray-500", lineHeight: "24px" }}
                 autoFocus
               />
             </div>
@@ -273,9 +273,9 @@ const RecommentList = ({
               onClick={handleSubmitReply}
               disabled={!replyInput.trim()}
               className="flex-shrink-0 flex items-center justify-center"
-              style={{ width: "50px", height: "50px", backgroundColor: "#D9DBE0" }}
+              style={{ width: "50px", height: "50px", backgroundColor: "bg-gray-300" }}
             >
-              <IconSend className="w-[26px] h-[26px] text-white" />
+              <IconSend className="w-[26px] h-[26px] text-background" />
             </button>
           </div>
         </div>

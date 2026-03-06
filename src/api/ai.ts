@@ -44,10 +44,21 @@ function buildMessages(context: AiContext, field: 'introduction' | 'schedule') {
   ];
 }
 
+/** JSON 응답에서 타이프라이터 효과로 텍스트를 점진적으로 노출합니다. */
+async function simulateStream(text: string, onChunk: (partial: string) => void): Promise<void> {
+  const CHUNK = 4; // 한 번에 표시할 글자 수
+  const DELAY = 20; // ms
+  for (let i = CHUNK; i < text.length; i += CHUNK) {
+    onChunk(text.slice(0, i));
+    await new Promise<void>((resolve) => setTimeout(resolve, DELAY));
+  }
+  onChunk(text); // 마지막 전체 텍스트 전달
+}
+
 /**
  * 스트리밍 응답을 지원하는 AI 텍스트 생성 함수.
  * SSE(text/event-stream) 응답이면 청크마다 onChunk를 호출하고,
- * 일반 JSON 응답이면 완료 후 onChunk를 한 번 호출합니다.
+ * 일반 JSON 응답이면 타이프라이터 효과로 점진적으로 표시합니다.
  */
 export async function generateAiTextStream(
   context: AiContext,
@@ -99,9 +110,9 @@ export async function generateAiTextStream(
     return fullText;
   }
 
-  // 폴백: 일반 JSON 응답
+  // 폴백: 일반 JSON 응답 → 타이프라이터 효과로 점진적 표시
   const data = await res.json();
   const text = data.choices[0].message.content as string;
-  onChunk(text);
+  await simulateStream(text, onChunk);
   return text;
 }

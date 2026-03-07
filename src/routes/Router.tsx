@@ -16,6 +16,7 @@ import Notification from '@/pages/Notification';
 import Register from '@/pages/Register';
 import CommentWritePage from '@/pages/CommentWritePage';
 import Chat from '@/pages/Chat';
+import Search from '@/pages/Search';
 
 export default function Router() {
   return (
@@ -25,6 +26,7 @@ export default function Router() {
         {/* 공통 레이아웃 (헤더 + 푸터) */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/study/:studyId" element={<StudyDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />

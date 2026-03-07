@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import MobileDrawer from '@/components/layout/MobileDrawer';
 import logoSrc from '@/assets/base/icon-Logo.svg';
@@ -10,15 +10,14 @@ import personIcon from '@/assets/base/icon-person.svg';
 import hamburgerIcon from '@/assets/base/icon-hamburger.svg';
 
 interface HeaderProps {
-  /** 'default': 일반 페이지 헤더 | 'auth': 로그인/회원가입 페이지 (로고만 표시) */
   variant?: 'default' | 'auth';
 }
 
 export default function Header({ variant = 'default' }: HeaderProps) {
   const { isLoggedIn } = useAuthStore();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // 로그인/회원가입 페이지 — 로고만 표시 (모바일/데스크탑 동일)
   if (variant === 'auth') {
     return (
       <header className="h-14 lg:h-20 bg-background border-b border-gray-300">
@@ -35,7 +34,7 @@ export default function Header({ variant = 'default' }: HeaderProps) {
     <>
       <header className="h-14 lg:h-20 bg-background border-b border-gray-300">
 
-        {/* ── 모바일 헤더 (lg 미만) ── */}
+        {/* ── 모바일 헤더 ── */}
         <div className="flex lg:hidden items-center justify-between h-full px-4">
           <button onClick={() => setDrawerOpen(true)}>
             <img src={hamburgerIcon} alt="메뉴" className="w-6 h-6" />
@@ -43,27 +42,24 @@ export default function Header({ variant = 'default' }: HeaderProps) {
           <Link to="/">
             <img src={logoSrc} alt="Studyin" className="h-5" />
           </Link>
-          {/* 로그인: 채팅 아이콘 / 비로그인: 프로필(로그인 유도) 아이콘 */}
           {isLoggedIn ? (
-            <button>
+            <button onClick={() => navigate('/chat')}>
               <img src={chattingIcon} alt="채팅" className="w-6 h-6" />
             </button>
           ) : (
-            <button>
+            <button onClick={() => navigate('/login')}>
               <img src={personIcon} alt="로그인" className="w-6 h-6" />
             </button>
           )}
         </div>
 
-        {/* ── 데스크탑 헤더 (lg 이상) ── */}
+        {/* ── 데스크탑 헤더 ── */}
         <div className="hidden lg:flex items-center h-full w-full max-w-[990px] mx-auto px-4 gap-6">
 
-          {/* 로고 */}
           <Link to="/" className="shrink-0">
             <img src={logoSrc} alt="Studyin" className="h-5" />
           </Link>
 
-          {/* 필터 탭 — 활성 탭 아래 60×4px 파란 바, 텍스트와 간격 28px */}
           <nav className="flex shrink-0 h-full">
             <button className="relative flex items-center px-3 text-base font-medium text-gray-900">
               내 지역
@@ -74,7 +70,6 @@ export default function Header({ variant = 'default' }: HeaderProps) {
             </button>
           </nav>
 
-          {/* 검색창 */}
           <div className="flex items-center flex-1 gap-2 px-4 py-2 border border-gray-300 rounded-full min-w-0">
             <input
               type="text"
@@ -84,29 +79,33 @@ export default function Header({ variant = 'default' }: HeaderProps) {
             <img src={searchIcon} alt="검색" className="w-5 h-5 shrink-0" />
           </div>
 
-          {/* 우측 — 로그인 여부에 따라 분기 */}
           {isLoggedIn ? (
             <div className="flex items-center gap-3 shrink-0">
-              <button>
+              <button onClick={() => navigate('/chat')}>
                 <img src={chattingIcon} alt="채팅" className="w-6 h-6" />
               </button>
-              <button className="relative">
+              <button className="relative" onClick={() => navigate('/notification')}>
                 <img src={notificationIcon} alt="알림" className="w-6 h-6" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full" />
               </button>
-              <button className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center overflow-hidden">
+              <button
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center overflow-hidden"
+                onClick={() => navigate('/profile')}
+              >
                 <img src={personIcon} alt="프로필" className="w-5 h-5" />
               </button>
             </div>
           ) : (
-            <button className="shrink-0 px-4 py-2 bg-primary text-background text-base font-medium rounded-lg">
+            <button
+              className="shrink-0 px-4 py-2 bg-primary text-background text-base font-medium rounded-lg"
+              onClick={() => navigate('/login')}
+            >
               시작하기
             </button>
           )}
         </div>
       </header>
 
-      {/* 모바일 사이드 드로어 */}
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </>
   );

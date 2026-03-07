@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "@/api/auth";
 import { storage } from "@/utils/storage";
+import { useAuthStore } from "@/store/authStore";
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const { login: setLogin } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -21,6 +23,7 @@ export const useLogin = () => {
       storage.setRefreshToken(data.refresh_token);
       storage.setUserId(data.user.pk);
       storage.setEmail(email);
+      setLogin();
 
       // 성공 시 메인 페이지로 이동
       navigate("/");

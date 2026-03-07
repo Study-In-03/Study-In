@@ -7,7 +7,7 @@ import searchIcon from '@/assets/base/icon-Search.svg';
 import chattingIcon from '@/assets/base/icon-chatting.svg';
 import notificationIcon from '@/assets/base/icon-Notification.svg';
 import personIcon from '@/assets/base/icon-person.svg';
-import hamburgerIcon from '@/assets/base/icon-hamburger.svg';
+import HamburgerIcon from '@/assets/base/icon-hamburger.svg?react';
 
 interface HeaderProps {
   variant?: 'default' | 'auth';
@@ -30,6 +30,10 @@ export default function Header({ variant = 'default' }: HeaderProps) {
     );
   }
 
+  // 로그아웃 상태이면서 현재 페이지가 채팅(/chat) 페이지인 경우
+  const isChatPage = location.pathname === '/chat';
+  const shouldHideChatIconOnMobile = !isLoggedIn && isChatPage;
+
   return (
     <>
       <header className="h-14 lg:h-20 bg-background border-b border-gray-300">
@@ -37,24 +41,32 @@ export default function Header({ variant = 'default' }: HeaderProps) {
         {/* ── 모바일 헤더 ── */}
         <div className="flex lg:hidden items-center justify-between h-full px-4">
           <button onClick={() => setDrawerOpen(true)}>
-            <img src={hamburgerIcon} alt="메뉴" className="w-6 h-6" />
+            <HamburgerIcon 
+              className="w-6 h-6 text-surface hover:text-primary-light transition-colors" 
+            />
           </button>
           <Link to="/">
             <img src={logoSrc} alt="Studyin" className="h-5" />
           </Link>
-          {isLoggedIn ? (
-            <button onClick={() => navigate('/chat')}>
-              <img src={chattingIcon} alt="채팅" className="w-6 h-6" />
-            </button>
-          ) : (
-            <button onClick={() => navigate('/login')}>
-              <img src={personIcon} alt="로그인" className="w-6 h-6" />
-            </button>
-          )}
+          {/* 로그인: 채팅 아이콘 / 비로그인: 프로필(로그인 유도) 아이콘 */}
+          <div className="w-[30px] h-[30px]">
+            {/* 조건부 렌더링: 로그아웃 + 채팅페이지가 아닐 때만 아이콘 표시 */}
+            {!shouldHideChatIconOnMobile && (
+              isLoggedIn ? (
+                <button onClick={() => navigate('/chat')}>
+                  <img src={chattingIcon} alt="채팅" className="w-6 h-6" />
+                </button>
+              ) : (
+                <button onClick={() => navigate('/login')}>
+                  <img src={personIcon} alt="로그인" className="w-6 h-6" />
+                </button>
+              )
+            )}
+          </div>
         </div>
 
-        {/* ── 데스크탑 헤더 ── */}
-        <div className="hidden lg:flex items-center h-full w-full max-w-[990px] mx-auto px-4 gap-6">
+        {/* ── 데스크탑 헤더 (lg 이상) ── */}
+        <div className="hidden lg:flex items-center h-full w-full max-w-[1190px] mx-auto px-4 gap-6">
 
           <Link to="/" className="shrink-0">
             <img src={logoSrc} alt="Studyin" className="h-5" />

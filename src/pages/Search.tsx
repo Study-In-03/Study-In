@@ -11,12 +11,10 @@ import triangleDownIcon from '@/assets/base/icon-Triangle-Down.svg';
 
 const SUBJECTS = ['개념학습', '응용/활용', '프로젝트', '챌린지', '자격증/시험', '취업/코테', '기타', '특강'];
 const DIFFICULTIES = ['초급', '중급', '고급'];
+
 const TYPES = ['내지역', '온라인'];
 const STATUSES = ['모집 중', '진행 중', '종료'];
 const DAY_MAP: Record<string, number> = { 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6, 일: 7 };
-const SUBJECT_MAP: Record<string, number> = { '개념학습': 1, '응용/활용': 2, '프로젝트': 3, '챌린지': 4, '자격증/시험': 5, '취업/코테': 6, '기타': 7, '특강': 8 };
-const DIFFICULTY_MAP: Record<string, number> = { '초급': 1, '중급': 2, '고급': 3 };
-const STATUS_MAP: Record<string, number> = { '모집 중': 1, '진행 중': 2, '종료': 3 };
 
 function Chip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
@@ -70,15 +68,15 @@ export default function Search() {
     setIsLoading(true);
     setSearched(true);
     try {
-      const urlParams = new URLSearchParams();
-      if (params.q) urlParams.append('search', params.q);
-      params.subjects.forEach((s) => urlParams.append('subject', String(SUBJECT_MAP[s])));
-      params.difficulties.forEach((d) => urlParams.append('difficulty', String(DIFFICULTY_MAP[d])));
-      params.days.forEach((d) => urlParams.append('study_day', String(DAY_MAP[d])));
-      if (params.types.length === 1) urlParams.append('offline', params.types[0] === '내지역' ? '1' : '0');
-      params.statuses.forEach((s) => urlParams.append('study_status', String(STATUS_MAP[s])));
+      const apiParams: Record<string, unknown> = {};
+      if (params.q) apiParams.search = params.q;
+      if (params.subjects.length) apiParams.subject = params.subjects.join(',');
+      if (params.difficulties.length) apiParams.difficulty = params.difficulties.join(',');
+      if (params.days.length) apiParams.study_day = params.days.map((d) => DAY_MAP[d]).join(',');
+      if (params.types.length === 1) apiParams.is_offline = params.types[0] === '내지역' ? 1 : 0;
+      if (params.statuses.length) apiParams.status = params.statuses.join(',');
 
-      const res = await axiosInstance.get('/study/', { params: urlParams });
+      const res = await axiosInstance.get('/study/', { params: apiParams });
       const data = res.data.results ?? res.data;
       setStudies(Array.isArray(data) ? data : []);
     } catch {

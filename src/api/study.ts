@@ -96,30 +96,6 @@ function buildStudyPayload(
 }
 
 /**
- * 스터디 주제 카테고리 목록 조회
- */
-export async function getStudySubjects(): Promise<{ id: number; name: string }[]> {
-  const res = await axiosInstance.get<{ id: number; name: string }[]>('/study/subject/');
-  return res.data;
-}
-
-/**
- * 스터디 난이도 카테고리 목록 조회
- */
-export async function getStudyDifficulties(): Promise<{ id: number; name: string }[]> {
-  const res = await axiosInstance.get<{ id: number; name: string }[]>('/study/difficulty/');
-  return res.data;
-}
-
-/**
- * 검색 태그 카테고리 목록 조회
- */
-export async function getStudySearchTags(): Promise<{ id: number; name: string }[]> {
-  const res = await axiosInstance.get<{ id: number; name: string }[]>('/study/searchtag/');
-  return res.data;
-}
-
-/**
  * 스터디를 생성하고 생성된 id를 반환한다.
  * @param locationId 오프라인 스터디의 지역 ID (프로필 API 연동 시 실제 값으로 주입)
  */

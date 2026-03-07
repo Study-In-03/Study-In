@@ -16,12 +16,18 @@ export const axiosInstance = axios.create({
 // Request Interceptor (요청 보내기 전)
 axiosInstance.interceptors.request.use(
     (config) => {
+        // 모든 URL 끝에 슬래시(/)가 포함되도록 보장
+        if (config.url && !config.url.endsWith('/')) {
+            config.url += '/';
+        }
         // 토큰을 헤더에 넣지 말아야 할 API 엔드포인트 목록
         // (로그인, 회원가입, 토큰 갱신 등은 Access Token이 필요 없음)
         const noAuthUrls = [
             '/accounts/login/',
             '/accounts/token/refresh/',
-            // 나중에 '/accounts/register/', '/accounts/password-reset/' 등 추가 예정
+            '/accounts/register/',          
+            '/accounts/email-verifications/', 
+            '/accounts/emails/check/',       
         ];
 
         // 현재 요청하려는 URL이 위 목록에 포함되어 있는지 확인
@@ -49,9 +55,9 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             // 로그아웃 상태에서도 허용할 API인지 확인
             const skipRedirectUrls = ['/accounts/login/', '/studies/']; 
-            const isSkipUrl = skipRedirectUrls.some((url) => originalRequest.url?.includes(url));
+            const isSkipUrl = skipRedirectUrls.some((url) => originalRequest.url === url || originalRequest.url === `${url}/`);
 
-            if (isSkipUrl) {
+            if (isSkipUrl && originalRequest.method === 'get') {
                 return Promise.reject(error);
             }
 
@@ -79,10 +85,13 @@ axiosInstance.interceptors.response.use(
 
             // 토큰 갱신 로직 시작 (기존 로직 유지)
             try {
+                // API 명세에 따른 토큰 갱신 요청 (슬래시 포함)
                 const refreshResponse = await axios.post(
-                    `${import.meta.env.VITE_API_BASE_URL}/accounts/token/refresh/`,
+                    `${axiosInstance.defaults.baseURL}/accounts/token/refresh/`,
                     { refresh: refreshToken }
                 );
+                
+                // 명세서 응답 필드명 'access' 확인
                 const newAccessToken = refreshResponse.data.access;
                 storage.setAccessToken(newAccessToken);
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;

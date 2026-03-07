@@ -1,14 +1,27 @@
 import { create } from 'zustand';
 import { storage } from '@/utils/storage';
 
+interface User {
+  pk: number;
+  email: string;
+  nickname: string;
+}
+
 interface AuthState {
   isLoggedIn: boolean;
-  login: () => void;
+  user: User | null; // 내 정보 저장
+  login: (userData: User) => void;
   logout: () => void;
+  setUser: (userData: User) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: !!storage.getAccessToken(), // 토큰 있으면 로그인 상태로 초기화
-  login: () => set({ isLoggedIn: true }),
-  logout: () => set({ isLoggedIn: false }),
+  isLoggedIn: !!storage.getAccessToken(),
+  user: null, 
+  login: (userData) => set({ isLoggedIn: true, user: userData }),
+  logout: () => {
+    storage.clearAuth();
+    set({ isLoggedIn: false, user: null });
+  },
+  setUser: (userData) => set({ user: userData }),
 }));

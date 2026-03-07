@@ -5,7 +5,7 @@ export default function AuthLayout() {
     return (
         <div className="min-h-screen bg-background flex flex-col">
             
-            <Header variant="auth" />
+            <Header />
             
             {/* 
                 w-full: 기본적으로 화면을 꽉 채움 (모바일 대응)

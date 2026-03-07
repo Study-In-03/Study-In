@@ -43,6 +43,12 @@ export async function updateProfile(userId: number, data: UpdateProfileRequest):
   return res.data;
 }
 
+/** 회원 유형 확인. is_associate_member: true → 정회원, false → 준회원 */
+export async function getMemberType(): Promise<{ is_associate_member: boolean }> {
+  const res = await axiosInstance.get<{ is_associate_member: boolean }>('/accounts/members/type/');
+  return res.data;
+}
+
 export async function checkNickname(nickname: string): Promise<{ available: boolean; message: string }> {
   try {
     const res = await axiosInstance.get(`/accounts/nicknames/?nickname=${nickname}`)

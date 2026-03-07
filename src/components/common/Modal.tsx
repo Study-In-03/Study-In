@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useModalStore } from '@/store/modalStore';
+import ReportModal from '@/components/common/ReportModal';
 
 const CONFIRM_LABELS: Record<string, string> = {
   logout: '로그아웃',
@@ -14,9 +15,9 @@ const CONFIRM_MESSAGES: Record<string, string> = {
 };
 
 const Modal = () => {
-  const { isOpen, modalType, confirmType, onConfirm, closeModal, openConfirm } = useModalStore();
+  const { isOpen, modalType, confirmType, onConfirm, closeModal, openConfirm, targetId, reportTargetType } = useModalStore();
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  // 배경 스크롤 방지
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -26,15 +27,25 @@ const Modal = () => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isReportModalOpen) return null;
+
+  // 신고 모달
+  if (isReportModalOpen && targetId !== null && reportTargetType !== null) {
+    return (
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        targetType={reportTargetType}
+        targetId={targetId}
+      />
+    );
+  }
 
   // 확인 모달
   if (modalType === 'confirm' && confirmType) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        {/* 딤 배경 */}
         <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-        {/* 확인 모달 */}
         <div className="relative z-10 w-[280px] rounded-2xl bg-white p-6 shadow-xl">
           <p className="whitespace-pre-line text-center text-sm text-gray-700 leading-6">
             {CONFIRM_MESSAGES[confirmType]}
@@ -42,14 +53,14 @@ const Modal = () => {
           <div className="mt-6 flex gap-2">
             <button
               onClick={closeModal}
-              className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm text-gray-500 font-medium"
+              className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm text-gray-500 font-medium"
             >
               취소
             </button>
             <button
               onClick={() => { onConfirm?.(); closeModal(); }}
-              className={`flex-1 rounded-xl py-2.5 text-sm font-medium text-white ${
-                confirmType === 'report' ? 'bg-red-500' : 'bg-primary'
+              className={`flex-1 rounded-xl py-2.5 text-sm font-medium text-background ${
+                confirmType === 'report' ? 'bg-error' : 'bg-primary'
               }`}
             >
               {CONFIRM_LABELS[confirmType]}
@@ -65,20 +76,17 @@ const Modal = () => {
     switch (modalType) {
       case 'comment-mine':
         return (
-          <>
-            <button
-              onClick={() => {
-                closeModal();
-                openConfirm('delete', () => {
-                  // CommentItem에서 처리
-                  useModalStore.getState().onConfirm?.();
-                });
-              }}
-              className="w-full py-4 text-center text-base text-red-500 font-medium border-b border-gray-100"
-            >
-              삭제
-            </button>
-          </>
+          <button
+            onClick={() => {
+              closeModal();
+              openConfirm('delete', () => {
+                useModalStore.getState().onConfirm?.();
+              });
+            }}
+            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
+          >
+            삭제
+          </button>
         );
       case 'comment-other':
       case 'study-other':
@@ -86,11 +94,9 @@ const Modal = () => {
           <button
             onClick={() => {
               closeModal();
-              openConfirm('report', () => {
-                console.log('신고 처리');
-              });
+              setIsReportModalOpen(true);
             }}
-            className="w-full py-4 text-center text-base text-red-500 font-medium border-b border-gray-100"
+            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
           >
             신고하기
           </button>
@@ -108,7 +114,7 @@ const Modal = () => {
                   console.log('스터디 삭제');
                 });
               }}
-              className="w-full py-4 text-center text-base text-red-500 font-medium border-b border-gray-100"
+              className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
             >
               삭제
             </button>
@@ -127,7 +133,7 @@ const Modal = () => {
                   console.log('로그아웃');
                 });
               }}
-              className="w-full py-4 text-center text-base text-red-500 font-medium border-b border-gray-100"
+              className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
             >
               로그아웃
             </button>
@@ -140,16 +146,12 @@ const Modal = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      {/* 딤 배경 */}
       <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-      {/* 바텀시트 */}
       <div className="relative z-10 w-full max-w-lg rounded-t-2xl bg-white pb-safe">
-        {/* 핸들 바 */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="h-1 w-10 rounded-full bg-gray-300" />
         </div>
         {renderItems()}
-        {/* 취소 버튼 */}
         <button
           onClick={closeModal}
           className="w-full py-4 text-center text-base text-gray-500 font-medium"

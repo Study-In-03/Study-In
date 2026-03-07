@@ -51,6 +51,37 @@ export default function Header({ variant = 'default' }: HeaderProps) {
     fetchProfile();
   }, [isLoggedIn]);
 
+  if (variant === 'auth') {
+    return (
+      <>
+      <header className="bg-background border-b border-gray-300">
+        {/* 모바일: 기존 모바일 헤더 유지 */}
+        <div className="flex lg:hidden items-center justify-between h-14 px-4">
+          <button onClick={() => setDrawerOpen(true)}>
+            <HamburgerIcon className="w-7 h-7 text-surface" />
+          </button>
+          <Link to="/">
+            <img src={logoSrc} alt="Studyin" className="h-5" />
+          </Link>
+          <button onClick={() => navigate(isLoggedIn ? '/chat' : '/login')} className="relative">
+            <img src={chattingIcon} alt="채팅" className="w-[30px] h-[30px]" />
+            {isLoggedIn && unreadCount > 0 && (
+              <span className="absolute bottom-0.5 right-0 w-[10px] h-[10px] bg-error rounded-full" />
+            )}
+          </button>
+        </div>
+        {/* 데스크탑: 로고 가운데 */}
+        <div className="hidden lg:flex items-center justify-center h-[80px]">
+          <Link to="/">
+            <img src={logoSrc} alt="Studyin" className="h-[32px]" />
+          </Link>
+        </div>
+      </header>
+      <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      </>
+    );
+  }
+
   return (
     <>
       <header className="bg-background border-b border-gray-300">
@@ -128,8 +159,8 @@ export default function Header({ variant = 'default' }: HeaderProps) {
 
           </div>
         </div>
-
       </header>
+
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </>
   );

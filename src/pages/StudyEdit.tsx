@@ -13,6 +13,8 @@ import { useAiStream } from "@/features/study/hooks/useAiStream";
 import type { StudyApiData } from "@/api/study";
 import useUpload from "@/hooks/useUpload";
 import { getFullUrl } from "@/api/upload";
+import { getProfile } from "@/api/profile";
+import { storage } from "@/utils/storage";
 
 const DIFFICULTY_REVERSE: Record<string, string> = {
   초급: "beginner",
@@ -58,6 +60,8 @@ interface StudyEditInnerProps {
   initialValues: StudyFormState;
   currentParticipants: number;
   locationId?: number;
+  profileLocationId?: number;
+  profileLocation?: string;
   existingThumbnailUrl: string;
 }
 
@@ -66,6 +70,8 @@ function StudyEditInner({
   initialValues,
   currentParticipants,
   locationId,
+  profileLocationId,
+  profileLocation,
   existingThumbnailUrl,
 }: StudyEditInnerProps) {
   const navigate = useNavigate();
@@ -80,6 +86,15 @@ function StudyEditInner({
       if (isSubmitting || uploading) return;
       setIsSubmitting(true);
       setApiError(null);
+
+      // 오프라인 스터디: 스터디 지역 또는 프로필 지역 중 하나 필요
+      const effectiveLocationId = locationId ?? profileLocationId;
+      if (formState.studyType === "offline" && !effectiveLocationId) {
+        setApiError("오프라인 스터디 수정을 위해 프로필에서 지역을 먼저 설정해주세요.");
+        setIsSubmitting(false);
+        return;
+      }
+
       try {
         let thumbnailUrl: string;
         if (formState.thumbnail) {
@@ -92,7 +107,7 @@ function StudyEditInner({
         } else {
           thumbnailUrl = existingThumbnailUrl;
         }
-        await updateStudy(studyId, formState, thumbnailUrl, locationId);
+        await updateStudy(studyId, formState, thumbnailUrl, effectiveLocationId);
         navigate(`/study/${studyId}`);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -115,7 +130,7 @@ function StudyEditInner({
         setIsSubmitting(false);
       }
     },
-    [isSubmitting, uploading, navigate, handleImageUpload, studyId, locationId, existingThumbnailUrl],
+    [isSubmitting, uploading, navigate, handleImageUpload, studyId, locationId, profileLocationId, existingThumbnailUrl],
   );
 
   const handleDelete = async () => {
@@ -123,10 +138,25 @@ function StudyEditInner({
     setIsDeleting(true);
     try {
       await deleteStudy(studyId);
-      navigate("/");
-    } catch {
+      navigate("/my-study");
+    } catch (error) {
       setIsDeleting(false);
       setShowDeleteModal(false);
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const serverMsg: string | undefined = error.response?.data?.detail;
+        if (status === 401) {
+          setApiError("로그인이 필요합니다.");
+        } else if (status === 403) {
+          setApiError(serverMsg ?? "삭제 권한이 없습니다.");
+        } else if (status === 404) {
+          setApiError(serverMsg ?? "스터디를 찾을 수 없습니다.");
+        } else {
+          setApiError("삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+      } else {
+        setApiError("네트워크 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -191,7 +221,7 @@ function StudyEditInner({
           handleBlurField={handleBlurField}
           handleSubmit={onSubmit}
           handleReset={handleReset}
-          userLocation={initialValues.location}
+          userLocation={initialValues.location || profileLocation}
           onAiGenerate={() => trigger({
             title: form.title,
             subject: form.subject,
@@ -245,18 +275,29 @@ export default function StudyEdit() {
   const [initialValues, setInitialValues] = useState<StudyFormState | null>(null);
   const [currentParticipants, setCurrentParticipants] = useState(0);
   const [locationId, setLocationId] = useState<number | undefined>(undefined);
+  const [profileLocationId, setProfileLocationId] = useState<number | undefined>(undefined);
+  const [profileLocation, setProfileLocation] = useState<string | undefined>(undefined);
   const [existingThumbnailUrl, setExistingThumbnailUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!studyId) return;
-    getStudy(Number(studyId))
-      .then((data) => {
+    const userId = storage.getUserId();
+    const fetchProfile = userId
+      ? getProfile(userId).catch(() => null)
+      : Promise.resolve(null);
+
+    Promise.all([getStudy(Number(studyId)), fetchProfile])
+      .then(([data, profile]) => {
         setInitialValues(mapStudyApiToForm(data));
         setCurrentParticipants(data.current_participants);
         setLocationId(data.study_location?.id);
         setExistingThumbnailUrl(data.thumbnail);
+        if (profile?.preferred_region) {
+          setProfileLocationId(profile.preferred_region.id);
+          setProfileLocation(profile.preferred_region.location);
+        }
         setIsLoading(false);
       })
       .catch(() => {
@@ -294,6 +335,8 @@ export default function StudyEdit() {
       initialValues={initialValues}
       currentParticipants={currentParticipants}
       locationId={locationId}
+      profileLocationId={profileLocationId}
+      profileLocation={profileLocation}
       existingThumbnailUrl={existingThumbnailUrl}
     />
   );

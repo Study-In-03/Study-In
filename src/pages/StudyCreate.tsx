@@ -56,6 +56,13 @@ export default function StudyCreate() {
     if (isSubmitting || uploading) return;
     setIsSubmitting(true);
     setApiError(null);
+
+    if (formState.studyType === "offline" && !userLocationId) {
+      setApiError("오프라인 스터디 생성을 위해 프로필에서 지역을 먼저 설정해주세요.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const url = await handleImageUpload(formState.thumbnail!);
       if (!url) {

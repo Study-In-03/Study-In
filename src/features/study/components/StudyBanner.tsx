@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import banner1 from "../../../assets/main-banner-1.png";
 import banner2 from "../../../assets/main-banner-2.png";
-import banner3 from "../../../assets/main-banner-3.png";  
+import banner3 from "../../../assets/main-banner-3.png"; 
+import arrowLeft from "@/assets/base/icon-arrow-left.svg"; 
+import arrowRight from "@/assets/base/icon-arrow-right.svg";
+import characterImg from "@/assets/banner/character_tiger.png"; 
  
 const banners = [
   banner1,
@@ -12,6 +15,8 @@ const banners = [
 export default function StudyBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+
+  
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
   };

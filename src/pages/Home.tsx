@@ -11,6 +11,8 @@ import iconExam from "../assets/category/subject_자격증시험.svg";
 import iconJob from "../assets/category/subject_취업코테.svg";
 import iconEtc from "../assets/category/subject_기타.svg";
 
+const isLoggedIn = true;
+
 const categories = [
   { id: 1, name: "특강", icon: iconSpecial },
   { id: 2, name: "개념학습", icon: iconConcept },
@@ -24,7 +26,8 @@ const categories = [
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("최신 스터디");
-  return (
+  return ( 
+    <>   
     <div className="max-w-[1200px] mx-auto px-4 py-10">
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="flex-1 w-full space-y-12">
@@ -88,5 +91,52 @@ export default function Home() {
         </aside>
       </div>
     </div>
+
+    {/* md:px-6 -> PC/태블릿 여백, px-4 -> 모바일 여백*/}
+    <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 md:py-10">
+      
+      {/* flex-col (모바일) <-> flex-row (PC/lg) 전환 */}
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        
+        {/* 왼쪽 메인 컨텐츠 영역: 모바일은 w-full */}
+        <div className="flex-1 w-full space-y-8">
+          <StudyBanner />
+          
+          {/* 모바일 검색창 (시안 반영) */}
+          <div className="lg:hidden w-full relative">
+            <input type="text" placeholder="어떤 스터디를 찾고 계신가요?" className="w-full px-5 py-3 bg-gray-50 rounded-full border border-gray-100" />
+            <button className="absolute right-5 top-1/2 -translate-y-1/2">🔍</button>
+          </div>
+
+          {/* 스터디 리스트 영역 */}
+          <div className="mt-8">
+            <StudyListSection activeTab={activeTab} selectedCategory="전체" searchTerm="" />
+          </div>
+        </div>
+
+        {/* 오른쪽 사이드바 (프로필, 참여 스터디) */}
+        {/* hidden md:block: 모바일은 숨기고 태블릿부터 표시하거나 아래로 이동 */}
+        <aside className="w-full lg:w-[300px] mt-10 lg:mt-0 space-y-8>
+          <StudyProfileCard isLoggedIn={isLoggedIn} />
+
+          
+        flex flex-col items-center lg:items-start">
+          {isLoggedIn ? (
+            /* 로그인 했을 때 (PC/태블릿 시안 image_1.png) */
+            <>
+              <StudyProfileCard isLoggedIn={isLoggedIn} />
+              {/* 참여 중인 스터디 리스트 컴포넌트 추가 필요 */}
+              <div className="w-full h-[300px] bg-gray-50 rounded-xl p-6 border border-gray-100">참여 중인 스터디 (개발 필요)</div>
+            </>
+          ) : (
+            /* 로그인 안 했을 때 모바일 시안 (image_5.png) */
+            <div className="w-full h-[200px] bg-gray-50 rounded-xl p-6 border border-gray-100 flex items-center justify-center text-gray-500">
+              로그인이 필요합니다.
+            </div>
+          )}
+        </aside>
+      </div>
+    </div>
+    </>
   );
 }

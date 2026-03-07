@@ -1,7 +1,7 @@
 import logo2022Src from '@/assets/base/Logo-2022.svg';
 import wenivWorldLogo from '@/assets/base/Group.svg';
 import arrowIcon from '@/assets/base/icon-diagonal-arrow.svg';
-import { useAuthStore } from '@/store/authStore';
+import { useLocation } from 'react-router-dom';
 
 const SOCIAL_LINKS = [
   { label: 'SNS 1', href: '#' },
@@ -17,8 +17,15 @@ const POLICY_LINKS = [
   { label: '개인정보 처리방침', href: '/privacy' },
 ];
 
+// 초기 프로필 생성 페이지 구현 후 해당 경로를 아래에 추가할 것
+const SIMPLE_FOOTER_PATHS = [
+  '/login',
+  // '/profile/create',
+];
+
 export default function Footer() {
-  const { isLoggedIn } = useAuthStore();
+  const { pathname } = useLocation();
+  const isSimpleFooter = SIMPLE_FOOTER_PATHS.includes(pathname);
 
   return (
     <footer className="border-t border-gray-300">
@@ -85,8 +92,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 데스크탑 풀 푸터 - 비로그인 (lg 이상) */}
-      {!isLoggedIn && (
+      {/* 데스크탑 풀 푸터 - 로그인 페이지 제외 (lg 이상) */}
+      {!isSimpleFooter && (
         <div className="hidden lg:block py-[50px]">
           <div className="max-w-[1190px] mx-auto">
 
@@ -167,22 +174,27 @@ export default function Footer() {
         </div>
       )}
 
-      {/* 데스크탑 심플 푸터 - 로그인 (lg 이상) */}
-      {isLoggedIn && (
-        <div className="hidden lg:flex flex-col items-center justify-center gap-3 bg-background py-6">
-          <div className="flex items-center gap-4">
+      {/* 데스크탑 심플 푸터 - 로그인 페이지 (lg 이상) */}
+      {isSimpleFooter && (
+        <div className="hidden lg:flex flex-col items-center gap-[12px] bg-background pt-10 pb-6">
+          <div className="flex items-center gap-[10px]">
             {POLICY_LINKS.map(({ label, href }, index) => (
-              <span key={label} className="flex items-center gap-4">
-                <a href={href} className="text-base text-gray-500 hover:text-gray-300">
+              <span key={label} className="flex items-center gap-[10px]">
+                <a href={href} className="text-base text-gray-500 hover:text-gray-700">
                   {label}
                 </a>
                 {index < POLICY_LINKS.length - 1 && (
-                  <span className="text-gray-700">|</span>
+                  <span className="text-base text-gray-500">|</span>
                 )}
               </span>
             ))}
           </div>
-          <p className="text-xs text-gray-700">ⓒ Copyright WENIV Corp. All Rights Reserved</p>
+          <p className="text-sm text-gray-500">
+            <span className="font-bold">ⓒ </span>
+            Copyright
+            <span className="font-bold"> WENIV Corp. </span>
+            All Rights Reserved.
+          </p>
         </div>
       )}
 

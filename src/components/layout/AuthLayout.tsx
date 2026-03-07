@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
+import Footer from './Footer';
 
 export default function AuthLayout() {
     return (
@@ -18,6 +19,7 @@ export default function AuthLayout() {
                 <Outlet /> {/* 이 안에서 그려지는 모든 페이지는 자동으로 1190px 중앙 정렬! */}
             </main>
 
+            <Footer />
         </div>
     );
 }

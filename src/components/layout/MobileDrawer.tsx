@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore';
-import { getNotifications } from '@/api/notification';
-import PersonIcon from '@/assets/base/icon-person.svg?react';
-import NotificationIcon from '@/assets/base/icon-Notification.svg?react';
-import LeftArrowIcon from '@/assets/base/icon-Left-arrow.svg?react';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+import { getNotifications } from "@/api/notification";
+import PersonIcon from "@/assets/base/icon-person.svg?react";
+import NotificationIcon from "@/assets/base/icon-Notification.svg?react";
+import LeftArrowIcon from "@/assets/base/icon-Left-arrow.svg?react";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -12,21 +12,21 @@ interface MobileDrawerProps {
 }
 
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
-  const { isLoggedIn } = useAuthStore();
-  const [unreadCount, setUnreadCount] = useState(0)
+  const { isLoggedIn, logout } = useAuthStore();
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn) return;
     const fetchUnread = async () => {
       try {
-        const data = await getNotifications()
-        setUnreadCount(data.results.filter((n) => !n.checked).length)
+        const data = await getNotifications();
+        setUnreadCount(data.results.filter((n) => !n.checked).length);
       } catch {
         // 에러 무시
       }
-    }
-    fetchUnread()
-  }, [isLoggedIn])
+    };
+    fetchUnread();
+  }, [isLoggedIn]);
 
   return (
     <>
@@ -39,12 +39,15 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
       <div
         className={`fixed top-0 right-0 h-full w-[290px] bg-background z-50 lg:hidden flex flex-col transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* 프로필 영역 */}
         <div className="bg-[#F3F5FA] px-[45px] pt-[46px] pb-[30px] flex flex-col items-center gap-5 relative">
-          <button onClick={onClose} className="absolute top-[10px] right-[10px] w-7 h-7 flex items-center justify-center">
+          <button
+            onClick={onClose}
+            className="absolute top-[10px] right-[10px] w-7 h-7 flex items-center justify-center"
+          >
             <LeftArrowIcon className="w-4 h-4 text-[#8D9299]" />
           </button>
 
@@ -55,7 +58,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
             {isLoggedIn ? (
               <>
-                <p className="text-base font-bold text-surface text-center">파이썬 연금술사</p>
+                <p className="text-base font-bold text-surface text-center">
+                  파이썬 연금술사
+                </p>
                 <Link
                   to="/study/create"
                   onClick={onClose}
@@ -67,7 +72,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             ) : (
               <>
                 <p className="text-base text-gray-500 text-center">
-                  스터디를 만들어<br />사람들과 함께 공부할 수 있어요!
+                  스터디를 만들어
+                  <br />
+                  사람들과 함께 공부할 수 있어요!
                 </p>
                 <Link
                   to="/login"
@@ -145,9 +152,14 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         {isLoggedIn && (
           <>
-            {/* 구분선 */}
-            <div className="h-[6px] bg-[#F3F5FA]" />
-            <button className="px-[30px] py-[15px] text-sm text-surface text-left">
+            <div className="h-[6px] bg-background" />
+            <button
+              onClick={() => {
+                logout();
+                onClose();
+              }}
+              className="px-[30px] py-[15px] text-sm text-surface text-left"
+            >
               로그아웃
             </button>
           </>

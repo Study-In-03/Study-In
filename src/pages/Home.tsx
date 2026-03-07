@@ -1,53 +1,92 @@
-import React, { useState } from "react";
-// 1. 컴포넌트들을 정확한 경로에서 불러옵니다.
 import StudyBanner from "../features/study/components/StudyBanner";
-import StudyFilter from "../features/study/components/StudyFilter";
 import StudyProfileCard from "../features/study/components/StudyProfileCard";
+import StudyListSection from "../features/study/components/StudyList";
+import { useState } from "react";
+import iconSpecial from "../assets/category/subject_특강.svg";
+import iconConcept from "../assets/category/subject_개념학습-2.svg";
+import iconApply from "../assets/category/subject_응용활용.svg";
+import iconProject from "../assets/category/subject_프로젝트.svg";
+import iconChallenge from "../assets/category/subject_챌린지.svg";
+import iconExam from "../assets/category/subject_자격증시험.svg";
+import iconJob from "../assets/category/subject_취업코테.svg";
+import iconEtc from "../assets/category/subject_기타.svg";
 
-// 2. 에러 해결을 위한 가짜 데이터(mockStudies) 정의
-const mockStudies = [
-  { id: 1, title: "크롬 확장 프로그램 함께 구현해 보실 분 찾습니다.", status: "진행 중" as const, dDay: "D+8", image: "https://via.placeholder.com/150" },
-  { id: 2, title: "8주 파이썬 정복하기", status: "진행 중" as const, dDay: "D+8", image: "https://via.placeholder.com/150" },
-  { id: 3, title: "매일 IT 아티클 읽고 요약해서 공유하실 분?", status: "모집 중" as const, dDay: "D-10", image: "https://via.placeholder.com/150" },
-  { id: 4, title: "매일 IT 아티클 읽고 요약해서 공유하실 분?", status: "모집 중" as const, dDay: "D-13", image: "https://via.placeholder.com/150" },
+const categories = [
+  { id: 1, name: "특강", icon: iconSpecial },
+  { id: 2, name: "개념학습", icon: iconConcept },
+  { id: 3, name: "응용/활용", icon: iconApply },
+  { id: 4, name: "프로젝트", icon: iconProject },
+  { id: 5, name: "챌린지", icon: iconChallenge },
+  { id: 6, name: "자격증/시험", icon: iconExam },
+  { id: 7, name: "취업/코테", icon: iconJob },
+  { id: 8, name: "기타", icon: iconEtc },
 ];
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  
-  // 로그인 상태 테스트를 위해 직접 변경해 보세요 (true: 로그인됨, false: 로그인 전)
-  const isLoggedIn = true; 
-
+  const [activeTab, setActiveTab] = useState("최신 스터디");
   return (
-    <main className="min-h-screen bg-white">
-      {/* 배너와 프로필 카드가 나란히 배치되는 영역 */}
-      <div className="max-w-[1200px] mx-auto pt-10 px-4 flex gap-6 items-start">
-        <div className="flex-1 min-w-0">
+    <div className="max-w-[1200px] mx-auto px-4 py-10">
+      <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex-1 w-full space-y-12">
           <StudyBanner />
+          <div className="flex justify-between items-center py-4 overflow-x-auto gap-4 no-scrollbar">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className="flex flex-col items-center min-w-[75px] gap-3 group"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center transition-all group-hover:bg-blue-50">
+                  <img
+                    src={category.icon}
+                    alt={category.name}
+                    className="w-10 h-10 object-contain"
+                  />
+                </div>
+                <span className="text-[14px] font-semibold text-gray-600 group-hover:text-blue-600">
+                  {category.name}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              스터디 둘러보기
+            </h2>
+
+            <div className="flex gap-3">
+              {["최신 스터디", "모집 중 스터디", "진행 중 스터디"].map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`
+          px-5 py-2 rounded-full text-[14px] font-semibold transition-all
+          ${
+            activeTab === tab
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+          }
+        `}
+                  >
+                    {tab}
+                  </button>
+                ),
+              )}
+            </div>
+
+            <StudyListSection
+              activeTab={activeTab}
+              selectedCategory="전체"
+              searchTerm=""
+            />
+          </div>
         </div>
-        
-        {/* 우측 프로필/스터디 관리 카드 (조건 1, 2, 3 반영) */}
-        <aside className="w-[300px] shrink-0">
-          <StudyProfileCard 
-            isLoggedIn={isLoggedIn} 
-            studies={mockStudies} // 스터디가 없는 경우를 보려면 [] 로 변경
-            userName="파이썬 연금술사"
-          />
+
+        <aside className="w-full md:w-[320px] sticky top-24">
+          <StudyProfileCard isLoggedIn={true} />
         </aside>
       </div>
-
-      {/* 카테고리 필터 영역 */}
-      <div className="max-w-[1200px] mx-auto py-10 px-4">
-        <StudyFilter 
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
-        
-        {/* 여기에 스터디 리스트 컴포넌트가 들어갈 예정입니다. */}
-      </div>
-    </main>
+    </div>
   );
 }

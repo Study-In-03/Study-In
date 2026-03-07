@@ -49,7 +49,7 @@ const StudyFilter = ({
             <div className={`w-[60px] h-[60px] rounded-[20px] flex items-center justify-center transition-all duration-200 mb-2 shadow-sm border
               ${selectedCategory === cat.id 
                 ? "bg-activation border-primary-light ring-2 ring-primary-light/20 scale-105" 
-                : "bg-white border-gray-100 group-hover:bg-gray-50 group-hover:scale-105"}`}
+                : "bg-background border-gray-100 group-hover:bg-gray-50 group-hover:scale-105"}`}
             >
               <img 
                 src={cat.icon} 

@@ -145,7 +145,7 @@ export default function StudyDetail() {
       <div className="mx-auto max-w-[390px] px-4 pb-[120px] pt-4">
 
         {/* TOP CARD */}
-        <section className="rounded-xl border bg-white">
+        <section className="rounded-xl border bg-background">
 
           <div className="flex gap-2 p-4">
             {data.chips.map((c) => (
@@ -174,7 +174,7 @@ export default function StudyDetail() {
         </section>
 
         {/* SCHEDULE */}
-        <section className="mt-4 rounded-xl border bg-white">
+        <section className="mt-4 rounded-xl border bg-background">
 
           <div className="bg-primary-light p-4 font-semibold text-white">
             {data.schedule.statusLabel}
@@ -235,7 +235,7 @@ export default function StudyDetail() {
         </section>
 
         {/* INTRO */}
-        <section className="mt-4 rounded-xl border bg-white p-4">
+        <section className="mt-4 rounded-xl border bg-background p-4">
 
           <h2 className="text-xl font-bold">
             {data.introTitle}
@@ -248,7 +248,7 @@ export default function StudyDetail() {
         </section>
 
         {/* COMMENTS */}
-        <section className="mt-4 rounded-xl border bg-white p-4">
+        <section className="mt-4 rounded-xl border bg-background p-4">
 
           <h2 className="text-xl font-bold">
             그룹장에게 질문하기
@@ -298,7 +298,7 @@ export default function StudyDetail() {
 
         <div className="fixed inset-0 flex items-end bg-black/40">
 
-          <div className="mx-auto w-full max-w-[390px] rounded-t-2xl bg-white p-4">
+          <div className="mx-auto w-full max-w-[390px] rounded-t-2xl bg-background p-4">
 
             <textarea
               value={commentText}
@@ -330,12 +330,12 @@ export default function StudyDetail() {
 
       {/* BOTTOM BAR */}
 
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-white">
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-background">
 
         <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
 
           {/* SHARE */}
-          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white text-base">
+          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-background text-base">
             <img src={shareIcon} className="h-5 w-5" />
             공유
           </button>

@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LeftArrowIcon from '@/assets/base/icon-Left-arrow.svg?react';
 import PeopleIcon from '@/assets/base/icon-people.svg?react';
 import HomeIcon from '@/assets/base/icon-Home.svg?react'; 
 import DotsIcon from '@/assets/base/icon-dots.svg?react';
 import ImportIcon from '@/assets/base/icon-asset-import.svg?react';
+import { axiosInstance } from '@/api/axios';
 
 interface ChatHeaderProps {
+    studyPk: number;
     title?: string; 
     statusName?: string;
     onBack?: () => void;
     onToggleSidebar?: () => void;
     isRoomListOpen?: boolean;
-    isMemberSidebarOpen?: boolean;
+    leaderId?: number;
 }
 
 const StudyStatusBadge = ({ status }: { status: string }) => {
@@ -30,10 +32,42 @@ const StudyStatusBadge = ({ status }: { status: string }) => {
     );
 };
 
-export default function ChatHeader({ title, statusName = "진행 중", onBack, onToggleSidebar, isRoomListOpen, isMemberSidebarOpen }: ChatHeaderProps) {
+export default function ChatHeader({ studyPk, title, statusName = "진행 중", onBack, onToggleSidebar, isRoomListOpen, leaderId }: ChatHeaderProps) {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [participatingCount, setParticipatingCount] = useState(0); // 참여 스터디 개수 상태
     const handleGoHome = () => navigate('/');
+
+    // [API 연동] 참여 중인 스터디 목록 개수 가져오기
+    useEffect(() => {
+        const fetchParticipatingCount = async () => {
+            try {
+                const response = await axiosInstance.get('/study/my-participating-study/');
+                setParticipatingCount(response.data.length || 0);
+            } catch (error) {
+                console.error("참여 스터디 목록을 가져오지 못했습니다.", error);
+            }
+        };
+        fetchParticipatingCount();
+    }, []);
+
+    // [API 연동] 스터디 나가기 기능
+    const handleLeaveStudy = async () => {
+        if (!window.confirm("정말 이 스터디를 나가시겠습니까?")) return;
+
+        try {
+            // DELETE /study/{study_pk}/participate/
+            await axiosInstance.delete(`/study/${studyPk}/participate/`);
+            alert("스터디 탈퇴가 완료되었습니다.");
+            navigate('/'); // 탈퇴 후 메인으로 이동
+        } catch (error: any) {
+            // 400 에러: 스터디장은 나갈 수 없음
+            const errorMsg = error.response?.data?.error || "스터디 탈퇴에 실패했습니다.";
+            alert(errorMsg);
+        } finally {
+            setIsMenuOpen(false);
+        }
+    };
 
     return (
         <div className="w-full bg-background shrink-0">
@@ -43,7 +77,7 @@ export default function ChatHeader({ title, statusName = "진행 중", onBack, o
                     items-center justify-between px-4 md:w-[calc((100vw-1190px)/2)] w-full md:min-w-[200px] border-r border-b border-gray-300 shrink-0
                 `}>
                     <h2 className="text-base font-medium text-surface">
-                        참여 중인 스터디 - <span className="text-primary font-bold">4개</span>
+                        참여 중인 스터디 - <span className="text-primary font-bold">{participatingCount}개</span>
                     </h2>
                     <button className="text-gray-500 hover:text-primary-light transition-colors">
                         <ImportIcon className="w-[21px] h-[21px]" />
@@ -105,7 +139,7 @@ export default function ChatHeader({ title, statusName = "진행 중", onBack, o
                                             </button>
                                             <button 
                                                 className="w-[184px] text-left px-[10px] py-[5px] text-base font-regular rounded-[8px] text-error mt-1 hover:bg-gray-100"
-                                                onClick={() => { /* 나가기 로직 */ setIsMenuOpen(false); }}
+                                                onClick={handleLeaveStudy}
                                             >
                                                 스터디 나가기
                                             </button>

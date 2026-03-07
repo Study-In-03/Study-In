@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { axiosInstance } from '@/api/axios';
 import ChatHeader from '@/features/chat/components/ChatHeader';
@@ -9,6 +10,7 @@ import ChatRoomList from '@/features/chat/components/ChatRoomList';
 import ChatSidebar from '@/features/chat/components/ChatSidebar';
 
 export default function Chat() {
+    const { study_pk } = useParams();
     const { isLoggedIn } = useAuthStore();
     const [hasStudy, setHasStudy] = useState<boolean | null>(null);
 
@@ -23,51 +25,14 @@ export default function Chat() {
         }
     }, [isLoggedIn]);
 
-    // const isNoData = !isLoggedIn || hasStudy === false;
-    const isNoData = false;
+    // 실제 데이터 존재 여부 판별
+    const isNoData = !isLoggedIn || hasStudy === false || !study_pk;
 
-    // 테스트용 메시지 데이터 (시안 반영)
-    const mockMessages = [
-        {
-            id: 1,
-            isMine: false,
-            sender: "주커버그사촌동생",
-            time: "오후 12:03",
-            text: "안녕하세요! 이번 스터디에서 진행할 파이썬 알고리즘 문제 풀이 공지드립니다. 이번 주는 프로그래머스 레벨 2 단계의 '해시'와 '정렬' 파트를 집중적으로 풀어볼 예정이에요. 다들 미리 문제를 읽어보고 오시면 스터디 진행에 큰 도움이 될 것 같습니다. 혹시 어려운 점이 있다면 언제든 채팅방에 질문 남겨주세요! 우리 모두 파이팅해서 끝까지 완주해봅시다!",
-            isOwner: true,
-            profileImg: null
-        },
-        {
-            id: 2,
-            isMine: false,
-            sender: "주커버그사촌동생",
-            time: "오후 12:03",
-            text: `def solution(numbers):
-                        # 숫자를 문자열로 변환하여 정렬합니다. 
-                        # 3, 30의 경우 330이 303보다 크므로 x*3을 기준으로 비교합니다.
-                        numbers = list(map(str, numbers))
-                        numbers.sort(key=lambda x: x*3, reverse=True)
-    
-                        # 모든 숫자가 0인 경우 '0'을 반환합니다.
-                        answer = str(int(''.join(numbers)))
-    
-                        # 이 부분은 정렬 알고리즘의 핵심 로직을 설명하기 위한 주석입니다.
-                        # 문자열 비교 연산은 사전순으로 진행되기 때문에 
-                        # '3' > '30'과 같은 비교를 위해 길이를 맞춰주는 과정이 필요합니다.
-                    return answer`,
-            isCode: true,
-            isOwner: true,
-            profileImg: null
-        },
-        {
-            id: 3,
-            isMine: true,
-            sender: "나",
-            time: "오후 12:05",
-            text: "오! 좋은 코드네요. 참고하겠습니다!",
-            profileImg: null
-        }
-    ];
+    // 메시지 전송 로직 (WebSocket 연결 시 이 함수를 통해 메시지를 보냄)
+    const handleSendMessage = (content: string, type: 'text' | 'image' | 'file' = 'text') => {
+        console.log(`전송할 메시지 (${type}):`, content);
+        // 여기에 WebSocket 전송 로직이 들어감
+    };
 
     return (
         <div className="relative flex flex-col h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] bg-background md:bg-transparent overflow-x-hidden">
@@ -75,11 +40,11 @@ export default function Chat() {
             {/* ChatHeader */}
             <div className="relative z-[40]">
                 <ChatHeader 
-                    title={!isNoData ? "8주 파이썬 정복하기" : undefined} 
+                    studyPk={Number(study_pk)} // 🟢 추가
+                    title={!isNoData ? "스터디 채팅방" : undefined} 
                     statusName="진행 중"
                     isRoomListOpen={isRoomListOpen}
-                    isMemberSidebarOpen={isMemberSidebarOpen}
-                    onBack={() => setIsRoomListOpen(true)} // 채팅방 -> 목록으로 가기
+                    onBack={() => setIsRoomListOpen(true)}
                     onToggleSidebar={() => setIsMemberSidebarOpen(!isMemberSidebarOpen)}
                 />
             </div>
@@ -116,8 +81,8 @@ export default function Chat() {
                         <ChatEmptyState isLoggedIn={isLoggedIn} />
                     ) : (
                         <>
-                            <ChatMessageList messages={mockMessages} />
-                            <ChatInput />
+                            <ChatMessageList studyPk={Number(study_pk)} />
+                            <ChatInput onSendMessage={handleSendMessage} />
                         </>
                     )}
                 </main>

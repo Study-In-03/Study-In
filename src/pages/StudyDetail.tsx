@@ -4,6 +4,9 @@ import { useParams } from "react-router-dom";
 import heartIcon from "@/assets/base/icon-heart.svg";
 import heartFillIcon from "@/assets/base/icon-heart-fill.svg";
 import shareIcon from "@/assets/base/icon-Share.svg";
+import crownIcon from "@/assets/base/icon-crown-fill.svg";
+
+import CommentSection from "@/features/comments/components/CommentSection";
 
 /* ========================
    TYPES
@@ -137,13 +140,13 @@ export default function StudyDetail() {
   const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
   return (
-    <div className="w-full bg-[#F7F8FA]">
+    <div className="w-full bg-gray-100">
 
       {/* CONTENT */}
       <div className="mx-auto max-w-[390px] px-4 pb-[120px] pt-4">
 
         {/* TOP CARD */}
-        <section className="rounded-[12px] border bg-white">
+        <section className="rounded-xl border bg-background">
 
           <div className="flex gap-2 p-4">
             {data.chips.map((c) => (
@@ -160,11 +163,11 @@ export default function StudyDetail() {
 
           <div className="p-4">
 
-            <h1 className="whitespace-pre-line text-[18px] font-bold">
+            <h1 className="whitespace-pre-line text-xl font-bold">
               {data.title}
             </h1>
 
-            <p className="mt-2 text-[14px] text-primary-light">
+            <p className="mt-2 text-base text-primary-light">
               {data.hashtags}
             </p>
 
@@ -172,7 +175,7 @@ export default function StudyDetail() {
         </section>
 
         {/* SCHEDULE */}
-        <section className="mt-4 rounded-[12px] border bg-white">
+        <section className="mt-4 rounded-xl border bg-background">
 
           <div className="bg-primary-light p-4 font-semibold text-white">
             {data.schedule.statusLabel}
@@ -180,7 +183,7 @@ export default function StudyDetail() {
 
           <div className="p-5">
 
-            <h2 className="text-center text-[18px] font-bold">
+            <h2 className="text-center text-xl font-bold">
               스터디 일정
             </h2>
 
@@ -193,7 +196,7 @@ export default function StudyDetail() {
                 return (
                   <div
                     key={d}
-                    className={`h-[30px] w-[30px] flex items-center justify-center rounded-full text-[13px]
+                    className={`h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm
                     ${
                       active
                         ? "bg-primary-light text-white"
@@ -233,28 +236,33 @@ export default function StudyDetail() {
         </section>
 
         {/* INTRO */}
-        <section className="mt-4 rounded-[12px] border bg-white p-4">
+        <section className="mt-4 rounded-xl border bg-background p-4">
 
-          <h2 className="text-[18px] font-bold">
+          <h2 className="text-xl font-bold">
             {data.introTitle}
           </h2>
 
-          <p className="mt-2 whitespace-pre-line text-[14px]">
+          <p className="mt-2 whitespace-pre-line text-base">
             {data.introBody}
           </p>
 
         </section>
 
         {/* COMMENTS */}
-        <section className="mt-4 rounded-[12px] border bg-white p-4">
+        <section className="mt-4 rounded-xl border bg-background p-4">
 
-          <h2 className="text-[18px] font-bold">
+          <h2 className="text-xl font-bold">
             그룹장에게 질문하기
           </h2>
 
+          <section className="mt-6">
+            <CommentSection studyPk={data.id} />
+          </section>
+
+
           <button
             onClick={() => setIsCommentOpen(true)}
-            className="mt-3 w-full rounded border p-2"
+            className="mt-3 w-full rounded border border-gray-300 p-2"
           >
             작성하기
           </button>
@@ -265,11 +273,14 @@ export default function StudyDetail() {
 
               <div key={c.id}>
 
-                <p className="font-bold text-sm">
-                  {c.author} {c.leaderReply ? "👑" : ""}
-                </p>
+                <p className="flex items-center gap-1 font-bold text-sm">
+                  {c.author}
+                  {c.leaderReply && (
+                    <img src={crownIcon} className="w-4 h-4" />
+  )}
+</p>
 
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   {c.date}
                 </p>
 
@@ -291,7 +302,7 @@ export default function StudyDetail() {
 
         <div className="fixed inset-0 flex items-end bg-black/40">
 
-          <div className="mx-auto w-full max-w-[390px] rounded-t-2xl bg-white p-4">
+          <div className="mx-auto w-full max-w-[390px] rounded-t-2xl bg-background p-4">
 
             <textarea
               value={commentText}
@@ -323,12 +334,12 @@ export default function StudyDetail() {
 
       {/* BOTTOM BAR */}
 
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-white">
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-background">
 
         <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
 
           {/* SHARE */}
-          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-[8px] border border-[#D9DBE0] bg-white text-[14px]">
+          <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-background text-base">
             <img src={shareIcon} className="h-5 w-5" />
             공유
           </button>
@@ -336,7 +347,7 @@ export default function StudyDetail() {
           {/* HEART */}
           <button
             onClick={() => setLiked((p) => !p)}
-            className="flex h-[50px] w-[50px] items-center justify-center rounded-[8px] border border-[#D9DBE0]"
+            className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border border-gray-300"
           >
             <img
               src={liked ? heartFillIcon : heartIcon}
@@ -347,7 +358,7 @@ export default function StudyDetail() {
           {/* JOIN */}
           <button
             onClick={() => setIsJoined((p) => !p)}
-            className="h-[50px] w-[186px] rounded-[8px] bg-primary text-white"
+            className="h-[50px] w-[186px] rounded-lg bg-primary text-white"
           >
             {primaryButtonText}
           </button>
@@ -394,7 +405,7 @@ function InfoRow({
         </div>
 
         {subRight && (
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-gray-500">
             {subRight}
           </div>
         )}

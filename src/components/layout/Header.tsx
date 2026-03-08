@@ -4,12 +4,14 @@ import { useAuthStore } from '@/store/authStore';
 import { getNotifications } from '@/api/notification';
 import { getProfile } from '@/api/profile';
 import { storage } from '@/utils/storage';
+import { useModalStore } from '@/store/modalStore';
 import MobileDrawer from '@/components/layout/MobileDrawer';
 import logoSrc from '@/assets/base/icon-Logo.svg';
 import searchIcon from '@/assets/base/icon-Search.svg';
 import chattingIcon from '@/assets/base/icon-chatting.svg';
 import notificationIcon from '@/assets/base/icon-Notification.svg';
 import HamburgerIcon from '@/assets/base/icon-hamburger.svg?react';
+import MoreIcon from '@/assets/base/icon-000.svg?react';
 
 interface HeaderProps {
   variant?: 'default' | 'auth';
@@ -21,6 +23,7 @@ export default function Header({ variant = 'default' }: HeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [profileImg, setProfileImg] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { openModal } = useModalStore();
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -155,6 +158,11 @@ export default function Header({ variant = 'default' }: HeaderProps) {
                   <div className="w-full h-full flex items-center justify-center" />
                 )}
               </button>
+              {isLoggedIn && (
+                <button onClick={() => openModal('header')}>
+                  <MoreIcon className="w-6 h-6 text-surface" />
+                </button>
+              )}
             </div>
 
           </div>

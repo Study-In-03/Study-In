@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { getNotifications } from "@/api/notification";
 import { storage } from "@/utils/storage";
+import { useModalStore } from "@/store/modalStore";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
 import NotificationIcon from "@/assets/base/icon-Notification.svg?react";
 import LeftArrowIcon from "@/assets/base/icon-Left-arrow.svg?react";
@@ -18,6 +19,7 @@ interface MobileDrawerProps {
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { isLoggedIn, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { openConfirm } = useModalStore();
   const [unreadCount, setUnreadCount] = useState(0);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
@@ -191,10 +193,12 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             <div className="h-[6px] bg-gray-100" />
             <button
               onClick={() => {
-                storage.clearAuth();
-                logout();
                 onClose();
-                navigate('/login');
+                openConfirm('logout', () => {
+                  storage.clearAuth();
+                  logout();
+                  navigate('/login');
+                });
               }}
               className="px-[30px] py-[15px] text-sm text-surface text-left"
             >

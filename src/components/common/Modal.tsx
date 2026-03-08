@@ -20,6 +20,7 @@ const Modal = () => {
     modalType,
     confirmType,
     onConfirm,
+    onEdit,
     closeModal,
     openConfirm,
     targetId,
@@ -90,17 +91,27 @@ const Modal = () => {
     switch (modalType) {
       case "comment-mine":
         return (
-          <button
-            onClick={() => {
-              closeModal();
-              openConfirm("delete", () => {
-                useModalStore.getState().onConfirm?.();
-              });
-            }}
-            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
-          >
-            삭제
-          </button>
+          <>
+            <button
+              onClick={() => {
+                closeModal();
+                onEdit?.();
+              }}
+              className="w-full py-4 text-center text-base text-gray-700 font-medium border-b border-gray-100"
+            >
+              수정
+            </button>
+            <button
+              onClick={() => {
+                const deleteCallback = onConfirm;
+                closeModal();
+                openConfirm("delete", () => deleteCallback?.());
+              }}
+              className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
+            >
+              삭제
+            </button>
+          </>
         );
       case "comment-other":
       case "study-other":

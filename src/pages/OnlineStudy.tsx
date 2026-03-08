@@ -9,7 +9,7 @@ export default function OnlineStudy() {
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-10 min-h-[800px]">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">온라인 스터디</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">온라인 스터디</h1>
         <p className="text-gray-500 text-sm">장소 제약 없이 어디서든 함께 열공하세요.</p>
       </div>
 
@@ -20,10 +20,10 @@ export default function OnlineStudy() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 rounded-full text-[14px] font-semibold transition-all ${
+              className={`px-5 py-3 rounded-full text-lg font-bold transition-all ${
                 activeTab === tab 
-                  ? "bg-blue-600 text-white shadow-sm" 
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  ? "bg-primary text-white shadow-sm" 
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-300"
               }`}
             >
               {tab}

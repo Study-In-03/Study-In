@@ -17,6 +17,8 @@ import Register from '@/pages/Register';
 import CommentWritePage from '@/pages/CommentWritePage';
 import Chat from '@/pages/Chat';
 import Search from '@/pages/Search';
+import LocalStudy from "@/pages/LocalStudy";
+import OnlineStudy from "@/pages/OnlineStudy";
 
 export default function Router() {
   return (
@@ -46,6 +48,8 @@ export default function Router() {
           element={<CommentWritePage />}
         />
         <Route path="/study/:studyId/edit" element={<StudyEdit />} />
+        <Route path="/local" element={<LocalStudy />} />
+<Route path="/online" element={<OnlineStudy />} />
 
         {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>

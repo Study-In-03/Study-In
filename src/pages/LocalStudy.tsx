@@ -1,4 +1,4 @@
-import { useState } from "react";
+              import { useState } from "react";
 import StudyListSection from "../features/study/components/StudyList";
 import iconLocation from "../assets/base/icon-location.svg"; // 피그마 base 폴더의 위치 아이콘
 import iconArrowDown from "../assets/base/icon-arrow-down.svg"; // 피그마 base 폴더의 아래 화살표 아이콘
@@ -14,7 +14,7 @@ export default function LocalStudy() {
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-10 min-h-[600px]">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold black                                                                                        ">
+        <h1 className="text-3xl font-bold black                                                                                        ">
           내 지역 스터디
         </h1>
 
@@ -64,10 +64,10 @@ export default function LocalStudy() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-full text-[14px] font-semibold transition-all ${
+                className={`px-5 py-3 rounded-full text-lg font-bold transition-all ${
                   activeTab === tab
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-300"
                 }`}
               >
                 {tab}

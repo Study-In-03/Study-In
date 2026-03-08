@@ -6,6 +6,9 @@ import { storage } from "@/utils/storage";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
 import NotificationIcon from "@/assets/base/icon-Notification.svg?react";
 import LeftArrowIcon from "@/assets/base/icon-Left-arrow.svg?react";
+import defaultProfileSrc from "@/assets/base/Ellipse 46.svg";
+import { getProfile, type UserProfile } from "@/api/profile";
+import { getFullUrl } from "@/api/upload";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -16,9 +19,11 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { isLoggedIn, logout } = useAuthStore();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) return;
+
     const fetchUnread = async () => {
       try {
         const data = await getNotifications();
@@ -27,7 +32,20 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         // 에러 무시
       }
     };
+
+    const fetchProfile = async () => {
+      const userId = storage.getUserId();
+      if (!userId) return;
+      try {
+        const data = await getProfile(userId);
+        setProfile(data);
+      } catch {
+        // 에러 무시
+      }
+    };
+
     fetchUnread();
+    fetchProfile();
   }, [isLoggedIn]);
 
   return (
@@ -44,36 +62,49 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* 프로필 영역 */}
-        <div className="bg-gray-100 px-[45px] pt-[46px] pb-[30px] flex flex-col items-center gap-5 relative">
+        {/* 상단 24px 흰색 여백 */}
+        <div className="h-6 flex-shrink-0" />
+
+        {/* 프로필 영역 (닫기 버튼 포함) */}
+        <div className="bg-gray-100 border-b border-gray-300 px-[45px] pt-[40px] pb-[36px] flex flex-col items-center relative">
           <button
             onClick={onClose}
             className="absolute top-[10px] right-[10px] w-7 h-7 flex items-center justify-center"
           >
-            <LeftArrowIcon className="w-4 h-4 text-gray-500" />
+            <LeftArrowIcon className="w-6 h-6 text-gray-500" />
           </button>
 
-          <div className="flex flex-col items-center gap-5">
-            <div className="w-[100px] h-[100px] rounded-full border border-gray-300 bg-gray-100 flex items-center justify-center overflow-hidden">
-              <PersonIcon className="w-16 h-16 text-gray-300" />
-            </div>
-
-            {isLoggedIn ? (
-              <>
-                <p className="text-base font-bold text-surface text-center">
-                  파이썬 연금술사
+          {isLoggedIn ? (
+            /* 로그인 상태: 아바타+이름 그룹(gap-20) → 버튼(gap-36) */
+            <div className="flex flex-col items-center gap-[36px] w-full">
+              <div className="flex flex-col items-center gap-[20px]">
+                <div className="w-[100px] h-[100px] rounded-full border border-gray-300 overflow-hidden">
+                  <img
+                    src={profile?.profile_img ? getFullUrl(profile.profile_img) : defaultProfileSrc}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <p className="text-lg font-bold text-surface text-center">
+                  {profile?.nickname ?? ''}
                 </p>
-                <Link
-                  to="/study/create"
-                  onClick={onClose}
-                  className="w-[200px] py-[10px] bg-primary text-background text-sm font-medium rounded-lg text-center"
-                >
-                  스터디 만들기
-                </Link>
-              </>
-            ) : (
-              <>
-                <p className="text-base text-gray-500 text-center">
+              </div>
+              <Link
+                to="/study/create"
+                onClick={onClose}
+                className="w-[200px] h-[40px] bg-primary text-background text-sm font-medium rounded-lg flex items-center justify-center"
+              >
+                스터디 만들기
+              </Link>
+            </div>
+          ) : (
+            /* 비로그인 상태: 아바타 → 텍스트+버튼(gap-28) */
+            <div className="flex flex-col items-center gap-[28px] w-full">
+              <div className="w-[100px] h-[100px] rounded-full border border-gray-300 overflow-hidden">
+                <img src={defaultProfileSrc} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex flex-col items-center gap-3 w-full">
+                <p className="text-sm text-gray-700 text-center leading-[20px]">
                   스터디를 만들어
                   <br />
                   사람들과 함께 공부할 수 있어요!
@@ -81,20 +112,23 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <Link
                   to="/login"
                   onClick={onClose}
-                  className="w-[200px] py-[10px] bg-primary text-background text-sm font-medium rounded-lg text-center"
+                  className="w-[200px] h-[40px] bg-primary text-background text-sm font-medium rounded-lg flex items-center justify-center"
                 >
                   시작하기
                 </Link>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
+        </div>
 
-          {isLoggedIn && (
-            <div className="flex justify-around w-[200px] pt-1">
+        {/* 로그인 시: 단축 아이콘 섹션 (그레이 영역 밖 흰색 배경) */}
+        {isLoggedIn && (
+          <>
+            <div className="flex justify-around px-[13px] pt-[16px] pb-[10px]">
               <Link
                 to="/profile"
                 onClick={onClose}
-                className="flex flex-col items-center gap-1"
+                className="flex flex-col items-center gap-[6px]"
               >
                 <PersonIcon className="w-[30px] h-[30px] text-surface" />
                 <span className="text-xs text-gray-700">프로필</span>
@@ -102,7 +136,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               <Link
                 to="/my-study"
                 onClick={onClose}
-                className="flex flex-col items-center gap-1"
+                className="flex flex-col items-center gap-[6px]"
               >
                 <PersonIcon className="w-[30px] h-[30px] text-surface" />
                 <span className="text-xs text-gray-700">My 스터디</span>
@@ -110,51 +144,51 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               <Link
                 to="/notification"
                 onClick={onClose}
-                className="flex flex-col items-center gap-1"
+                className="flex flex-col items-center gap-[6px]"
               >
                 <div className="relative w-[30px] h-[30px]">
                   <NotificationIcon className="w-[30px] h-[30px] text-surface" />
                   {unreadCount > 0 && (
-                    <span className="absolute bottom-0.5 right-0 w-[10px] h-[10px] bg-error rounded-full" />
+                    <span className="absolute top-0 right-0 w-[10px] h-[10px] bg-error rounded-full" />
                   )}
                 </div>
                 <span className="text-xs text-gray-700">알림</span>
               </Link>
             </div>
-          )}
-        </div>
-
-        {/* 구분선 */}
-        <div className="h-[6px] bg-background" />
+            {/* 구분선 */}
+            <div className="h-[6px] bg-gray-100" />
+          </>
+        )}
 
         {/* 네비게이션 */}
-        <nav className="flex flex-col px-[30px] gap-1">
+        <nav className="flex flex-col pt-[5px]">
           <Link
             to="/"
             onClick={onClose}
-            className="py-[15px] text-base text-surface"
+            className="px-[30px] py-[15px] text-sm text-surface"
           >
             스터디인 홈
           </Link>
           <Link
             to="/?type=local"
             onClick={onClose}
-            className="py-[15px] text-base text-surface"
+            className="px-[30px] py-[15px] text-sm text-surface"
           >
             내지역 스터디
           </Link>
           <Link
             to="/?type=online"
             onClick={onClose}
-            className="py-[15px] text-base text-surface"
+            className="px-[30px] py-[15px] text-sm text-surface"
           >
             온라인 스터디
           </Link>
         </nav>
 
+        {/* 로그인 시: 구분선 + 로그아웃 */}
         {isLoggedIn && (
           <>
-            <div className="h-[6px] bg-background" />
+            <div className="h-[6px] bg-gray-100" />
             <button
               onClick={() => {
                 storage.clearAuth();
@@ -162,7 +196,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 onClose();
                 navigate('/login');
               }}
-              className="px-[30px] py-[15px] text-base text-surface text-left"
+              className="px-[30px] py-[15px] text-sm text-surface text-left"
             >
               로그아웃
             </button>

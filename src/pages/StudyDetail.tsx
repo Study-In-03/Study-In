@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAssociateGuard } from "@/hooks/useAssociateGuard";
 
 import heartIcon from "@/assets/base/icon-heart.svg";
 import heartFillIcon from "@/assets/base/icon-heart-fill.svg";
@@ -54,6 +55,7 @@ export default function StudyDetail() {
 
   const [liked, setLiked] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
+  const { withAssociateGuard } = useAssociateGuard();
 
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -357,7 +359,7 @@ export default function StudyDetail() {
 
           {/* JOIN */}
           <button
-            onClick={() => setIsJoined((p) => !p)}
+            onClick={() => withAssociateGuard(() => setIsJoined((p) => !p))}
             className="h-[50px] w-[186px] rounded-lg bg-primary text-white"
           >
             {primaryButtonText}

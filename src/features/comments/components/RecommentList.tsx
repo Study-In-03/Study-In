@@ -6,6 +6,7 @@ import { useModalStore } from "@/store/modalStore";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
 import IconSend from "@/assets/base/icon-Send.svg?react";
+import MoreIcon from "@/assets/base/icon-000.svg?react";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 
@@ -59,7 +60,7 @@ const RecommentList = ({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
   const [replyInput, setReplyInput] = useState("");
-  const { openConfirm } = useModalStore();
+  const { openConfirm, openModal } = useModalStore();
 
   const handleUpdate = (recommentPk: number, isSecret: boolean) => {
     if (!editContent.trim()) return;
@@ -107,6 +108,17 @@ const RecommentList = ({
                 {/* 프로필 이미지 */}
                 {recomment.is_secret && !isAuthor ? (
                   <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
+                ) : !isWithdrawnUser(recomment.user) && isNormalUser(recomment.user) && !isAuthor ? (
+                  <button
+                    className="flex-shrink-0"
+                    onClick={() => openModal('user-info', isNormalUser(recomment.user) ? recomment.user.id : undefined)}
+                  >
+                    <img
+                      src={profileImg}
+                      alt={nickname}
+                      className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    />
+                  </button>
                 ) : (
                   <img
                     src={profileImg}
@@ -147,6 +159,26 @@ const RecommentList = ({
                         {formatDate(recomment.created)}
                       </p>
                     </div>
+
+                    {/* 모바일 전용: ⋮ 버튼 */}
+                    <button
+                      className="md:hidden flex-shrink-0"
+                      onClick={() =>
+                        openModal(
+                          isAuthor ? 'comment-mine' : 'comment-other',
+                          recomment.recomment_id,
+                          undefined,
+                          'recomment',
+                          isAuthor ? () => {
+                            setEditingId(recomment.recomment_id);
+                            setEditContent(recomment.content);
+                          } : undefined,
+                          isAuthor ? () => onDeleteRecomment(commentPk, recomment.recomment_id) : undefined,
+                        )
+                      }
+                    >
+                      <MoreIcon className="w-5 h-5 text-gray-500" />
+                    </button>
 
                     {/* 웹 전용: 수정/삭제/신고 */}
                     <div className="hidden md:flex gap-2 flex-shrink-0">

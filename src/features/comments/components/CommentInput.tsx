@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAssociateGuard } from "@/hooks/useAssociateGuard";
 import IconSquareCheck from "@/assets/base/icon-square-Check.svg?react";
 import IconSquareCheckFill from "@/assets/base/icon-square-Check-fill.svg?react";
 
@@ -16,12 +17,15 @@ const CommentInput = ({
   const [content, setContent] = useState("");
   const [isSecret, setIsSecret] = useState(false);
   const MAX_LENGTH = 1000;
+  const { withAssociateGuard } = useAssociateGuard();
 
   const handleSubmit = () => {
     if (!content.trim()) return;
-    onSubmit(content, isSecret);
-    setContent("");
-    setIsSecret(false);
+    withAssociateGuard(() => {
+      onSubmit(content, isSecret);
+      setContent("");
+      setIsSecret(false);
+    });
   };
 
   return (

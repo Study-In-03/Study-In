@@ -23,9 +23,15 @@ const SIMPLE_FOOTER_PATHS = [
   // '/profile/create',
 ];
 
+// 웹(lg 이상)에서 푸터를 완전히 숨길 경로
+const NO_DESKTOP_FOOTER_PATHS = [
+  '/register',
+];
+
 export default function Footer() {
   const { pathname } = useLocation();
   const isSimpleFooter = SIMPLE_FOOTER_PATHS.includes(pathname);
+  const isNoDesktopFooter = NO_DESKTOP_FOOTER_PATHS.includes(pathname);
 
   return (
     <footer className="border-t border-gray-300">
@@ -92,8 +98,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 데스크탑 풀 푸터 - 로그인 페이지 제외 (lg 이상) */}
-      {!isSimpleFooter && (
+      {/* 데스크탑 풀 푸터 - 로그인/회원가입 페이지 제외 (lg 이상) */}
+      {!isSimpleFooter && !isNoDesktopFooter && (
         <div className="hidden lg:block py-[50px]">
           <div className="max-w-[1190px] mx-auto">
 

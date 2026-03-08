@@ -160,7 +160,7 @@ export default function Header({ variant = 'default' }: HeaderProps) {
               </button>
               {isLoggedIn && (
                 <button onClick={() => openModal('header')}>
-                  <MoreIcon className="w-6 h-6 text-surface" />
+                  <MoreIcon className="w-[30px] h-[30px] text-surface" />
                 </button>
               )}
             </div>

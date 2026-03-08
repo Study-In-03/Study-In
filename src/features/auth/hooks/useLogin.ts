@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "@/api/auth";
+import { getMemberType } from "@/api/profile";
 import { storage } from "@/utils/storage";
 import { useAuthStore } from "@/store/authStore";
 
@@ -25,8 +26,13 @@ export const useLogin = () => {
       storage.setEmail(email);
       setLogin();
 
-      // 성공 시 메인 페이지로 이동
-      navigate("/");
+      // 준회원이면 프로필 생성 페이지로, 정회원이면 메인으로
+      try {
+        const { is_associate_member } = await getMemberType();
+        navigate(is_associate_member ? "/" : "/profile/edit");
+      } catch {
+        navigate("/");
+      }
     } catch (error: any) {
       // 실패 시 에러 핸들링
       const errorMessage =

@@ -9,11 +9,13 @@ import RightIcon from '@/assets/base/icon-right.svg?react'
 import { getProfile } from '@/api/profile'
 import { storage } from '@/utils/storage'
 import { useMyStudies } from '../hooks/useMyStudies'
+import { useAssociateGuard } from '@/hooks/useAssociateGuard'
 
 const PAGE_SIZE = 10
 
 const ActivityTabs = () => {
   const navigate = useNavigate()
+  const { withAssociateGuard } = useAssociateGuard()
   const [activeTab, setActiveTab] = useState<'my' | 'joined' | 'ended' | 'liked'>('my')
   const [likedStudies, setLikedStudies] = useState<number[]>([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -123,6 +125,14 @@ const ActivityTabs = () => {
           <div className="flex flex-col items-center gap-2 py-16 text-gray-500">
             <p className="text-base">아직 스터디가 없어요!</p>
             <p className="text-sm">스터디를 만들거나 참여해보세요</p>
+            {activeTab === 'my' && (
+              <button
+                onClick={() => withAssociateGuard(() => navigate('/study/create'))}
+                className="mt-2 px-6 py-2 bg-primary text-background rounded-lg text-base font-medium"
+              >
+                스터디 만들기
+              </button>
+            )}
           </div>
         ) : (
           <>

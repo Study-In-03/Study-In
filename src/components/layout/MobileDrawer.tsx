@@ -45,16 +45,16 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         }`}
       >
         {/* 프로필 영역 */}
-        <div className="bg-[#F3F5FA] px-[45px] pt-[46px] pb-[30px] flex flex-col items-center gap-5 relative">
+        <div className="bg-gray-100 px-[45px] pt-[46px] pb-[30px] flex flex-col items-center gap-5 relative">
           <button
             onClick={onClose}
             className="absolute top-[10px] right-[10px] w-7 h-7 flex items-center justify-center"
           >
-            <LeftArrowIcon className="w-4 h-4 text-[#8D9299]" />
+            <LeftArrowIcon className="w-4 h-4 text-gray-500" />
           </button>
 
           <div className="flex flex-col items-center gap-5">
-            <div className="w-[100px] h-[100px] rounded-full border border-[#D9DBE0] bg-gray-100 flex items-center justify-center overflow-hidden">
+            <div className="w-[100px] h-[100px] rounded-full border border-gray-300 bg-gray-100 flex items-center justify-center overflow-hidden">
               <PersonIcon className="w-16 h-16 text-gray-300" />
             </div>
 
@@ -66,7 +66,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <Link
                   to="/study/create"
                   onClick={onClose}
-                  className="w-[200px] py-[10px] bg-primary text-white text-sm font-medium rounded-lg text-center"
+                  className="w-[200px] py-[10px] bg-primary text-background text-sm font-medium rounded-lg text-center"
                 >
                   스터디 만들기
                 </Link>
@@ -81,7 +81,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <Link
                   to="/login"
                   onClick={onClose}
-                  className="w-[200px] py-[10px] bg-primary text-white text-sm font-medium rounded-lg text-center"
+                  className="w-[200px] py-[10px] bg-primary text-background text-sm font-medium rounded-lg text-center"
                 >
                   시작하기
                 </Link>
@@ -97,7 +97,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 className="flex flex-col items-center gap-1"
               >
                 <PersonIcon className="w-[30px] h-[30px] text-surface" />
-                <span className="text-xs text-[#47494D]">프로필</span>
+                <span className="text-xs text-gray-700">프로필</span>
               </Link>
               <Link
                 to="/my-study"
@@ -105,7 +105,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 className="flex flex-col items-center gap-1"
               >
                 <PersonIcon className="w-[30px] h-[30px] text-surface" />
-                <span className="text-xs text-[#47494D]">My 스터디</span>
+                <span className="text-xs text-gray-700">My 스터디</span>
               </Link>
               <Link
                 to="/notification"
@@ -118,7 +118,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <span className="absolute bottom-0.5 right-0 w-[10px] h-[10px] bg-error rounded-full" />
                   )}
                 </div>
-                <span className="text-xs text-[#47494D]">알림</span>
+                <span className="text-xs text-gray-700">알림</span>
               </Link>
             </div>
           )}
@@ -132,21 +132,21 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           <Link
             to="/"
             onClick={onClose}
-            className="py-[15px] text-sm text-surface"
+            className="py-[15px] text-base text-surface"
           >
             스터디인 홈
           </Link>
           <Link
             to="/?type=local"
             onClick={onClose}
-            className="py-[15px] text-sm text-surface"
+            className="py-[15px] text-base text-surface"
           >
             내지역 스터디
           </Link>
           <Link
             to="/?type=online"
             onClick={onClose}
-            className="py-[15px] text-sm text-surface"
+            className="py-[15px] text-base text-surface"
           >
             온라인 스터디
           </Link>
@@ -162,7 +162,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 onClose();
                 navigate('/login');
               }}
-              className="px-[30px] py-[15px] text-sm text-surface text-left"
+              className="px-[30px] py-[15px] text-base text-surface text-left"
             >
               로그아웃
             </button>

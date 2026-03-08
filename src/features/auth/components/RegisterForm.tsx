@@ -152,6 +152,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                             <div className="flex gap-2">
                                 <input
                                     type="text"
+                                    
                                     maxLength={6}
                                     value={code}
                                     onChange={(e) => {

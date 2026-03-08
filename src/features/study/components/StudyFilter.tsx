@@ -1,84 +1,65 @@
-// Home에서 보내주는 데이터들의 타입 정의
+import React, { Dispatch, SetStateAction } from "react"; // Dispatch 추가
+// 1. SVG 아이콘 경로 설정
+import iconSpecial from "@/assets/category/subject_특강.svg";
+import iconConcept from "@/assets/category/subject_개념학습-2.svg";
+import iconApplied from "@/assets/category/subject_응용활용.svg";
+import iconProject from "@/assets/category/subject_프로젝트.svg";
+import iconChallenge from "@/assets/category/subject_챌린지.svg";
+import iconCert from "@/assets/category/subject_자격증시험.svg";
+import iconJob from "@/assets/category/subject_취업코테.svg";
+import iconEtc from "@/assets/category/subject_기타.svg";
+
 interface StudyFilterProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  searchTerm: string;       
-  onSearchChange: (value: string) => void; 
+  // 에러 해결을 위해 아래 두 줄을 추가합니다.
+  searchTerm: string; 
+  onSearchChange: Dispatch<SetStateAction<string>>;
 }
 
 const CATEGORIES = [
-  { id: "all", label: "전체", icon: "🌐" }, 
-  { id: "lecture", label: "특강", icon: "🎓" },
-  { id: "concept", label: "개념학습", icon: "📖" },
-  { id: "apply", label: "응용/활용", icon: "💻" },
-  { id: "project", label: "프로젝트", icon: "🚀" },
-  { id: "challenge", label: "챌린지", icon: "🔥" },
-  { id: "cert", label: "자격증/시험", icon: "📝" },
-  { id: "job", label: "취업/코테", icon: "💼" },
-  { id: "etc", label: "기타", icon: "✨" },
+  { id: "lecture", label: "특강", icon: iconSpecial },
+  { id: "concept", label: "개념학습", icon: iconConcept },
+  { id: "apply", label: "응용/활용", icon: iconApplied },
+  { id: "project", label: "프로젝트", icon: iconProject },
+  { id: "challenge", label: "챌린지", icon: iconChallenge },
+  { id: "cert", label: "자격증/시험", icon: iconCert },
+  { id: "job", label: "취업/코테", icon: iconJob },
+  { id: "etc", label: "기타", icon: iconEtc },
 ];
 
-const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchChange }: StudyFilterProps) => {
+// props에서 searchTerm과 onSearchChange를 받아줍니다.
+const StudyFilter = ({ 
+  selectedCategory, 
+  onCategoryChange,
+  searchTerm,
+  onSearchChange 
+}: StudyFilterProps) => {
   return (
-  <div className="space-y-8 mb-10">
-    {/* 검색창 영역 */}
-    <div className="relative max-w-2xl mx-auto">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="어떤 스터디를 찾고 계신가요?"
-        className="w-full py-4 px-6 rounded-2xl bg-gray-100 border-none focus:ring-2 focus:ring-primary-light outline-none text-base font-medium placeholder:text-gray-500"
-      />
-      <button className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-gray-700">
-        🔍
-      </button>
-    </div>
-
-    {/* 카테고리 영역: 전체(왼쪽) + 나머지 8개(오른쪽 그리드) */}
-    <div className="flex justify-center items-start gap-6 md:gap-10">
-      
-      {/* '전체' 버튼 */}
-      <div className="flex flex-col items-center pt-1">
-        <button
-          onClick={() => onCategoryChange('all')}
-          className={`group flex flex-col items-center gap-2 transition-all ${
-            selectedCategory === 'all' ? "scale-105" : ""
-          }`}
-        >
-          <div className={`w-14 h-14 md:w-16 md:h-16 rounded-[20px] flex items-center justify-center shadow-sm border transition-all duration-200 
-            ${selectedCategory === 'all' 
-              ? "bg-activation border-primary-light ring-2 ring-primary-light/20" 
-              : "bg-background border-gray-100 group-hover:bg-activation"}`}
-          >
-            <span className="text-2xl">🌐</span>
-          </div>
-          <span className={`text-sm font-bold ${selectedCategory === 'all' ? "text-primary" : "text-gray-700"}`}>
-            전체
-          </span>
-        </button>
-      </div>
-
-      {/* 오른쪽: 나머지 8개 버튼 */}
-      <div className="grid grid-cols-4 gap-x-4 gap-y-6">
-        {CATEGORIES.filter(cat => cat.id !== 'all').map((cat) => (
+    <div className="mb-10">
+      {/* 카테고리 아이콘 영역 (기존 디자인 유지) */}
+      <div className="grid grid-cols-4 md:flex md:flex-row justify-center items-center gap-x-2 gap-y-6 md:gap-x-8">
+        {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            className={`group flex flex-col items-center gap-2 w-16 md:w-20 transition-all ${
-              selectedCategory === cat.id ? "scale-105" : ""
-            }`}
+            className="flex flex-col items-center group transition-all shrink-0"
+            style={{ width: '70px', height: '98px' }}
           >
-            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-[20px] flex items-center justify-center shadow-sm border transition-all duration-200 
-              ${selectedCategory === cat.id
-                ? "bg-activation border-primary-light ring-2 ring-primary-light/20"
-                : "bg-background border-gray-100 group-hover:bg-activation"
-              }`}
+            <div className={`w-[60px] h-[60px] rounded-[20px] flex items-center justify-center transition-all duration-200 mb-2 shadow-sm border
+              ${selectedCategory === cat.id 
+                ? "bg-activation border-primary-light ring-2 ring-primary-light/20 scale-105" 
+                : "bg-background border-gray-100 group-hover:bg-gray-50 group-hover:scale-105"}`}
             >
-              <span className="text-2xl">{cat.icon}</span>
+              <img 
+                src={cat.icon} 
+                alt={cat.label} 
+                className="w-full h-full object-contain p-2" 
+              />
             </div>
-            <span className={`text-sm font-medium transition-colors ${
-              selectedCategory === cat.id ? "text-primary" : "text-gray-700 group-hover:text-primary-light"
+            
+            <span className={`text-[13px] font-bold text-center break-keep leading-tight ${
+              selectedCategory === cat.id ? "text-primary" : "text-gray-700"
             }`}>
               {cat.label}
             </span>
@@ -86,8 +67,7 @@ const StudyFilter = ({ selectedCategory, onCategoryChange, searchTerm, onSearchC
         ))}
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default StudyFilter;

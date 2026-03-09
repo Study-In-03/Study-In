@@ -11,6 +11,8 @@ import iconExam from "../assets/category/subject_자격증시험.svg";
 import iconJob from "../assets/category/subject_취업코테.svg";
 import iconEtc from "../assets/category/subject_기타.svg";
 
+const isLoggedIn = true;
+
 const categories = [
   { id: 1, name: "특강", icon: iconSpecial },
   { id: 2, name: "개념학습", icon: iconConcept },
@@ -24,7 +26,8 @@ const categories = [
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("최신 스터디");
-  return (
+  return ( 
+    <>   
     <div className="max-w-[1200px] mx-auto px-4 py-10">
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="flex-1 w-full space-y-12">
@@ -88,5 +91,8 @@ export default function Home() {
         </aside>
       </div>
     </div>
+
+    
+    </>
   );
 }

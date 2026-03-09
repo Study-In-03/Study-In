@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import banner1 from "../../../assets/main-banner-1.png";
 import banner2 from "../../../assets/main-banner-2.png";
-import banner3 from "../../../assets/main-banner-3.png";  
- 
-const banners = [
-  banner1,
-  banner2,
-  banner3,
-];
+import banner3 from "../../../assets/main-banner-3.png";
+import arrowLeft from "@/assets/base/icon-arrow-left.svg";
+import arrowRight from "@/assets/base/icon-arrow-right.svg";
+import characterImg from "@/assets/banner/character_tiger.png";
+
+const banners = [banner1, banner2, banner3];
 
 export default function StudyBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -104,8 +103,8 @@ export default function StudyBanner() {
               w-2 h-2 rounded-full transition-all duration-300
               ${
                 currentSlide === index
-                  ? "bg-white opacity-100 scale-110" // 활성화된 점: 밝은 흰색, 약간 크게
-                  : "bg-white/40 hover:bg-white/60" // 비활성 점: 반투명한 흰색
+                  ? "bg-background opacity-100 scale-110" // 활성화된 점: 밝은 흰색, 약간 크게
+                  : "bg-background/40 hover:bg-background/60" // 비활성 점: 반투명한 흰색
               }
             `}
             aria-label={`${index + 1}번 슬라이드로 이동`}

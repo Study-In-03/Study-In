@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { GitHubCalendar } from 'react-github-calendar'
 import { useNavigate } from 'react-router-dom'
 import PersonIcon from '@/assets/base/icon-person.svg?react'
-import { getProfile, UserProfile } from '@/api/profile'
+import { getProfile } from '@/api/profile'
+import type { UserProfile } from '@/types/user'
 import { storage } from '@/utils/storage'
 import { getFullUrl } from '@/api/upload'
 
@@ -20,7 +21,8 @@ const ProfileCard = () => {
       try {
         const data = await getProfile(userId)
         setProfile(data)
-        setIsMyProfile(data.user === userId)
+        // storage.getUserId()는 string | null → Number()로 변환해야 number인 data.user와 비교 가능
+        setIsMyProfile(data.user === Number(userId))
       } catch {
         setError('프로필을 불러오는 데 실패했어요.')
       } finally {
@@ -48,7 +50,7 @@ const ProfileCard = () => {
 
   return (
     <div className="flex flex-col px-4 py-6 gap-4 bg-background">
-    <div className="flex flex-col border border-gray-300 rounded-xl overflow-hidden">
+      <div className="flex flex-col border border-gray-300 rounded-xl overflow-hidden">
 
         <div className="flex flex-col items-center gap-3 px-4 py-6">
           <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">

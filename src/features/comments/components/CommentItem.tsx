@@ -3,6 +3,7 @@ import type { Comment } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
+import DotsIcon from "@/assets/base/icon-dots.svg?react";
 import RecommentList from "./RecommentList";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
@@ -49,7 +50,7 @@ const CommentItem = ({
   const [taggedUser, setTaggedUser] = useState<
     { id: number; nickname: string } | undefined
   >(undefined);
-  const { openConfirm } = useModalStore();
+  const { openConfirm, openModal } = useModalStore();
 
   const isDeleted = !!comment.is_delete;
   const isAuthor =
@@ -85,6 +86,17 @@ const CommentItem = ({
       <div className="flex gap-[10px]">
         {comment.is_secret && !isAuthor ? (
           <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
+        ) : !isWithdrawnUser(comment.user!) && isNormalUser(comment.user!) && !isAuthor ? (
+          <button
+            className="flex-shrink-0"
+            onClick={() => openModal('user-info', comment.user && isNormalUser(comment.user) ? comment.user.id : undefined)}
+          >
+            <img
+              src={profileImg}
+              alt={nickname}
+              className="w-10 h-10 rounded-full object-cover border border-gray-300"
+            />
+          </button>
         ) : (
           <img
             src={profileImg}
@@ -96,26 +108,39 @@ const CommentItem = ({
         <div className="flex-1 min-w-0">
           {/* 모바일 */}
           <div className="md:hidden">
-            <div className="flex items-center gap-[10px]">
-              <span
-                className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
-              >
-                {nickname}
-              </span>
-              {/* {isAuthor && (
-                <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
-                  내댓글
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-[10px]">
+                <span
+                  className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
+                >
+                  {nickname}
                 </span>
-              )} */}
+                {!isDeleted && (
+                  <button
+                    onClick={() => {
+                      setTaggedUser(undefined);
+                      setShowRecommentInput((prev) => !prev);
+                    }}
+                    className="text-base text-gray-500 underline"
+                  >
+                    답글달기
+                  </button>
+                )}
+              </div>
               {!isDeleted && (
                 <button
-                  onClick={() => {
-                    setTaggedUser(undefined);
-                    setShowRecommentInput((prev) => !prev);
-                  }}
-                  className="text-base text-gray-500 underline"
+                  onClick={() =>
+                    openModal(
+                      isAuthor ? 'comment-mine' : 'comment-other',
+                      comment.id,
+                      undefined,
+                      'comment',
+                      isAuthor ? () => setIsEditing(true) : undefined,
+                      isAuthor ? () => onDelete(comment.id) : undefined,
+                    )
+                  }
                 >
-                  답글달기
+                  <DotsIcon className="w-5 h-5 text-gray-500" />
                 </button>
               )}
             </div>
@@ -171,7 +196,7 @@ const CommentItem = ({
                 ) : (
                   <button
                     onClick={() =>
-                      openConfirm("report", () => console.log("신고"))
+                      openModal('report', comment.id, undefined, 'comment')
                     }
                     className="text-sm text-gray-500 underline"
                   >

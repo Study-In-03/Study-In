@@ -18,9 +18,10 @@ export interface NotificationListResponse {
   results: Notification[];
 }
 
-// 알림 목록 가져오기
-export async function getNotifications(): Promise<NotificationListResponse> {
-  const res = await axiosInstance.get<NotificationListResponse>('/notifications/');
+export async function getNotifications(page = 1): Promise<NotificationListResponse> {
+  const res = await axiosInstance.get<NotificationListResponse>('/notifications/', {
+    params: { page },
+  });
   return res.data;
 }
 

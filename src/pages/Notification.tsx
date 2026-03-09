@@ -25,7 +25,7 @@ const Notification = () => {
     const fetchNotifications = async () => {
       setIsLoading(true)
       try {
-        const data = await getNotifications()
+        const data = await getNotifications(currentPage)
         setNotifications(data.results)
         setTotalCount(data.count)
       } catch {
@@ -35,7 +35,7 @@ const Notification = () => {
       }
     }
     fetchNotifications()
-  }, [currentPage])
+  }, [currentPage]) // currentPage가 의존성 배열에 있으므로 페이지 변경 시 재요청
 
   const handleDelete = async (notificationId: number) => {
     try {
@@ -137,7 +137,7 @@ const Notification = () => {
         )}
       </div>
 
-      {/* 페이지네이션 - 항상 보임 */}
+      {/* 페이지네이션 */}
       <div className="flex justify-center items-center gap-4 mt-2">
         <button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

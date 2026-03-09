@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { GitHubCalendar } from 'react-github-calendar'
 import useUpload from '@/hooks/useUpload'
 import { getFullUrl } from '@/api/upload'
-import { getProfile, updateProfile, checkNickname } from '@/api/profile'
+import { getProfile, updateProfile, checkNickname, getMemberType } from '@/api/profile'
+import { getRegions, Region } from '@/api/auth'
 import { storage } from '@/utils/storage'
+import { useAuthStore } from '@/store/authStore'
 import PersonIcon from '@/assets/base/icon-person.svg?react'
 import ImageIcon from '@/assets/base/icon-Image.svg?react'
 import CheckIcon from '@/assets/base/icon-Check.svg?react'
@@ -13,9 +15,12 @@ import CloseIcon from '@/assets/base/icon-X.svg?react'
 const allTags = ['Python', 'JS', 'Java', 'React', 'Django', '크롬확장프로그램', '사이드프로젝트', '알고리즘', '취업준비']
 const MAX_BIO_LENGTH = 80
 
+type Tag = { id?: number; name: string }
+
 const ProfileEditForm = () => {
   const navigate = useNavigate()
   const { uploading, handleImageUpload } = useUpload()
+  const { setIsAssociateMember } = useAuthStore()
 
   const [profileImg, setProfileImg] = useState<string | null>(null)
   const [profileImgPath, setProfileImgPath] = useState<string | null>(null)
@@ -28,13 +33,21 @@ const ProfileEditForm = () => {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [bio, setBio] = useState('')
-  const [region, setRegion] = useState('')
   const [github, setGithub] = useState('')
-  const [selectedTags, setSelectedTags] = useState<Array<{ id: number; name: string }>>([])
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const [tagInput, setTagInput] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+
+  const [regions, setRegions] = useState<Region[]>([])
+  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null)
+
+  useEffect(() => {
+    getRegions()
+      .then((data) => setRegions(data))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -46,15 +59,18 @@ const ProfileEditForm = () => {
         setName(data.name ?? '')
         setPhone(data.phone ?? '')
         setBio(data.introduction ?? '')
-        setRegion(data.preferred_region?.location ?? '')
         setGithub(data.github_username ?? '')
         setSelectedTags(data.tag ?? [])
+        if (data.preferred_region) {
+          setSelectedRegionId(data.preferred_region.id)
+        }
         if (data.profile_img) {
           setProfileImg(getFullUrl(data.profile_img))
           setProfileImgPath(data.profile_img)
         }
         const emailFromStorage = storage.getEmail()
         if (emailFromStorage) setEmail(emailFromStorage)
+        // 초기 로드 시 닉네임은 이미 본인 것이므로 중복확인 통과 처리
         setIsNicknameChecked(true)
         setIsNicknameAvailable(true)
       } catch {
@@ -82,7 +98,7 @@ const ProfileEditForm = () => {
     if (exists) {
       setSelectedTags(selectedTags.filter((t) => t.name !== tag))
     } else {
-      setSelectedTags([...selectedTags, { id: Date.now(), name: tag }])
+      setSelectedTags([...selectedTags, { name: tag }])
     }
   }
 
@@ -92,7 +108,7 @@ const ProfileEditForm = () => {
 
   const addCustomTag = () => {
     if (tagInput.trim() && !selectedTags.find((t) => t.name === tagInput.trim())) {
-      setSelectedTags([...selectedTags, { id: Date.now(), name: tagInput.trim() }])
+      setSelectedTags([...selectedTags, { name: tagInput.trim() }])
       setTagInput('')
     }
   }
@@ -121,7 +137,16 @@ const ProfileEditForm = () => {
         github_username: github,
         profile_img: profileImgPath ?? undefined,
         tag: selectedTags,
+        preferred_region: selectedRegionId ? { id: selectedRegionId } : undefined,
       })
+
+      try {
+        const res = await getMemberType()
+        setIsAssociateMember(res.is_associate_member)
+      } catch {
+        // 회원 타입 조회 실패는 저장 성공에 영향 없음 — 무시
+      }
+
       navigate('/profile')
     } catch {
       setApiError('저장에 실패했어요. 다시 시도해주세요.')
@@ -167,6 +192,8 @@ const ProfileEditForm = () => {
               className="hidden"
             />
           </div>
+
+          {/* 닉네임 */}
           <div className="flex flex-col gap-1 items-center w-full max-w-xs">
             <div className="flex items-center gap-2 w-full border-b border-gray-300 pb-1">
               <input
@@ -206,16 +233,17 @@ const ProfileEditForm = () => {
             />
             <p className="text-xs text-gray-500 text-right">{bio.length}/{MAX_BIO_LENGTH}자</p>
           </div>
+
           <div className="flex items-center gap-3 w-full">
             <span className="text-base font-medium text-gray-900 shrink-0">이메일(ID)</span>
             <span className="text-base text-gray-500">{email}</span>
           </div>
-
         </div>
 
         <div className="w-full border-t border-gray-300" />
         <div className="flex flex-col gap-4 px-4 py-5">
 
+          {/* 이름 */}
           <div className="flex flex-col gap-1">
             <label className="text-base font-medium text-gray-900">
               이름 <span className="text-error">*</span>
@@ -229,56 +257,51 @@ const ProfileEditForm = () => {
             />
           </div>
 
+          {/* 전화번호 */}
           <div className="flex flex-col gap-1">
             <label className="text-base font-medium text-gray-900">
               전화번호 <span className="text-error">*</span>
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="010-0000-0000"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-              />
-              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
-                인증
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="010-0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
+            />
           </div>
 
+          {/* 지역 */}
           <div className="flex flex-col gap-1">
             <label className="text-base font-medium text-gray-900">내 지역</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="지역 입력"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
-              />
-              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
-                재인증
-              </button>
-            </div>
+            <select
+              value={selectedRegionId ?? ''}
+              onChange={(e) => setSelectedRegionId(e.target.value ? Number(e.target.value) : null)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 focus:outline-none focus:border-primary-light bg-background"
+            >
+              <option value="">지역 선택</option>
+              {regions
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.location}
+                  </option>
+                ))}
+            </select>
           </div>
 
+          {/* GitHub */}
           <div className="flex flex-col gap-2">
             <label className="text-base font-medium text-gray-900">GitHub User Name</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="GitHub 아이디 입력 (영문/숫자/하이픈)"
-                value={github}
-                onChange={(e) => setGithub(e.target.value)}
-                className={`flex-1 border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
-                  github && !isGithubValid ? 'border-error' : 'border-gray-300 focus:border-primary-light'
-                }`}
-              />
-              <button className="w-20 py-2 border border-gray-300 rounded-lg text-base text-gray-700 shrink-0">
-                인증
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="GitHub 아이디 입력 (영문/숫자/하이픈)"
+              value={github}
+              onChange={(e) => setGithub(e.target.value)}
+              className={`border rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none ${
+                github && !isGithubValid ? 'border-error' : 'border-gray-300 focus:border-primary-light'
+              }`}
+            />
             {github && !isGithubValid && (
               <p className="text-sm text-error">영문, 숫자, 하이픈(-)만 입력 가능해요!</p>
             )}
@@ -294,6 +317,8 @@ const ProfileEditForm = () => {
               </div>
             )}
           </div>
+
+          {/* 관심 분야 태그 */}
           <div className="flex flex-col gap-2">
             <label className="text-base font-medium text-gray-900">관심 분야 태그</label>
             <input
@@ -305,9 +330,9 @@ const ProfileEditForm = () => {
               className="border border-gray-300 rounded-lg px-3 py-2 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary-light"
             />
             <div className="flex flex-wrap gap-2">
-              {selectedTags.map((tag) => (
+              {selectedTags.map((tag, index) => (
                 <span
-                  key={tag.id}
+                  key={tag.id ?? `new-${index}`}
                   className="flex items-center gap-1 bg-primary text-background text-sm px-3 py-1 rounded-full"
                 >
                   {tag.name}
@@ -340,6 +365,7 @@ const ProfileEditForm = () => {
       {apiError && (
         <p className="text-sm text-error text-center">{apiError}</p>
       )}
+
       <button
         onClick={handleSave}
         disabled={!isSaveEnabled || isSaving}

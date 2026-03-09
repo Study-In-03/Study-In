@@ -1,26 +1,7 @@
 import { axiosInstance } from './axios';
+import type { UserProfile, PreferredRegion } from '@/types/user';
 
-export interface PreferredRegion {
-  id: number;
-  sort_order: number;
-  location: string;
-}
-
-export interface UserProfile {
-  is_associate_member: boolean;
-  is_social_user: boolean;
-  user_login_type: string;
-  user: number;
-  name?: string;
-  nickname: string;
-  profile_img: string;
-  introduction: string;
-  phone?: string;
-  preferred_region: PreferredRegion | null;
-  github_username: string;
-  tag: Array<{ id: number; name: string }>;
-  grade: string;
-}
+export type { UserProfile, PreferredRegion };
 
 export interface UpdateProfileRequest {
   name?: string;
@@ -30,7 +11,7 @@ export interface UpdateProfileRequest {
   phone?: string;
   preferred_region?: { id: number };
   github_username?: string;
-  tag?: Array<{ id: number; name: string }>;
+  tag?: Array<{ id?: number; name: string }>;  
 }
 
 export async function getProfile(userId: number): Promise<UserProfile> {
@@ -40,6 +21,12 @@ export async function getProfile(userId: number): Promise<UserProfile> {
 
 export async function updateProfile(userId: number, data: UpdateProfileRequest): Promise<UserProfile> {
   const res = await axiosInstance.put<UserProfile>(`/accounts/profiles/${userId}/`, data);
+  return res.data;
+}
+
+/* 회원 유형 확인. is_associate_member: true → 정회원, false → 준회원 */
+export async function getMemberType(): Promise<{ is_associate_member: boolean }> {
+  const res = await axiosInstance.get<{ is_associate_member: boolean }>('/accounts/members/type/');
   return res.data;
 }
 

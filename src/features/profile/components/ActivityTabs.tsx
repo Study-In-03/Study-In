@@ -6,18 +6,25 @@ import PeopleIcon from '@/assets/base/icon-people.svg?react'
 import RecruitIcon from '@/assets/base/icon-모집중.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
 import RightIcon from '@/assets/base/icon-right.svg?react'
-import { getProfile } from '@/api/profile'
-import { storage } from '@/utils/storage'
+import { likeStudy, unlikeStudy } from '@/api/study'
 import { useMyStudies } from '../hooks/useMyStudies'
+import { useAssociateGuard } from '@/hooks/useAssociateGuard'
 
 const PAGE_SIZE = 10
 
-const ActivityTabs = () => {
+interface ActivityTabsProps {
+  // ProfileCard와 getProfile()을 공유하기 위해 부모에서 prop으로 받음
+  // 부모(Profile 페이지)에서 한 번만 fetch → 중복 API 호출 제거
+  locationName?: string
+}
+
+const ActivityTabs = ({ locationName = '-' }: ActivityTabsProps) => {
   const navigate = useNavigate()
+  const { withAssociateGuard } = useAssociateGuard()
   const [activeTab, setActiveTab] = useState<'my' | 'joined' | 'ended' | 'liked'>('my')
   const [likedStudies, setLikedStudies] = useState<number[]>([])
+  const [likeLoadingIds, setLikeLoadingIds] = useState<number[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [locationName, setLocationName] = useState<string>('-')
 
   const endpoint =
     activeTab === 'ended'
@@ -26,32 +33,39 @@ const ActivityTabs = () => {
         ? '/study/my-study/'
         : activeTab === 'joined'
           ? '/study/my-participating-study/'
-          : null
+          : '/study/my-like-study/'
 
-  const { studies, isLoading, error } = useMyStudies(
-    activeTab === 'liked' ? null : endpoint,
-  )
+  const { studies, isLoading, error } = useMyStudies(endpoint)
 
   const totalPages = Math.ceil(studies.length / PAGE_SIZE)
   const pagedStudies = studies.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-
-  useEffect(() => {
-    const userId = storage.getUserId()
-    if (!userId) return
-    getProfile(userId).then((profile) => {
-      setLocationName(profile.preferred_region?.location ?? '-')
-    })
-  }, [])
 
   useEffect(() => {
     setLikedStudies(studies.filter((s) => s.is_liked).map((s) => s.id))
     setCurrentPage(1)
   }, [studies])
 
-  const toggleLike = (id: number) => {
-    setLikedStudies((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    )
+  const toggleLike = async (id: number) => {
+    if (likeLoadingIds.includes(id)) return
+    setLikeLoadingIds((prev) => [...prev, id])
+    const isLiked = likedStudies.includes(id)
+    try {
+      if (isLiked) {
+        await unlikeStudy(id)
+        setLikedStudies((prev) => prev.filter((i) => i !== id))
+      } else {
+        await likeStudy(id)
+        setLikedStudies((prev) => [...prev, id])
+      }
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        setLikedStudies((prev) =>
+          isLiked ? prev.filter((i) => i !== id) : [...prev, id],
+        )
+      }
+    } finally {
+      setLikeLoadingIds((prev) => prev.filter((i) => i !== id))
+    }
   }
 
   const handleTab = (tab: 'my' | 'joined' | 'ended' | 'liked') => {
@@ -62,7 +76,6 @@ const ActivityTabs = () => {
   return (
     <div className="flex flex-col">
 
-     
       <div className="px-4 py-3">
         <div className="border border-gray-300 rounded-xl overflow-hidden grid grid-cols-2">
           <button
@@ -112,17 +125,23 @@ const ActivityTabs = () => {
         </div>
       )}
 
-      {!isLoading && !error && activeTab === 'liked' && (
-        <div className="flex flex-col items-center gap-2 py-16 text-gray-500">
-          <p className="text-base">관심 스터디 기능은 준비 중이에요!</p>
-        </div>
-      )}
-
-      {!isLoading && !error && activeTab !== 'liked' && (
+      {!isLoading && !error && (
         studies.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-16 text-gray-500">
             <p className="text-base">아직 스터디가 없어요!</p>
-            <p className="text-sm">스터디를 만들거나 참여해보세요</p>
+            <p className="text-sm">
+              {activeTab === 'liked'
+                ? '관심 있는 스터디에 좋아요를 눌러보세요'
+                : '스터디를 만들거나 참여해보세요'}
+            </p>
+            {activeTab === 'my' && (
+              <button
+                onClick={() => withAssociateGuard(() => navigate('/study/create'))}
+                className="mt-2 px-6 py-2 bg-primary text-background rounded-lg text-base font-medium"
+              >
+                스터디 만들기
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -133,7 +152,6 @@ const ActivityTabs = () => {
                   className="bg-background rounded-2xl shadow-md border border-gray-300 flex flex-col cursor-pointer overflow-hidden"
                   onClick={() => navigate(`/study/${study.id}`)}
                 >
-                  
                   <div className="flex justify-between items-center px-2 pt-2 pb-1">
                     <RecruitIcon className="w-16 h-6" />
                     <span className="text-xs text-gray-900 bg-gray-100 rounded-full px-2 py-0.5">
@@ -150,12 +168,12 @@ const ActivityTabs = () => {
                     ) : (
                       <div className="w-full h-full bg-gray-100" />
                     )}
-                    {/* 하트 */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         toggleLike(study.id)
                       }}
+                      disabled={likeLoadingIds.includes(study.id)}
                       className="absolute bottom-2 right-2 w-9 h-9 bg-background rounded-full flex items-center justify-center shadow-md"
                     >
                       {likedStudies.includes(study.id) ? (
@@ -166,9 +184,7 @@ const ActivityTabs = () => {
                     </button>
                   </div>
 
-                  {/* 카드 내용 */}
                   <div className="px-2 py-4 flex flex-col gap-2">
-                    {/* 카테고리 태그 */}
                     <div className="flex gap-1 flex-wrap">
                       {study.subject && (
                         <span className="text-xs border border-gray-300 rounded-full px-2 py-0.5 text-gray-500">

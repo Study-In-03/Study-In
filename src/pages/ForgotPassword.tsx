@@ -9,43 +9,30 @@ export default function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
 
-    const { sendEmail, isLoading, apiError, setApiError } = usePasswordResetEmail();
+    const { verifyCode, isLoading, apiError, setApiError } = usePasswordResetEmail();
 
     // 실시간 이메일 유효성 검사
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setEmail(value);
+        if (apiError) setApiError(null);
 
-        if (apiError) {
-            setApiError(null);
-        }
-
-        if (value.length === 0) {
-            setEmailError('');
-        } else if (!validateEmail(value)) {
-            setEmailError('이메일 형식이 올바르지 않습니다.'); 
-        } else {
-            setEmailError('');
-        }
+        if (value.length === 0) setEmailError('');
+        else if (!validateEmail(value)) setEmailError('이메일 형식이 올바르지 않습니다.');
+        else setEmailError('');
     };
 
     // 이메일이 입력되었고, 에러가 없을 때만 버튼 활성화
     const isValid = email.length > 0 && validateEmail(email);
 
-    const handleSubmit = async () => {
+    // 인증코드 확인
+    const handleSendEmail = async () => {
         if (!isValid || isLoading) return;
-        
-        // 서버에 이메일 발송 요청
-        const isSuccess = await sendEmail(email);
-        
-        // 성공하면 재설정 페이지로 이동 (이메일 정보와 고정 인증번호 전달)
+        const isSuccess = await verifyCode(email, '123456');
         if (isSuccess) {
-            alert('비밀번호 재설정 링크가 이메일로 발송되었습니다.');
-            navigate('/reset-password', { 
-                state: { email: email } 
-            }); 
+            navigate('/reset-password', { state: { email } });
         }
-    };
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -89,8 +76,8 @@ export default function ForgotPassword() {
 
                 <button
                     type="button"
-                    onClick={handleSubmit}
-                    disabled={!isValid}
+                    onClick={handleSendEmail}
+                    disabled={!isValid || isLoading}
                     className={`w-full font-medium text-lg py-[18px] transition-colors ${
                         isValid
                             ? 'bg-primary text-background hover:bg-primary-light cursor-pointer'

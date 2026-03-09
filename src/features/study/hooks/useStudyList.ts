@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../api/axios";
 import { Study } from "../../../types/study";
+import { normalizeStudy } from "@/utils/study";
 
-// searchTerm(검색어) 매개변수 추가
-export const useStudyList = (category: string, searchTerm: string = "") => {
+// activeTab → API study_status 파라미터 ID 매핑 (서버사이드 필터링)
+const STATUS_MAP: Record<string, number> = {
+  "모집 중 스터디": 1,
+  "진행 중 스터디": 3,
+};
+
+export const useStudyList = (category: string, searchTerm: string = "", activeTab: string = "최신 스터디") => {
   const [studies, setStudies] = useState<Study[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,21 +18,19 @@ export const useStudyList = (category: string, searchTerm: string = "") => {
     const fetchStudies = async () => {
       try {
         setIsLoading(true);
-        setError(null); // 새로운 요청 시 에러 초기화
+        setError(null);
 
-        // 카테고리와 검색어를 함께 파라미터 전송
         const response = await axiosInstance.get("/study/", {
-          params: { 
-            category: category !== "all" ? category : undefined,
-            search: searchTerm || undefined // 검색어가 있을 때만 포함
+          params: {
+            search: searchTerm || undefined,
+            study_status: STATUS_MAP[activeTab] ?? undefined,
           },
         });
 
-        // 서버 응답 구조가 { results: [...] } 인지 확인 후 저장
-        // 만약 results가 없다면 response.data를 바로 사용하도록 안전장치 추가
         const data = response.data.results || response.data;
-        setStudies(Array.isArray(data) ? data : []); 
+        const rawStudies = Array.isArray(data) ? data : [];
 
+        setStudies(rawStudies.map(normalizeStudy));
       } catch (err) {
         setError("스터디 목록을 불러오는 데 실패했습니다.");
         console.error("API Error:", err);
@@ -35,9 +39,8 @@ export const useStudyList = (category: string, searchTerm: string = "") => {
       }
     };
 
-    // 지금은 우선 직관적으로 category와 searchTerm이 바뀔 때마다 실행
     fetchStudies();
-  }, [category, searchTerm]); // 의존성 배열에 searchTerm 추가
+  }, [category, searchTerm, activeTab]);
 
   return { studies, isLoading, error };
 };

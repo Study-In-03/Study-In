@@ -39,6 +39,8 @@ export default function Router() {
           <Route path="/study/:studyId" element={<StudyDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/local" element={<LocalStudy />} />
+          <Route path="/online" element={<OnlineStudy />} />
           {/* 마이 스터디 페이지 - B2 담당 */}
           <Route path="/my-study" element={<MyStudy />} />
           {/* 알림 페이지 - B2 담당 */}
@@ -57,9 +59,6 @@ export default function Router() {
           element={<CommentWritePage />}
         />
         <Route path="/study/:studyId/edit" element={<StudyEdit />} />
-        <Route path="/local" element={<LocalStudy />} />
-        <Route path="/online" element={<OnlineStudy />} />
-
         {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />

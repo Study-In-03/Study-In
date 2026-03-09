@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, NavLink } from 'react-router-dom';
+import { Link, useNavigate, NavLink, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { getNotifications } from '@/api/notification';
 import { getProfile } from '@/api/profile';
@@ -26,9 +26,54 @@ export default function Header({ variant = "default" }: HeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [profileImg, setProfileImg] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<Array<string>>(() => {
+    try { const s = localStorage.getItem('searchHistory'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  /* URL의 q 파라미터와 검색창 동기화 */
+  useEffect(() => {
+    setSearchValue(searchParams.get('q') || '');
+  }, [searchParams]);
+
+  const doSearch = () => {
+    const trimmed = searchValue.trim();
+    saveSearch(trimmed);
+    setSearchFocused(false);
+    const base = location.pathname === '/local' || location.pathname.startsWith('/local/')
+      ? '/local/search'
+      : location.pathname === '/online' || location.pathname.startsWith('/online/')
+      ? '/online/search'
+      : '/search';
+    navigate(trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base);
+  };
+
+  const saveSearch = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    const next = [trimmed, ...searchHistory.filter((h) => h !== trimmed)].slice(0, 5);
+    setSearchHistory(next);
+    localStorage.setItem('searchHistory', JSON.stringify(next));
+  };
+
+  /* search outside click */
+  useEffect(() => {
+    if (!searchFocused) return;
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [searchFocused]);
 
   /* dropdown outside click */
   useEffect(() => {
@@ -165,13 +210,48 @@ export default function Header({ variant = "default" }: HeaderProps) {
             <div className="flex-1" />
 
             {/* 검색 */}
-            <div className="flex items-center w-[400px] h-[44px] px-5 border-2 border-gray-300 rounded-full shrink-0">
-              <input
-                type="text"
-                placeholder="어떤 스터디를 찾고 계신가요?"
-                className="flex-1 text-base font-medium outline-none text-surface placeholder:text-gray-500 bg-transparent min-w-0"
-              />
-              <SearchIcon className="w-7 h-7 text-gray-700 shrink-0" />
+            <div className="relative shrink-0" ref={searchRef}>
+              <div className="flex items-center w-[400px] h-[44px] px-5 border-2 border-gray-300 rounded-full">
+                <input
+                  type="text"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="어떤 스터디를 찾고 계신가요?"
+                  className="flex-1 text-base font-medium outline-none text-surface placeholder:text-gray-500 bg-transparent min-w-0"
+                  onFocus={() => setSearchFocused(true)}
+                  onClick={() => setSearchFocused(true)}
+                  onKeyDown={(e) => e.key === 'Enter' && doSearch()}
+                />
+                <button onClick={doSearch}>
+                  <SearchIcon className="w-7 h-7 text-gray-700 shrink-0" />
+                </button>
+              </div>
+
+              {searchFocused && searchHistory.length > 0 && (
+                <div className="absolute left-0 top-[calc(100%+4px)] w-[400px] bg-background rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-50 overflow-hidden py-1">
+                  {searchHistory.map((item) => (
+                    <button
+                      key={item}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSearchValue(item);
+                        setSearchFocused(false);
+                        const base = location.pathname === '/local' || location.pathname.startsWith('/local/')
+                          ? '/local/search'
+                          : location.pathname === '/online' || location.pathname.startsWith('/online/')
+                          ? '/online/search'
+                          : '/search';
+                        navigate(`${base}?q=${encodeURIComponent(item)}`);
+                      }}
+                      className="w-full h-[40px] flex items-center px-2 group"
+                    >
+                      <span className="w-full h-[30px] flex items-center px-[10px] text-surface text-base rounded-[8px] group-hover:bg-gray-100">
+                        {item}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* 아이콘 */}

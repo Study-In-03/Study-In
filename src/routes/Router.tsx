@@ -40,7 +40,9 @@ export default function Router() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />
           <Route path="/local" element={<LocalStudy />} />
+          <Route path="/local/search" element={<Search />} />
           <Route path="/online" element={<OnlineStudy />} />
+          <Route path="/online/search" element={<Search />} />
           {/* 마이 스터디 페이지 - B2 담당 */}
           <Route path="/my-study" element={<MyStudy />} />
           {/* 알림 페이지 - B2 담당 */}

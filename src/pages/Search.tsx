@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { axiosInstance } from '@/api/axios';
+import { normalizeStudy } from '@/utils/study';
 import StudyCard from '@/features/study/components/StudyCard';
 import type { Study } from '@/types/study';
 import searchIcon from '@/assets/base/icon-Search.svg';
@@ -80,7 +81,8 @@ export default function Search() {
 
       const res = await axiosInstance.get('/study/', { params: urlParams });
       const data = res.data.results ?? res.data;
-      setStudies(Array.isArray(data) ? data : []);
+      const raw = Array.isArray(data) ? data : [];
+      setStudies(raw.map(normalizeStudy));
     } catch {
       setStudies([]);
     } finally {
@@ -162,7 +164,7 @@ export default function Search() {
 
       {/* 필터 패널 */}
       {filterOpen && (
-        <div className="border border-gray-300 rounded-[12px] p-[14px] mb-6 bg-background -mx-4 w-[calc(100%+32px)] h-[460px] overflow-hidden md:-mx-8 md:w-[calc(100%+64px)] md:h-[360px] md:pt-[10px] md:pl-[30px] md:pb-[30px] md:mb-[30px]">
+        <div className="border border-gray-300 rounded-[12px] p-[14px] mb-6 bg-background h-[460px] overflow-hidden md:-mx-8 md:w-[calc(100%+64px)] md:h-[360px] md:pt-[10px] md:pl-[30px] md:pb-[30px] md:mb-[30px]">
           <FilterRow label="주제">
             {SUBJECTS.map((s) => (
               <Chip key={s} label={s} selected={subjects.includes(s)} onClick={() => toggle(subjects, setSubjects, s)} />
@@ -239,7 +241,7 @@ export default function Search() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-[10px] md:gap-6 md:px-4">
               {studies.map((study) => (
                 <StudyCard key={study.id} study={study} />
               ))}

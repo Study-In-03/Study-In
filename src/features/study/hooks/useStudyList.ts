@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../api/axios";
 import { Study } from "../../../types/study";
+import { normalizeStudy } from "@/utils/study";
 
-// fix: activeTab → API study_status 파라미터 ID 매핑
+// activeTab → API study_status 파라미터 ID 매핑 (서버사이드 필터링)
 const STATUS_MAP: Record<string, number> = {
   "모집 중 스터디": 1,
   "진행 중 스터디": 3,
@@ -19,8 +20,6 @@ export const useStudyList = (category: string, searchTerm: string = "", activeTa
         setIsLoading(true);
         setError(null);
 
-        // fix1: category는 API 미지원 파라미터 → 제거
-        // fix2: study_status 필터를 서버에서 처리 (클라이언트 filter() 제거)
         const response = await axiosInstance.get("/study/", {
           params: {
             search: searchTerm || undefined,
@@ -29,9 +28,9 @@ export const useStudyList = (category: string, searchTerm: string = "", activeTa
         });
 
         const data = response.data.results || response.data;
-        const rawStudies: Study[] = Array.isArray(data) ? data : [];
+        const rawStudies = Array.isArray(data) ? data : [];
 
-        setStudies(rawStudies);
+        setStudies(rawStudies.map(normalizeStudy));
       } catch (err) {
         setError("스터디 목록을 불러오는 데 실패했습니다.");
         console.error("API Error:", err);

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Study } from "../../../types/study";
 import { likeStudy, unlikeStudy } from "@/api/study";
-import { getFullUrl } from "@/api/upload";
-import iconRecruiting from "@/assets/base/icon-모집중.svg";
-import defaultThumbnail from "@/assets/base/User-Profile-L.svg";
+import { STATUS_COLOR } from "@/constants/study";
+import IconSpeaker from "@/assets/base/icon-speaker.svg?react";
+import IconPeople from "@/assets/base/icon-people.svg?react";
 import HeartIcon from "@/assets/base/icon-heart.svg?react";
 import HeartFillIcon from "@/assets/base/icon-heart-fill.svg?react";
+import defaultThumbnail from "@/assets/base/User-Profile-L.svg";
 
 interface StudyCardProps {
   study: Study;
@@ -14,8 +15,7 @@ interface StudyCardProps {
 
 const StudyCard = ({ study }: StudyCardProps) => {
   const navigate = useNavigate();
-
-  const [isLiked, setIsLiked] = useState(study.user_liked ?? false);
+  const [isLiked, setIsLiked] = useState(study.is_liked);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -40,86 +40,78 @@ const StudyCard = ({ study }: StudyCardProps) => {
     }
   };
 
-  const statusName = study.study_status?.name ?? "";
-
-  const statusColors: Record<string, string> = {
-    "모집 중": "bg-primary",
-    "모집 완료": "bg-warning",
-    "진행 중": "bg-warning",
-    "완료": "bg-gray-400",
-  };
-
-  const thumbnailSrc = study.thumbnail
-    ? getFullUrl(study.thumbnail)
-    : defaultThumbnail;
-
   return (
     <div
       onClick={() => navigate(`/study/${study.id}`)}
-      className="flex flex-col bg-white rounded-[24px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer"
+      className="flex flex-col bg-background border border-gray-300 rounded-[10px] overflow-hidden cursor-pointer"
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center gap-1.5">
-          {statusName === "모집 중" ? (
-            <img src={iconRecruiting} alt="모집 중" className="w-24 h-8" />
-          ) : (
-            <span className={`px-3 py-1 text-xs text-background rounded-full ${statusColors[statusName] ?? "bg-gray-400"}`}>
-              {statusName}
-            </span>
-          )}
+      {/* 상단: 상태 뱃지 + 지역 태그 */}
+      <div className="flex items-center justify-between px-[10px] h-[38px] shrink-0">
+        <div className="flex items-center gap-1">
+          <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
+          <span className={`text-sm font-bold ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
+            {study.status === "모집 중" ? "모집 중!" : study.status}
+          </span>
         </div>
-        <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-          {study.study_location?.location ?? "온라인"}
+        <span className="text-xs bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700">
+          {study.location ?? "온라인"}
         </span>
       </div>
 
-      {/* 스터디 썸네일 */}
-      <div className="relative aspect-[1/1] bg-[#F4F6F8] flex items-center justify-center overflow-hidden">
+      {/* 썸네일 */}
+      <div className="relative aspect-square bg-gray-100 border-y border-gray-300 shrink-0">
         <img
-          src={thumbnailSrc}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+          src={study.thumbnail || defaultThumbnail}
+          onError={(e) => { e.currentTarget.src = defaultThumbnail; }}
+          className={study.thumbnail ? "w-full h-full object-cover" : "absolute inset-0 m-auto w-2/3 h-2/3 object-contain opacity-40"}
           alt="스터디 썸네일"
         />
-
+        {/* 종료 오버레이 */}
+        {study.status === "종료" && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <span className="text-background text-sm font-medium">완료된 스터디입니다 :)</span>
+          </div>
+        )}
+        {/* 하트 버튼 */}
         <button
           aria-label={isLiked ? "관심 스터디 해제" : "관심 스터디 추가"}
           onClick={handleLike}
           disabled={isLikeLoading}
-          className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+          className="absolute bottom-3 right-[10px] w-8 h-8 bg-white rounded-full flex items-center justify-center drop-shadow-[2px_2px_6px_rgba(0,0,0,0.1)]"
         >
           {isLiked ? (
-            <HeartFillIcon className="w-6 h-6 text-error" />
+            <HeartFillIcon className="w-[22px] h-[22px] text-error" />
           ) : (
-            <HeartIcon className="w-6 h-6 text-gray-300" />
+            <HeartIcon className="w-[22px] h-[22px] text-gray-300" />
           )}
         </button>
       </div>
 
-      {/* 하단 텍스트 정보 */}
-      <div className="p-5 flex flex-col flex-1 border-t border-gray-100">
-        <div className="flex gap-2 mb-3">
-          {study.subject && (
-            <span className="px-3 py-1 border border-gray-200 text-gray-500 text-xs rounded-full">
-              {study.subject.name}
-            </span>
-          )}
-          {study.difficulty && (
-            <span className="px-3 py-1 border border-gray-200 text-gray-500 text-xs rounded-full">
-              {study.difficulty.name}
-            </span>
-          )}
-        </div>
+      {/* 태그 (주제 + 난이도) */}
+      <div className="flex gap-1 px-[10px] mt-[10px] flex-wrap">
+        {study.topic && (
+          <span className="text-xs border border-gray-300 rounded-full px-[10px] py-[2px] text-gray-700">
+            {study.topic}
+          </span>
+        )}
+        {study.difficulty && (
+          <span className="text-xs border border-gray-300 rounded-full px-[10px] py-[2px] text-gray-700">
+            {typeof study.difficulty === 'object' ? study.difficulty.name : study.difficulty}
+          </span>
+        )}
+      </div>
 
-        <h3 className="text-[17px] font-bold text-gray-900 mb-4 line-clamp-2 leading-[1.4] h-12">
-          {study.title}
-        </h3>
+      {/* 제목 */}
+      <p className="px-[10px] mt-[10px] text-sm font-medium text-surface line-clamp-2 leading-5">
+        {study.title}
+      </p>
 
-        <div className="mt-auto flex items-center text-sm text-gray-500">
-          <svg className="w-4 h-4 mr-1.5 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-          </svg>
-          <span>현재 <b className="text-primary font-bold">{study.participant_count ?? 0}명</b>이 신청했어요.</span>
-        </div>
+      {/* 참여 인원 */}
+      <div className="flex items-center gap-1 px-[10px] mt-auto pt-2 pb-3">
+        <IconPeople className="w-[14px] h-[14px] text-gray-500 shrink-0" />
+        <span className="text-sm text-gray-500">
+          현재 <b className="text-primary font-medium">{study.current_participants}명</b>이 신청했어요.
+        </span>
       </div>
     </div>
   );

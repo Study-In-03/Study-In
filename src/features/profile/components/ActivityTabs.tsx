@@ -71,7 +71,8 @@ const ActivityTabs = () => {
 
   return (
     <div className="px-4 py-3">
-  <div className="border border-gray-300 rounded-xl p-4 flex flex-col gap-4">
+
+      <div className="border border-gray-300 rounded-xl p-4 flex flex-col gap-4">
         <div className="flex items-center justify-center gap-2 flex-wrap">
           {(['my', 'joined', 'ended', 'liked'] as const).map((tab) => (
             <button
@@ -127,15 +128,15 @@ const ActivityTabs = () => {
                   <div
                     key={study.id}
                     onClick={() => navigate(`/study/${study.id}`)}
-                    className="flex flex-col bg-white rounded-[24px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer"
+                    className="flex flex-col bg-background rounded-[24px] border border-gray-300 overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer"
                   >
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                       <img src={iconRecruiting} alt="모집중" className="w-20 h-7" />
-                      <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                      <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                         {locationName}
                       </span>
                     </div>
-                    <div className="relative aspect-square bg-[#F4F6F8] flex items-center justify-center overflow-hidden">
+                    <div className="relative aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
                       {study.thumbnail ? (
                         <img
                           src={study.thumbnail}
@@ -154,7 +155,7 @@ const ActivityTabs = () => {
                           e.stopPropagation()
                           toggleLike(study.id)
                         }}
-                        className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                        className="absolute bottom-4 right-4 w-10 h-10 bg-background rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
                       >
                         {likedStudies.includes(study.id) ? (
                           <HeartFillIcon className="w-5 h-5 text-error" />
@@ -166,12 +167,12 @@ const ActivityTabs = () => {
                     <div className="p-4 flex flex-col flex-1 border-t border-gray-100">
                       <div className="flex gap-2 mb-2 flex-wrap">
                         {study.subject && (
-                          <span className="px-2 py-0.5 border border-gray-200 text-gray-500 text-xs rounded-full">
+                          <span className="px-2 py-0.5 border border-gray-300 text-gray-500 text-xs rounded-full">
                             {study.subject.name}
                           </span>
                         )}
                         {study.difficulty && (
-                          <span className="px-2 py-0.5 border border-gray-200 text-gray-500 text-xs rounded-full">
+                          <span className="px-2 py-0.5 border border-gray-300 text-gray-500 text-xs rounded-full">
                             {study.difficulty.name}
                           </span>
                         )}
@@ -180,7 +181,7 @@ const ActivityTabs = () => {
                         {study.title}
                       </h3>
                       <div className="mt-auto flex items-center gap-1">
-                        <PeopleIcon className="w-4 h-4 text-gray-400" />
+                        <PeopleIcon className="w-4 h-4 text-gray-500" />
                         <span className="text-xs text-gray-500">
                           현재 <span className="text-primary font-bold">{study.current_participants ?? 0}명</span>이 신청했어요.
                         </span>
@@ -189,6 +190,7 @@ const ActivityTabs = () => {
                   </div>
                 ))}
               </div>
+
               <div className="flex justify-center items-center gap-4 py-2">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

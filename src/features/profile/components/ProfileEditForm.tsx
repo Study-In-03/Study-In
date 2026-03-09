@@ -143,8 +143,8 @@ const ProfileEditForm = () => {
     <div className="flex flex-col py-3 gap-4 bg-background w-full">
 
       <div className="flex flex-col border border-gray-300 rounded-xl overflow-hidden">
-        <div className="flex flex-col items-center gap-3 px-6 py-6">
 
+        <div className="flex flex-col items-center gap-3 px-6 py-6">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
               {profileImg ? (
@@ -168,7 +168,6 @@ const ProfileEditForm = () => {
               className="hidden"
             />
           </div>
-
           <div className="flex flex-col gap-1 items-center w-full max-w-xs">
             <div className="flex items-center gap-2 w-full border-b border-gray-300 pb-1">
               <input
@@ -205,14 +204,13 @@ const ProfileEditForm = () => {
         </div>
 
         <div className="w-full border-t border-gray-300" />
-
         <div className="flex flex-col gap-4 px-6 py-5">
-
           <div className="flex items-center">
             <span className="text-sm font-medium text-gray-700 w-24 shrink-0">이메일(ID)</span>
             <span className="text-sm text-gray-500">{email}</span>
           </div>
 
+  
           <div className="flex items-center">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0">
               이름 <span className="text-error">*</span>
@@ -222,9 +220,10 @@ const ProfileEditForm = () => {
               placeholder="이름 입력"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary"
+              className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary"
             />
           </div>
+
 
           <div className="flex items-center">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0">
@@ -236,7 +235,7 @@ const ProfileEditForm = () => {
                 placeholder="010-0000-0000"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary"
+                className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary"
               />
               <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0">
                 인증
@@ -244,6 +243,7 @@ const ProfileEditForm = () => {
             </div>
           </div>
 
+    
           <div className="flex items-center">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0">내 지역</label>
             <div className="flex gap-2">
@@ -252,13 +252,15 @@ const ProfileEditForm = () => {
                 placeholder="지역 입력"
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
-                className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary"
+                className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-primary"
               />
               <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0">
                 재인증
               </button>
             </div>
           </div>
+
+
           <div className="flex items-start">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0 pt-1.5">
               GitHub<br />User Name
@@ -270,7 +272,7 @@ const ProfileEditForm = () => {
                   placeholder="GitHub 아이디"
                   value={github}
                   onChange={(e) => setGithub(e.target.value)}
-                  className={`w-72 border rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none ${
+                  className={`w-72 border rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none ${
                     github && !isGithubValid ? 'border-error' : 'border-gray-300 focus:border-primary'
                   }`}
                 />
@@ -294,6 +296,7 @@ const ProfileEditForm = () => {
               )}
             </div>
           </div>
+
           <div className="flex items-start">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0 pt-2">관심 분야 태그</label>
             <div className="flex flex-col gap-2 flex-1">
@@ -316,7 +319,7 @@ const ProfileEditForm = () => {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addCustomTag()}
                   disabled={selectedTags.length >= 5}
-                  className="flex-1 min-w-20 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent"
+                  className="flex-1 min-w-20 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none bg-transparent"
                 />
               </div>
               <div className="flex flex-wrap gap-2">

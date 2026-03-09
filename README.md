@@ -496,7 +496,7 @@ npm run dev
 |          ![](img src="이미지URL" width="100" height="100")          | **강수정**(팀원) | 역할 추후 수정 |                                |                       | 회고 추후 수정 |
 |          ![](img src="이미지URL" width="100" height="100")          | **강주현**(팀원) | 역할 추후 수정 |                                |                       | 회고 추후 수정 |
 |          ![](img src="이미지URL" width="100" height="100")          | **권하리**(팀원) | 역할 추후 수정 |                                |                       | 회고 추후 수정 |
-| <img src="@/assets/EditorPhoto/B2.png" className="w-24 h-24 rounded-full object-cover" alt="프로필 이미지"/> | **박외숙**(팀원) | 담당한 기능    |
+| <img src="src/assets/EditorPhoto/B2.png" className="w-24 h-24 rounded-full object-cover" alt="프로필 이미지"/> | **박외숙**(팀원) | 담당한 기능    |
 
 - 메인 페이지(Home) UI 구현
 - StudyCard 컴포넌트 디자인 및 반응형 레이아웃 구현

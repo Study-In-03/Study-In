@@ -21,6 +21,7 @@ import Search from '@/pages/Search';
 import LocalStudy from "@/pages/LocalStudy";
 import OnlineStudy from "@/pages/OnlineStudy";
 import Modal from '@/components/common/Modal';
+import NotFound from "@/pages/NotFound";
 
 function PrivateRoute() {
     const { isLoggedIn } = useAuthStore();
@@ -65,8 +66,10 @@ export default function Router() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-        </Route>
+          </Route>
+          <Route path="*" element={<NotFound />} />
       </Routes>
+      
     </BrowserRouter>
   );
 }

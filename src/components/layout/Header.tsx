@@ -112,13 +112,13 @@ export default function Header({ variant = "default" }: HeaderProps) {
         {/* ── 모바일 헤더 ── */}
         <div className="flex md:hidden items-center justify-between h-14 px-4">
           <button onClick={() => setDrawerOpen(true)} aria-label="메뉴 열기">
-            <HamburgerIcon className="w-7 h-7 text-surface hover:text-primary-light" />
+            <HamburgerIcon className="w-7 h-7 text-surface" />
           </button>
           <Link to="/" className="flex items-center">
             <LogoIcon className="h-[22px] w-auto" />
           </Link>
           <button onClick={() => navigate('/chat')} className="relative" aria-label="채팅 확인">
-            <ChattingIcon className="w-[30px] h-[30px] text-surface hover:text-primary-light" />
+            <ChattingIcon className="w-[30px] h-[30px] text-surface" />
             {isLoggedIn && unreadCount > 0 && (
               <span className="absolute bottom-0.5 right-0 w-[10px] h-[10px] bg-error rounded-full" />
             )}
@@ -127,28 +127,38 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
         {/* ── 데스크탑 헤더 ── */}
         <div className="hidden md:flex items-center h-[80px]">
-          <div className="flex items-center w-full max-w-[1190px] mx-auto">
+          <div className="flex items-center w-full max-w-[1190px] mx-auto h-full">
 
             <Link to="/" className="shrink-0 flex items-center">
-              <LogoIcon className="h-[32px] w-auto text-surface hover:text-primary-light" />
+              <LogoIcon className="h-[32px] w-auto text-surface" />
             </Link>
 
-            <nav className="flex items-center shrink-0 ml-[40px] gap-[30px]">
+            <nav className="flex self-stretch items-stretch shrink-0 ml-[40px] gap-[30px]">
               <NavLink
                 to="/local"
                 className={({ isActive }) =>
-                  `text-lg transition-colors ${isActive ? 'font-bold text-primary' : 'font-regular text-surface hover:text-primary-light'}`
+                  `relative flex items-center text-lg transition-colors ${isActive ? 'font-bold text-surface' : 'font-regular text-surface'}`
                 }
               >
-                내 지역
+                {({ isActive }) => (
+                  <>
+                    내 지역
+                    {isActive && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60px] h-[4px] bg-primary" />}
+                  </>
+                )}
               </NavLink>
               <NavLink
                 to="/online"
                 className={({ isActive }) =>
-                  `text-lg transition-colors ${isActive ? 'font-bold text-primary' : 'font-regular text-surface hover:text-primary-light'}`
+                  `relative flex items-center text-lg transition-colors ${isActive ? 'font-bold text-surface' : 'font-regular text-surface'}`
                 }
               >
-                온라인
+                {({ isActive }) => (
+                  <>
+                    온라인
+                    {isActive && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60px] h-[4px] bg-primary" />}
+                  </>
+                )}
               </NavLink>
             </nav>
 
@@ -167,14 +177,14 @@ export default function Header({ variant = "default" }: HeaderProps) {
             {/* 아이콘 */}
             <div className="flex items-center ml-[32px] gap-[20px] shrink-0">
               <button onClick={() => navigate('/chat')} aria-label="채팅 페이지 이동">
-                <ChattingIcon className="w-[30px] h-[30px] text-surface hover:text-primary-light" />
+                <ChattingIcon className="w-[30px] h-[30px] text-surface" />
               </button>
               <button
                 className="relative"
                 onClick={() => navigate(isLoggedIn ? '/notification' : '/login')}
                 aria-label="알림 페이지 이동"
               >
-                <NotificationIcon className="w-[30px] h-[30px] text-surface hover:text-primary-light" />
+                <NotificationIcon className="w-[30px] h-[30px] text-surface" />
                 {isLoggedIn && unreadCount > 0 && (
                   <span className="absolute bottom-0.5 right-0 w-[10px] h-[10px] bg-error rounded-full" />
                 )}
@@ -183,7 +193,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
               {/* 프로필 + 드롭다운 */}
               <div className="relative shrink-0" ref={dropdownRef}>
                 <button
-                  className="w-[44px] h-[44px] rounded-full border-2 border-gray-300 overflow-hidden block"
+                  className={`w-[44px] h-[44px] rounded-full border-2 overflow-hidden block ${dropdownOpen ? 'border-primary' : 'border-gray-300'}`}
                   onClick={() => isLoggedIn ? setDropdownOpen((prev) => !prev) : navigate("/login")}
                 >
                   {isLoggedIn && profileImg ? (

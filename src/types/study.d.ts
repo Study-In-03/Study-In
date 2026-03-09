@@ -45,10 +45,10 @@ export interface Study {
   thumbnail: string;
   title: string;
   is_offline: boolean;
-  location: string | null;
-  difficulty: '초급' | '중급' | '고급';
-  topic: string;
-  status: '모집 중' | '모집 완료' | '진행 중' | '종료';
-  current_participants: number;
-  is_liked: boolean;
+  study_location: { id: number; sort_order: number; location: string } | null;
+  difficulty: { id: number; name: string };
+  subject: { id: number; name: string };
+  study_status: { id: number; name: string };
+  participant_count: number;
+  user_liked: boolean;
 }

@@ -87,7 +87,6 @@ function StudyEditInner({
       setIsSubmitting(true);
       setApiError(null);
 
-      // 오프라인 스터디: 스터디 지역 또는 프로필 지역 중 하나 필요
       const effectiveLocationId = locationId ?? profileLocationId;
       if (formState.studyType === "offline" && !effectiveLocationId) {
         setApiError("오프라인 스터디 수정을 위해 프로필에서 지역을 먼저 설정해주세요.");
@@ -291,7 +290,7 @@ export default function StudyEdit() {
     Promise.all([getStudy(Number(studyId)), fetchProfile])
       .then(([data, profile]) => {
         setInitialValues(mapStudyApiToForm(data));
-        setCurrentParticipants(data.current_participants);
+        setCurrentParticipants(data.participants.length);
         setLocationId(data.study_location?.id);
         setExistingThumbnailUrl(data.thumbnail);
         if (profile?.preferred_region) {

@@ -51,7 +51,7 @@ export default function LocalStudy() {
     <div className="max-w-[1190px] mx-auto px-4 py-10 min-h-[600px]">
       {/* 헤더 */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-surface">내 지역 스터디</h1>
+        <h1 className="text-2xl md:text-[30px] font-bold text-surface">내 지역 스터디</h1>
 
         {/* 드롭다운 버튼 (지역 인증 시에만 표시) */}
         {region && (

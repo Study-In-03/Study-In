@@ -13,28 +13,25 @@ export const useLogin = () => {
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    setApiError(null); // 에러 초기화
+    setApiError(null);
 
     try {
-      // API 호출
       const data = await loginApi({ email, password });
 
-      // 스토리지에 토큰 및 사용자 ID 저장
       storage.setAccessToken(data.access_token);
       storage.setRefreshToken(data.refresh_token);
       storage.setUserId(data.user.pk);
       storage.setEmail(email);
-      setLogin();
+      setLogin({ pk: data.user.pk, email: email, nickname: '' });
 
-      // 준회원이면 프로필 생성 페이지로, 정회원이면 메인으로
+      // 준회원 → 프로필 생성 페이지, 정회원 → 메인
       try {
         const { is_associate_member } = await getMemberType();
-        navigate(is_associate_member ? "/" : "/profile/edit");
+        navigate(is_associate_member ? "/profile/edit" : "/");
       } catch {
         navigate("/");
       }
     } catch (error: any) {
-      // 실패 시 에러 핸들링
       const errorMessage =
         error.response?.data?.error ||
         "로그인에 실패했습니다. 다시 시도해주세요.";

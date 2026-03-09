@@ -26,7 +26,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     const {
         isLoading, apiError, setApiError,
         isDuplicateChecked, isCodeSent, isVerified,
-        checkDuplicate, sendVerificationCode, verifyCode
+        checkDuplicate, sendVerificationCode, verifyCode,
+        register,
     } = useRegister();
 
     // 이메일 입력 핸들러
@@ -57,7 +58,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setPasswordConfirm(value);
-
+        
         if (value.length === 0) setConfirmError('');
         else if (password !== value) setConfirmError('비밀번호가 일치하지 않습니다.');
         else setConfirmError('');
@@ -99,11 +100,9 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         !confirmError;
     
     const handleSubmit = async () => {
-        // 백엔드 회원가입 API 호출 로직
-        // const result = await api.register({ email, password });
-        
-        // API 호출이 성공 가정
-        onSuccess(); 
+        if (!isReadyToSubmit || isLoading) return;
+        const success = await register(email, password);
+        if (success) onSuccess();
     };
 
     return (

@@ -89,14 +89,14 @@ export default function StudyProfileCard({
                   alt="스터디"
                 />
                 <div className="flex flex-col justify-center overflow-hidden">
-                  <div className="flex items-center gap-1 font-semibold">
+                  <div className="flex items-center gap-1 font-medium">
                     <IconSpeaker className={`w-3 h-3 shrink-0 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
                     <span className={`text-[12px] ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
                       {study.status === "모집 중" ? "모집 중!" : study.status}
                       {study.dDay && ` (${study.dDay})`}
                     </span>
                   </div>
-                  <p className="text-[14px] font-bold truncate">{study.title}</p>
+                  <p className="text-[14px] font-medium truncate">{study.title}</p>
                 </div>
               </div>
             ))}

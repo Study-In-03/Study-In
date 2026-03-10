@@ -172,14 +172,14 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             스터디인 홈
           </Link>
           <Link
-            to="/?type=local"
+            to="/local"
             onClick={onClose}
             className="px-[30px] py-[15px] text-sm text-surface"
           >
             내지역 스터디
           </Link>
           <Link
-            to="/?type=online"
+            to="/online"
             onClick={onClose}
             className="px-[30px] py-[15px] text-sm text-surface"
           >

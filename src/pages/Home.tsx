@@ -96,13 +96,13 @@ export default function Home() {
                       {/* 상태 뱃지 */}
                       <div className="flex items-center gap-1 mt-2">
                         <IconSpeaker className={`w-4 h-4 shrink-0 ${STATUS_COLOR[study.study_status.name] ?? "text-gray-400"}`} />
-                        <span className={`text-xs font-bold ${STATUS_COLOR[study.study_status.name] ?? "text-gray-400"}`}>
+                        <span className={`text-sm font-bold ${STATUS_COLOR[study.study_status.name] ?? "text-gray-400"}`}>
                           {study.study_status.name === "모집 중" ? "모집 중!" : study.study_status.name}
                           {calcDDay(study.start_date, study.end_date) && ` (${calcDDay(study.start_date, study.end_date)})`}
                         </span>
                       </div>
                       {/* 제목 */}
-                      <p className="text-sm font-medium text-surface mt-1 line-clamp-2 leading-5">{study.title}</p>
+                      <p className="text-base font-medium text-surface mt-1 line-clamp-2 leading-5">{study.title}</p>
                     </div>
                   ))}
                 </div>
@@ -182,14 +182,14 @@ export default function Home() {
                           className="w-[50px] h-[50px] object-contain"
                         />
                       </div>
-                      <span className="text-[14px] font-semibold text-gray-600 group-hover:text-primary">
+                      <span className="text-base font-semibold text-gray-500 group-hover:text-primary">
                         {category.name}
                       </span>
                     </button>
                   ))}
                 </div>
                 <div className="space-y-6 mt-12">
-                  <h2 className="text-2xl font-bold text-gray-900">스터디 둘러보기</h2>
+                  <h2 className="text-2xl font-bold text-surface">스터디 둘러보기</h2>
                   <div className="flex gap-3">
                     {["최신 스터디", "모집 중 스터디", "진행 중 스터디"].map((tab) => (
                       <button
@@ -209,6 +209,7 @@ export default function Home() {
                     activeTab={activeTab}
                     selectedCategory="전체"
                     searchTerm=""
+                    cols={3}
                   />
                 </div>
               </>

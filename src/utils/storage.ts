@@ -25,11 +25,17 @@ export const storage = {
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(USER_ID_KEY);
         localStorage.removeItem(USER_EMAIL_KEY);
+        localStorage.removeItem('nickname');
     },
 
     // 이메일 관리
     getEmail: () => localStorage.getItem(USER_EMAIL_KEY),   
     setEmail: (email: string) => localStorage.setItem(USER_EMAIL_KEY, email),
     removeEmail: () => localStorage.removeItem(USER_EMAIL_KEY),
+
+    // 닉네임 관리
+    getNickname: () => localStorage.getItem('nickname'),
+    setNickname: (nickname: string) => localStorage.setItem('nickname', nickname),
+    removeNickname: () => localStorage.removeItem('nickname'),
 
 };

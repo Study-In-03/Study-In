@@ -22,10 +22,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAssociateMember: false,          
 
   user: storage.getUserId()
-    ? { pk: storage.getUserId()!, email: storage.getEmail() ?? '', nickname: '' }
+    ? { pk: storage.getUserId()!, email: storage.getEmail() ?? '', nickname: storage.getNickname() ?? '' }
     : null,
 
-  login: (userData) => set({ isLoggedIn: true, user: userData }),
+  login: (userData) => {
+    if (userData.nickname) storage.setNickname(userData.nickname);
+    set({ isLoggedIn: true, user: userData });
+  },
   logout: () => {
     storage.clearAuth();
     set({ isLoggedIn: false, user: null, isAssociateMember: false });

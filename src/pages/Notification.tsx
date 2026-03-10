@@ -160,27 +160,6 @@ const Notification = () => {
         {renderContent()}
       </div>
 
-      {/* 페이지네이션 */}
-      <div className="flex justify-center items-center gap-4 mt-2">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className={currentPage === 1 ? 'text-gray-300' : 'text-gray-500'}
-        >
-          <LeftIcon className="w-4 h-4" />
-        </button>
-        <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">
-          {currentPage}
-        </span>
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(Math.max(totalPages, 1), p + 1))}
-          disabled={currentPage === totalPages || totalPages === 0}
-          className={currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-500'}
-        >
-          <RightIcon className="w-4 h-4" />
-        </button>
-      </div>
-
     </div>
   )
 }

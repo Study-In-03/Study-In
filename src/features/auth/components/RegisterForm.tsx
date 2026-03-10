@@ -84,7 +84,14 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     // 인증 코드 검증
     const handleVerifyCode = async () => {
-        if (code.length !== 6) return;
+        if (code.length === 0) {
+            setApiError('인증번호를 입력해 주세요.');
+            return;
+        }
+        if (code.length !== 6) {
+            setApiError('인증번호 6자리를 입력해 주세요.');
+            return;
+        }
         const success = await verifyCode(email, code);
         if (success) {
             alert('이메일 인증이 완료되었습니다.');
@@ -158,20 +165,26 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                             <div className="flex gap-2">
                                 <input
                                     type="text"
-                                    
                                     maxLength={6}
                                     value={code}
                                     onChange={(e) => {
                                         setCode(e.target.value);
                                         if (apiError) setApiError(null);
                                     }}
+                                    onBlur={() => {
+                                        if (!isVerified && code.length === 0) {
+                                            setApiError('이 필드는 필수 항목입니다.');
+                                        }
+                                    }}
                                     disabled={isVerified}
-                                    className={`flex-1 border rounded-[8px] border-gray-300 px-4 py-2 text-lg focus:outline-none transition-colors disabled:bg-background focus:border-primary`}
+                                    className={`flex-1 border rounded-[8px] px-4 py-2 text-lg focus:outline-none transition-colors disabled:bg-background ${
+                                        apiError ? 'border-error' : 'border-gray-300 focus:border-primary'
+                                    }`}
                                 />
                                 <button
                                     type="button"
                                     onClick={handleVerifyCode}
-                                    disabled={code.length !== 6 || isLoading || isVerified}
+                                    disabled={isLoading || isVerified}
                                     className={`w-[70px] shrink-0 rounded-[8px] py-2 text-base font-medium transition-colors ${
                                         code.length === 6 && !isVerified
                                             ? 'bg-primary text-background hover:bg-primary-light'

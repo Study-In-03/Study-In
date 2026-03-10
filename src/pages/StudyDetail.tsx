@@ -6,7 +6,7 @@ import { StudyApiData, likeStudy, unlikeStudy } from '@/api/study';
 import { useAssociateGuard } from '@/hooks/useAssociateGuard';
 import { getFullUrl } from '@/api/upload';
 
-import iconRecruiting from "@/assets/base/icon-모집중.svg";
+import SpeakerIcon from "@/assets/base/icon-speaker.svg?react";
 import HeartIcon from "@/assets/base/icon-heart.svg?react";
 import HeartFillIcon from "@/assets/base/icon-heart-fill.svg?react";
 import ShareIcon from "@/assets/base/icon-Share.svg?react";
@@ -93,7 +93,7 @@ export default function StudyDetail() {
   const SideCard = () => (
     <div className="border border-gray-300 rounded-xl overflow-hidden">
       <div className="bg-primary px-4 py-3 flex items-center justify-between">
-        <img src={iconRecruiting} alt="모집중" className="h-7" />
+        <SpeakerIcon className="h-7 w-7 text-background" />
         <span className="text-background text-sm font-medium">{studyDetail.study_status.name}</span>
       </div>
       <div className="p-4 flex flex-col gap-4">
@@ -189,7 +189,7 @@ export default function StudyDetail() {
                 <h2 className="text-lg font-bold text-gray-900 mb-4">그룹장 소개</h2>
                 <div className="flex gap-4 cursor-pointer" onClick={() => navigate(`/profile/${studyDetail.leader.id}`)}>
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                    {leaderImgUrl ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-200" />}
+                    {leaderImgUrl ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-100" />}
                   </div>
                   <div className="flex flex-col justify-center gap-1">
                     <div className="flex items-center gap-2">
@@ -249,7 +249,7 @@ export default function StudyDetail() {
           <div className="rounded-xl border border-gray-300 overflow-hidden">
             {/* 모집중 헤더 */}
             <div className="bg-primary px-4 py-3 flex items-center gap-3">
-              <img src={iconRecruiting} alt="모집중" className="h-7" />
+              <SpeakerIcon className="h-7 w-7 text-background" />
             </div>
 
             <div className="p-4 flex flex-col gap-3">
@@ -308,7 +308,7 @@ export default function StudyDetail() {
             <h2 className="text-lg font-bold text-gray-900 mb-3">그룹장 소개</h2>
             <div className="flex gap-3 cursor-pointer" onClick={() => navigate(`/profile/${studyDetail.leader.id}`)}>
               <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                {leaderImgUrl ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-200" />}
+                {leaderImgUrl ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-100" />}
               </div>
               <div className="flex flex-col justify-center gap-1">
                 <div className="flex items-center gap-2 flex-wrap">

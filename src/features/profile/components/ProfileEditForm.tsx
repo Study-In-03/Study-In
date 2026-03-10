@@ -334,7 +334,10 @@ const ProfileEditForm = () => {
                     {region.location}
                   </option>
                 ))}
-            </select>
+           </select>
+            <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0">
+              재인증
+            </button>
           </div>
 
           {/* GitHub */}
@@ -432,8 +435,8 @@ const ProfileEditForm = () => {
 
       {apiError && <p className="text-sm text-error text-center">{apiError}</p>}
 
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1" />
+      {/* 모바일: 둘다 중앙, 탈퇴 아래 / 웹: 저장 중앙, 탈퇴 오른쪽 끝 */}
+      <div className="flex flex-col items-center gap-6 px-2 md:flex-row md:justify-center md:gap-3 md:relative">
         <button
           onClick={handleSave}
           disabled={!isSaveEnabled || isSaving}
@@ -445,19 +448,17 @@ const ProfileEditForm = () => {
         >
           {isSaving ? "저장 중..." : "저장하기"}
         </button>
-        <div className="flex-1 flex justify-end">
-          <a
-            href="https://weniv.world"
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-gray-500 underline"
-          >
-            위니브월드 탈퇴하기
-          </a>
-        </div>
+        <a
+          href="https://weniv.world"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-gray-500 underline md:absolute md:right-2"
+        >
+          위니브월드 탈퇴하기
+        </a>
       </div>
     </div>
   );
 };
 
-export default ProfileEditForm;
+export default ProfileEditForm;          

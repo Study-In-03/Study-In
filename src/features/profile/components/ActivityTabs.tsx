@@ -5,6 +5,7 @@ import HeartFillIcon from '@/assets/base/icon-heart-fill.svg?react'
 import PeopleIcon from '@/assets/base/icon-people.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
 import RightIcon from '@/assets/base/icon-right.svg?react'
+import SpeakerIcon from '@/assets/base/icon-speaker.svg?react'
 import { likeStudy, unlikeStudy } from '@/api/study'
 import { useMyStudies } from '../hooks/useMyStudies'
 import { useAssociateGuard } from '@/hooks/useAssociateGuard'
@@ -73,7 +74,6 @@ const ActivityTabs = ({ locationName = '-' }: ActivityTabsProps) => {
   return (
     <div className="px-4 py-3">
 
-      {/* 탭 버튼 - 2x2 그리드 */}
       <div className="border border-gray-300 rounded-xl overflow-hidden grid grid-cols-2">
         <button
           onClick={() => handleTab('my')}
@@ -141,7 +141,6 @@ const ActivityTabs = ({ locationName = '-' }: ActivityTabsProps) => {
           </div>
         ) : (
           <>
-            {/* 카드 그리드 - 모바일 2열 / 웹 3열 */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-5 px-2 pb-3 mt-4">
               {pagedStudies.map((study) => (
                 <div
@@ -150,7 +149,10 @@ const ActivityTabs = ({ locationName = '-' }: ActivityTabsProps) => {
                   onClick={() => navigate(`/study/${study.id}`)}
                 >
                   <div className="flex justify-between items-center px-2 pt-2 pb-1">
-                    <span className="text-xs font-medium text-primary">모집중</span>
+                    <div className="flex items-center gap-1">
+                      <SpeakerIcon className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-medium text-primary">모집중</span>
+                    </div>
                     <span className="text-xs text-gray-900 bg-gray-100 rounded-full px-2 py-0.5">
                       {locationName}
                     </span>

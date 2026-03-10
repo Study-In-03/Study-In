@@ -14,6 +14,7 @@ import { storage } from "@/utils/storage";
 import { useAuthStore } from "@/store/authStore";
 import ImageIcon from "@/assets/base/icon-Image.svg?react";
 import CheckIcon from "@/assets/base/icon-Check.svg?react";
+import CheckFillIcon from "@/assets/base/icon-Check-fill.svg?react";
 import iconBtnX from "@/assets/base/icon-btn-X.svg";
 
 const TAG_OPTIONS = [
@@ -43,6 +44,8 @@ const ProfileCreateForm = () => {
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [nicknameMessage, setNicknameMessage] = useState<string | null>(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [isNicknameFocused, setIsNicknameFocused] = useState(false);
+  const [isNicknameTouched, setIsNicknameTouched] = useState(false);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -52,6 +55,7 @@ const ProfileCreateForm = () => {
   const [tagInput, setTagInput] = useState("");
   const [isTagFocused, setIsTagFocused] = useState(false);
   const [isRegionUnlocked, setIsRegionUnlocked] = useState(false);
+  const [isGithubLinked, setIsGithubLinked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -113,6 +117,18 @@ const ProfileCreateForm = () => {
     isGithubValid &&
     name !== "" &&
     phone !== "";
+
+  // 닉네임 입력 시 500ms debounce 자동 중복 체크
+  useEffect(() => {
+    if (!isNicknameValid) return;
+    const timer = setTimeout(async () => {
+      const result = await checkNickname(nickname);
+      setIsNicknameChecked(true);
+      setIsNicknameAvailable(result.available);
+      setNicknameMessage(result.message);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [nickname, isNicknameValid]);
 
   const handleCheckNickname = async () => {
     const result = await checkNickname(nickname);
@@ -234,32 +250,42 @@ const ProfileCreateForm = () => {
                 <input
                   type="text"
                   value={nickname}
-                  placeholder="닉네임"
+                  placeholder="별명을 입력해 주세요."
                   onChange={(e) => {
                     setNickname(e.target.value);
                     setIsNicknameChecked(false);
                     setIsNicknameAvailable(false);
                     setNicknameMessage(null);
                   }}
-                  className="w-full border-b-2 border-primary py-2 text-base text-surface text-center bg-transparent focus:outline-none placeholder:text-gray-500"
+                  onFocus={() => setIsNicknameFocused(true)}
+                  onBlur={() => { setIsNicknameFocused(false); setIsNicknameTouched(true); }}
+                  className={`w-full border-b-2 ${
+                    (isNicknameTouched && !nickname) || (isNicknameChecked && !isNicknameAvailable)
+                      ? 'border-error'
+                      : isNicknameFocused
+                        ? 'border-primary'
+                        : 'border-gray-300'
+                  } py-2 text-base text-surface text-center bg-transparent focus:outline-none placeholder:text-gray-500`}
                 />
                 <button
                   onClick={handleCheckNickname}
                   disabled={!isNicknameValid}
                   className="absolute right-0 top-1/2 -translate-y-1/2"
                 >
-                  <CheckIcon
-                    className={`w-5 h-5 ${isNicknameValid ? "text-gray-300" : "text-gray-300"}`}
-                  />
+                  {isNicknameAvailable ? (
+                    <CheckFillIcon className="w-5 h-5 text-primary" />
+                  ) : (
+                    <CheckIcon className="w-5 h-5 text-gray-300" />
+                  )}
                 </button>
               </div>
-              {nicknameMessage && (
-                <p
-                  className={`text-sm ${isNicknameAvailable ? "text-primary" : "text-error"}`}
-                >
-                  {nicknameMessage}
+              {isNicknameTouched && !nickname ? (
+                <p className="text-sm text-error">*별명은 필수 입력 항목입니다.</p>
+              ) : nicknameMessage ? (
+                <p className={`text-sm ${isNicknameAvailable ? "text-primary" : "text-error"}`}>
+                  {isNicknameAvailable ? nicknameMessage : `*${nicknameMessage}`}
                 </p>
-              )}
+              ) : null}
             </div>
 
             {/* 소개 */}
@@ -296,18 +322,13 @@ const ProfileCreateForm = () => {
             <label className="text-sm font-bold text-gray-700 w-[100px] shrink-0">
               이름 <span className="text-error">*</span>
             </label>
-            <div className="flex items-center gap-[10px]">
-              <input
-                type="text"
-                placeholder="이름 입력"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full md:w-[382px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none focus:border-primary"
-              />
-              <button className="w-[120px] h-[40px] border border-gray-300 rounded-[8px] text-sm font-medium text-background bg-gray-300 shrink-0">
-                중복 확인
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="이름 입력"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full md:w-[282px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none focus:border-primary"
+            />
           </div>
 
           {/* 전화번호 */}
@@ -321,7 +342,7 @@ const ProfileCreateForm = () => {
                 placeholder="010-0000-0000"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full md:w-[382px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none focus:border-primary"
+                className="w-full md:w-[282px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none focus:border-primary"
               />
               <button className="w-[120px] h-[40px] border border-gray-300 rounded-[8px] text-sm font-medium text-surface bg-background shrink-0">
                 인증
@@ -343,7 +364,7 @@ const ProfileCreateForm = () => {
                       e.target.value ? Number(e.target.value) : null,
                     )
                   }
-                  className="w-full md:w-[382px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface focus:outline-none focus:border-primary bg-background"
+                  className="w-full md:w-[282px] h-[40px] border border-gray-300 rounded-[8px] px-[14px] text-base text-surface focus:outline-none focus:border-primary bg-background"
                 >
                   <option value="">지역 선택</option>
                   {regions
@@ -355,7 +376,7 @@ const ProfileCreateForm = () => {
                     ))}
                 </select>
               ) : (
-                <div className="w-full md:w-[382px] h-[40px] border border-gray-300 rounded-[8px] bg-gray-100" />
+                <div className="w-full md:w-[282px] h-[40px] border border-gray-300 rounded-[8px] bg-gray-100" />
               )}
               <button
                 type="button"
@@ -379,14 +400,30 @@ const ProfileCreateForm = () => {
                   placeholder="GitHub 아이디"
                   value={github}
                   onChange={(e) => setGithub(e.target.value)}
-                  className={`w-full md:w-[382px] h-[40px] border rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none ${
+                  className={`w-full md:w-[282px] h-[40px] border rounded-[8px] px-[14px] text-base text-surface placeholder:text-gray-500 focus:outline-none ${
                     github && !isGithubValid
                       ? "border-error"
                       : "border-gray-300 focus:border-primary"
                   }`}
                 />
-                <button className="w-[120px] h-[40px] border border-gray-300 rounded-[8px] text-sm font-medium text-background bg-gray-300 shrink-0">
-                  {github ? "연동 해제" : "잔디 연동"}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isGithubLinked) {
+                      setIsGithubLinked(false);
+                    } else if (github && isGithubValid) {
+                      setIsGithubLinked(true);
+                    }
+                  }}
+                  className={`w-[120px] h-[40px] border rounded-[8px] text-sm font-medium shrink-0 ${
+                    isGithubLinked
+                      ? "border-gray-300 text-background bg-gray-300"
+                      : github && isGithubValid
+                        ? "border-primary bg-primary text-background cursor-pointer"
+                        : "border-gray-300 text-background bg-gray-300 cursor-not-allowed"
+                  }`}
+                >
+                  {isGithubLinked ? "연동 해제" : "잔디 연동"}
                 </button>
               </div>
               {github && !isGithubValid && (
@@ -394,7 +431,7 @@ const ProfileCreateForm = () => {
                   영문, 숫자, 하이픈(-)만 입력 가능해요!
                 </p>
               )}
-              {github && isGithubValid && (
+              {isGithubLinked && github && isGithubValid && (
                 <div className="w-full h-[160px] border border-gray-300 rounded-[10px] bg-background px-5 flex items-center">
                   <GitHubCalendar
                     username={github}

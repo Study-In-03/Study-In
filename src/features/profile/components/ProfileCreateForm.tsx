@@ -89,8 +89,6 @@ const ProfileCreateForm = () => {
         }
         const emailFromStorage = storage.getEmail();
         if (emailFromStorage) setEmail(emailFromStorage);
-        setIsNicknameChecked(true);
-        setIsNicknameAvailable(true);
       } catch {
         setApiError("프로필을 불러오는 데 실패했어요.");
       } finally {

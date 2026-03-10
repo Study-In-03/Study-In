@@ -57,7 +57,7 @@ const DIFFICULTY_MAP: Record<string, { id: number; name: string }> = {
 
 // 스터디 주제 폼값 → API {id, name}
 const SUBJECT_MAP: Record<string, { id: number; name: string }> = {
-  '개념/학습':   { id: 1, name: '개념학습' },
+  '개념학습':   { id: 1, name: '개념학습' },
   '응용/활용':   { id: 2, name: '응용/활용' },
   '프로젝트':    { id: 3, name: '프로젝트' },
   '챌린지':      { id: 4, name: '챌린지' },
@@ -183,5 +183,75 @@ export async function getLikedStudies(): Promise<StudyApiData[]> {
 /** 내가 참여 중인 스터디 목록 - GET /study/my-participating-study/ */
 export async function getParticipatingStudies(): Promise<StudyApiData[]> {
   const res = await axiosInstance.get<StudyApiData[]>('/study/my-participating-study/');
+  return res.data;
+}
+
+/** 스터디 전체 조회 + 검색/필터 - GET /study/ */
+export interface StudyListParams {
+  page?: number;
+  search?: string;
+  offline?: 0 | 1;
+  study_day?: number | number[];
+  subject?: number;
+  difficulty?: number;
+  study_status?: number;
+  limit?: number;
+  study_location?: number;
+}
+
+export interface StudyListItem {
+  id: number;
+  title: string;
+  thumbnail: string;
+  is_offline: boolean;
+  study_location: { id: number; location: string } | null;
+  difficulty: { id: number; name: string };
+  subject: { id: number; name: string };
+  study_status: { id: number; name: string };
+  participant_count: number;
+  user_liked: boolean;
+}
+
+export interface StudyListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: StudyListItem[];
+}
+
+export async function getStudies(params?: StudyListParams): Promise<StudyListResponse> {
+  const res = await axiosInstance.get<StudyListResponse>('/study/', { params });
+  return res.data;
+}
+
+/** 스터디 참가자 조회 - GET /study/{study_pk}/participate/ */
+export async function getStudyParticipants(studyId: number): Promise <
+  { user: number; nickname: string; profile_img: string; grade: string }[]
+> {
+  const res = await axiosInstance.get(`/study/${studyId}/participate/`);
+  return res.data;
+}
+
+/** 스터디 참가 - POST /study/{study_pk}/participate/ */
+export async function joinStudy(studyId: number): Promise<{ detail: string }> {
+  const res = await axiosInstance.post<{ detail: string }>(`/study/${studyId}/participate/`);
+  return res.data;
+}
+
+/** 스터디 탈퇴 - DELETE /study/{study_pk}/participate/ */
+export async function leaveStudy(studyId: number): Promise<{ detail: string }> {
+  const res = await axiosInstance.delete<{ detail: string }>(`/study/${studyId}/participate/`);
+  return res.data;
+}
+
+/** 내가 만든 스터디 조회 - GET /study/my-study/ */
+export async function getMyStudies(): Promise<StudyApiData[]> {
+  const res = await axiosInstance.get<StudyApiData[]>('/study/my-study/');
+  return res.data;
+}
+
+/** 내 마감된 스터디 조회 - GET /study/my-closed-study/ */
+export async function getMyClosedStudies(): Promise<StudyApiData[]> {
+  const res = await axiosInstance.get<StudyApiData[]>('/study/my-closed-study/');
   return res.data;
 }

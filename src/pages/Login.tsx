@@ -3,9 +3,19 @@ import { Link } from 'react-router-dom';
 import loginIllustration from '@/assets/login-illustration.png';
 import LoginForm from '@/features/auth/components/LoginForm';
 import githubLogo from '@/assets/base/Logo-github.svg';
+import kakaoLogo from '@/assets/base/Logo-kakao-message.svg';
+import googleLogo from '@/assets/base/Logo-Google.svg';
+
+type SnsProvider = { name: string; logo: string; logoClass?: string; bgClass: string };
+
+const SNS_PROVIDERS: SnsProvider[] = [
+    { name: 'GitHub', logo: githubLogo, logoClass: 'invert', bgClass: 'bg-gray-900' },
+    { name: 'Kakao', logo: kakaoLogo, logoClass: 'brightness-0', bgClass: 'bg-[#FEE500]' },
+    { name: 'Google', logo: googleLogo, bgClass: 'bg-white border border-gray-300' },
+];
 
 export default function Login() {
-    const [showModal, setShowModal] = useState(false);
+    const [modalProvider, setModalProvider] = useState<SnsProvider | null>(null);
 
     return (
         <div className="flex flex-col items-center justify-center w-full px-4 py-12">
@@ -37,30 +47,35 @@ export default function Login() {
                     <span className="text-sm text-gray-500 shrink-0">간편로그인</span>
                     <div className="flex-1 h-[1px] bg-gray-300" />
                 </div>
-                {/* GitHub 버튼 */}
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="w-11 h-11 rounded-full bg-gray-900 flex items-center justify-center hover:opacity-80 transition-opacity"
-                >
-                    <img src={githubLogo} alt="GitHub 로그인" className="w-6 h-6 invert" />
-                </button>
+                {/* SNS 버튼들 */}
+                <div className="flex items-center gap-4">
+                    {SNS_PROVIDERS.map((provider) => (
+                        <button
+                            key={provider.name}
+                            onClick={() => setModalProvider(provider)}
+                            className={`w-11 h-11 rounded-full ${provider.bgClass} flex items-center justify-center hover:opacity-80 transition-opacity`}
+                        >
+                            <img src={provider.logo} alt={`${provider.name} 로그인`} className={`w-6 h-6 ${provider.logoClass ?? ''}`} />
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* 구현 중 모달 */}
-            {showModal && (
+            {modalProvider && (
                 <div
                     className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => setModalProvider(null)}
                 >
                     <div
                         className="bg-background rounded-[12px] px-8 py-6 flex flex-col items-center gap-4 shadow-lg"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <img src={githubLogo} alt="" className="w-10 h-10" />
-                        <p className="text-base font-bold text-surface">GitHub 로그인</p>
+                        <img src={modalProvider.logo} alt="" className="w-10 h-10" />
+                        <p className="text-base font-bold text-surface">{modalProvider.name} 로그인</p>
                         <p className="text-sm text-gray-500 text-center">현재 구현 중인 기능입니다.</p>
                         <button
-                            onClick={() => setShowModal(false)}
+                            onClick={() => setModalProvider(null)}
                             className="w-full h-[40px] bg-primary text-background rounded-[8px] text-sm font-medium"
                         >
                             확인

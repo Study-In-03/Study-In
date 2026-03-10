@@ -2,7 +2,7 @@ import ProfileCreateForm from '../features/profile/components/ProfileCreateForm'
 
 const ProfileCreate = () => {
   return (
-    <div className="max-w-[990px] mx-auto w-full py-[50px]">
+    <div className="max-w-[990px] mx-auto w-full py-[50px] px-[16px] md:px-0">
       <ProfileCreateForm />
     </div>
   )

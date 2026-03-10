@@ -4,6 +4,7 @@ import Home from "@/pages/Home";
 import StudyDetail from "@/pages/StudyDetail";
 import Profile from "@/pages/Profile";
 import ProfileEdit from "@/pages/ProfileEdit";
+import ProfileCreate from "@/pages/ProfileCreate";
 import MyStudy from "@/pages/Mystudy";
 import StudyCreate from "@/pages/StudyCreate";
 import StudyEdit from "@/pages/StudyEdit";
@@ -40,6 +41,7 @@ export default function Router() {
           <Route path="/study/:studyId" element={<StudyDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/profile/create" element={<ProfileCreate />} />
           <Route path="/local" element={<LocalStudy />} />
           <Route path="/local/search" element={<Search />} />
           <Route path="/online" element={<OnlineStudy />} />

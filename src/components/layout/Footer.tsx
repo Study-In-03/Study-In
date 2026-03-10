@@ -17,10 +17,9 @@ const POLICY_LINKS = [
   { label: '개인정보 처리방침', href: '/privacy' },
 ];
 
-// 초기 프로필 생성 페이지 구현 후 해당 경로를 아래에 추가할 것
 const SIMPLE_FOOTER_PATHS = [
   '/login',
-  // '/profile/create',
+  '/profile/create',
 ];
 
 // 웹(lg 이상)에서 푸터를 완전히 숨길 경로

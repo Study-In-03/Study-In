@@ -11,7 +11,7 @@ type SnsProvider = { name: string; logo: string; logoClass?: string; bgClass: st
 const SNS_PROVIDERS: SnsProvider[] = [
     { name: 'GitHub', logo: githubLogo, logoClass: 'invert', bgClass: 'bg-gray-900' },
     { name: 'Kakao', logo: kakaoLogo, logoClass: 'brightness-0', bgClass: 'bg-[#FEE500]' },
-    { name: 'Google', logo: googleLogo, bgClass: 'bg-white border border-gray-300' },
+    { name: 'Google', logo: googleLogo, bgClass: 'bg-background border border-gray-300' },
 ];
 
 export default function Login() {
@@ -20,7 +20,7 @@ export default function Login() {
     return (
         <div className="flex flex-col items-center justify-center w-full px-4 py-12">
 
-            <h2 className="text-2xl font-bold text-gray-900 text-left leading-[1.6] mt-[52px] mb-5">
+            <h2 className="text-2xl font-bold text-surface text-left leading-[1.6] mt-[52px] mb-5">
                 SNS계정으로 간편하게<br />
                 회원가입/로그인 하세요! :)
             </h2>

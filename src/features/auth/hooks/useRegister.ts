@@ -36,21 +36,15 @@ export const useRegister = () => {
         }
     };
 
-    // 인증 코드 발송
+    // 인증 코드 발송 (중복 확인 완료 후에만 호출)
     const sendVerificationCode = async (email: string) => {
+        if (!isDuplicateChecked) {
+            setApiError('이메일 중복 확인을 먼저 완료해주세요.');
+            return false;
+        }
         setIsLoading(true);
         setApiError(null);
-        try {
-            await sendRegisterEmail(email);
-            setIsCodeSent(true);
-            return true;
-        } catch (error: any) {
-            setApiError(extractErrorMessage(error, '인증 코드 발송에 실패했습니다.'));
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    }
 
     // 인증 코드 검증
     const verifyCode = async (email: string, code: string) => {

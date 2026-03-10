@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
-import { axiosInstance } from '../../../api/axios';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-function toAbsoluteUrl(path: string | null | undefined): string {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  return `${BASE_URL}${path}`;
-}
+import { getMyStudies, getParticipatingStudies, getMyClosedStudies, getLikedStudies } from '@/api/study';
+import { toAbsoluteUrl } from '@/utils/study';
 
 export interface MyStudyItem {
   id: number;
@@ -40,9 +34,15 @@ export const useMyStudies = (endpoint: string | null) => {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await axiosInstance.get<MyStudyItem[]>(endpoint);
+        const API_MAP: Record<string, () => Promise<any[]>> = {
+          '/study/my-study/': getMyStudies,
+          '/study/my-participating-study/': getParticipatingStudies,
+          '/study/my-closed-study/': getMyClosedStudies,
+          '/study/my-like-study/': getLikedStudies,
+        };
+        const fetcher = API_MAP[endpoint];
+        const raw = fetcher ? await fetcher() : [];
         if (!cancelled) {
-          const raw = Array.isArray(res.data) ? res.data : [];
           setStudies(raw.map((s: MyStudyItem) => ({ ...s, thumbnail: toAbsoluteUrl(s.thumbnail) })));
         }
       } catch {

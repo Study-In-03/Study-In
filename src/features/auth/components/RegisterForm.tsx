@@ -25,7 +25,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     // 이메일 훅
     const {
         isLoading, apiError, setApiError,
-        isDuplicateChecked, isCodeSent, isVerified,
+        isCodeSent, isVerified,
         checkDuplicate, sendVerificationCode, verifyCode,
         register,
     } = useRegister();
@@ -126,12 +126,19 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                         className={`w-[70px] py-[10px] rounded-[8px] text-base font-medium transition-colors ${
                             email.length > 0 && !isVerified
                                 ? 'bg-primary text-background hover:bg-primary-light'
-                                : 'bg-gray-300 text-background cursor-not-allowed'   
+                                : 'bg-gray-300 text-background cursor-not-allowed'
                         }`}
                     >
                         {isVerified ? '인증됨' : (isCodeSent ? '재전송' : '인증')}
                     </button>
                 </div>
+                {/* 이메일 에러 메시지 (코드 발송 전) */}
+                {apiError && !isCodeSent && (
+                    <div className="flex items-center gap-1 mt-2 text-error text-base font-medium">
+                        <IconAlert className="w-5 h-5 text-error shrink-0" />
+                        <span>{apiError}</span>
+                    </div>
+                )}
             </div>
 
             {/* 인증번호 입력 폼 (이메일 발송 후에만 노출, 인증 완료되면 숨김) */}

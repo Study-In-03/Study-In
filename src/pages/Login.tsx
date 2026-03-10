@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import loginIllustration from '@/assets/login-illustration.png';
 import LoginForm from '@/features/auth/components/LoginForm';
 import githubLogo from '@/assets/base/Logo-github.svg';
 import kakaoLogo from '@/assets/base/Logo-kakao-message.svg';
 import googleLogo from '@/assets/base/Logo-Google.svg';
+import IconX from '@/assets/base/icon-X.svg?react';
+import { validateEmail } from '@/features/auth/utils/authValidators';
+import { usePasswordResetEmail } from '@/features/auth/hooks/usePasswordResetEmail';
 
 type SnsProvider = { name: string; logo: string; logoClass?: string; bgClass: string };
 
@@ -15,7 +18,41 @@ const SNS_PROVIDERS: SnsProvider[] = [
 ];
 
 export default function Login() {
+    const navigate = useNavigate();
     const [modalProvider, setModalProvider] = useState<SnsProvider | null>(null);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+    // 비밀번호 찾기 상태
+    const [fpEmail, setFpEmail] = useState('');
+    const [fpEmailError, setFpEmailError] = useState('');
+    const { verifyCode, isLoading: fpLoading, apiError: fpApiError, setApiError: setFpApiError } = usePasswordResetEmail();
+
+    const handleFpEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setFpEmail(value);
+        if (fpApiError) setFpApiError(null);
+        if (value.length === 0) setFpEmailError('');
+        else if (!validateEmail(value)) setFpEmailError('이메일 형식이 올바르지 않습니다.');
+        else setFpEmailError('');
+    };
+
+    const isFpValid = fpEmail.length > 0 && validateEmail(fpEmail);
+
+    const handleSendEmail = async () => {
+        if (!isFpValid || fpLoading) return;
+        const isSuccess = await verifyCode(fpEmail, '123456');
+        if (isSuccess) {
+            setShowForgotPassword(false);
+            navigate('/reset-password', { state: { email: fpEmail } });
+        }
+    };
+
+    const handleCloseForgotPassword = () => {
+        setShowForgotPassword(false);
+        setFpEmail('');
+        setFpEmailError('');
+        setFpApiError(null);
+    };
 
     return (
         <div className="flex flex-col items-center justify-center w-full px-4 py-12">
@@ -36,7 +73,12 @@ export default function Login() {
             <div className="flex items-center gap-2 mt-6 text-sm text-gray-700">
                 <Link to="/register" className="hover:text-primary-light transition-colors">회원가입</Link>
                 <span className="w-[1px] h-3 bg-gray-700"></span>
-                <Link to="/forgot-password" className="hover:text-primary-light transition-colors">비밀번호 찾기</Link>
+                <button
+                    onClick={() => setShowForgotPassword(true)}
+                    className="hover:text-primary-light transition-colors"
+                >
+                    비밀번호 찾기
+                </button>
             </div>
 
             {/* SNS 로그인 */}
@@ -79,6 +121,68 @@ export default function Login() {
                             className="w-full h-[40px] bg-primary text-background rounded-[8px] text-sm font-medium"
                         >
                             확인
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* 비밀번호 찾기 모달 */}
+            {showForgotPassword && (
+                <div
+                    className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4"
+                    onClick={handleCloseForgotPassword}
+                >
+                    <div
+                        className="relative w-full max-w-[390px] bg-background rounded-[10px] shadow-lg flex flex-col overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* 닫기 버튼 */}
+                        <button
+                            onClick={handleCloseForgotPassword}
+                            className="absolute top-2 right-2 p-2 cursor-pointer z-10"
+                        >
+                            <IconX className="w-5 h-5 text-gray-500 hover:text-primary-light transition-colors" />
+                        </button>
+
+                        <div className="px-8 pt-[34px] pb-6">
+                            {/* 타이틀 및 설명 */}
+                            <div className="text-center mb-7 mt-2">
+                                <h2 className="text-xl font-bold text-surface mb-3">비밀번호 찾기</h2>
+                                <p className="text-base font-regular text-surface leading-relaxed">
+                                    가입시 등록한 이메일을 입력해 주세요.<br />
+                                    비밀번호 재설정 링크를 이메일로 보내드릴게요 :)
+                                </p>
+                            </div>
+
+                            {/* 이메일 입력 */}
+                            <div className="relative mb-2">
+                                <input
+                                    type="email"
+                                    placeholder="이메일 입력"
+                                    value={fpEmail}
+                                    onChange={handleFpEmailChange}
+                                    className={`w-full border-b-2 py-3 text-base font-regular placeholder:text-gray-400 focus:outline-none transition-colors ${
+                                        isFpValid
+                                            ? 'border-primary text-surface'
+                                            : 'border-gray-300 text-surface focus:border-primary'
+                                    }`}
+                                />
+                                {fpEmailError && <p className="text-error text-sm mt-2 absolute">{fpEmailError}</p>}
+                            </div>
+                            {fpApiError && <p className="text-error text-xs text-center mt-6">{fpApiError}</p>}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleSendEmail}
+                            disabled={!isFpValid || fpLoading}
+                            className={`w-full font-medium text-lg py-[18px] transition-colors ${
+                                isFpValid
+                                    ? 'bg-primary text-background hover:bg-primary-light cursor-pointer'
+                                    : 'bg-gray-300 text-background cursor-not-allowed'
+                            }`}
+                        >
+                            {fpLoading ? '발송 중...' : '이메일 보내기'}
                         </button>
                     </div>
                 </div>

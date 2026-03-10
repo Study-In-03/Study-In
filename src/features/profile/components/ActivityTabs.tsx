@@ -5,6 +5,7 @@ import HeartFillIcon from '@/assets/base/icon-heart-fill.svg?react'
 import PeopleIcon from '@/assets/base/icon-people.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
 import RightIcon from '@/assets/base/icon-right.svg?react'
+import iconRecruiting from '@/assets/base/icon-모집중.svg'
 import { likeStudy, unlikeStudy } from '@/api/study'
 import { useMyStudies } from '../hooks/useMyStudies'
 import { useAssociateGuard } from '@/hooks/useAssociateGuard'
@@ -150,7 +151,7 @@ const ActivityTabs = ({ locationName = '-' }: ActivityTabsProps) => {
                   onClick={() => navigate(`/study/${study.id}`)}
                 >
                   <div className="flex justify-between items-center px-2 pt-2 pb-1">
-                    <span className="text-xs font-medium text-primary">모집중</span>
+                    <img src={iconRecruiting} alt="모집중" className="h-4" />
                     <span className="text-xs text-gray-900 bg-gray-100 rounded-full px-2 py-0.5">
                       {locationName}
                     </span>

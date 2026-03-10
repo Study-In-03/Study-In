@@ -277,20 +277,25 @@ const ProfileEditForm = () => {
           {/* 내 지역 - select 드롭다운 */}
           <div className="flex items-center">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0">내 지역</label>
-            <select
-              value={selectedRegionId ?? ''}
-              onChange={(e) => setSelectedRegionId(e.target.value ? Number(e.target.value) : null)}
-              className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-primary bg-background"
-            >
-              <option value="">지역 선택</option>
-              {regions
-                .sort((a, b) => a.sort_order - b.sort_order)
-                .map((region) => (
-                  <option key={region.id} value={region.id}>
-                    {region.location}
-                  </option>
-                ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={selectedRegionId ?? ''}
+                onChange={(e) => setSelectedRegionId(e.target.value ? Number(e.target.value) : null)}
+                className="w-72 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-primary bg-background"
+              >
+                <option value="">지역 선택</option>
+                {regions
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((region) => (
+                    <option key={region.id} value={region.id}>
+                      {region.location}
+                    </option>
+                  ))}
+              </select>
+              <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0">
+                재인증
+              </button>
+            </div>
           </div>
 
           {/* GitHub */}
@@ -381,8 +386,8 @@ const ProfileEditForm = () => {
         <p className="text-sm text-error text-center">{apiError}</p>
       )}
 
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1" />
+      {/* 모바일: 둘다 중앙, 탈퇴 아래 / 웹: 저장 중앙, 탈퇴 오른쪽 끝 */}
+      <div className="flex flex-col items-center gap-6 px-2 md:flex-row md:justify-center md:gap-3 md:relative">
         <button
           onClick={handleSave}
           disabled={!isSaveEnabled || isSaving}
@@ -394,16 +399,14 @@ const ProfileEditForm = () => {
         >
           {isSaving ? '저장 중...' : '저장하기'}
         </button>
-        <div className="flex-1 flex justify-end">
-          <a
-            href="https://weniv.world"
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-gray-500 underline"
-          >
-            위니브월드 탈퇴하기
-          </a>
-        </div>
+        <a
+          href="https://weniv.world"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-gray-500 underline md:absolute md:right-2"
+        >
+          위니브월드 탈퇴하기
+        </a>
       </div>
 
     </div>

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import RegenerationIcon from "@/assets/base/icon-Regeneration.svg?react";
+import SparkleIcon from "@/assets/base/icon-Sparkle.svg?react";
 
 interface AiGeneratorButtonProps {
   /** 버튼 라벨 (예: "소개글 AI 생성") */
@@ -59,32 +61,13 @@ export default function AiGeneratorButton({
         ) : targetHasValue ? (
           /* 재생성 아이콘 */
           <>
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M13.5 8a5.5 5.5 0 1 1-1.08-3.31" />
-              <path d="M13.5 2.5v3h-3" />
-            </svg>
+            <RegenerationIcon className="w-4 h-4" />
             재생성
           </>
         ) : (
           /* 스파크 아이콘 */
           <>
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5z" />
-            </svg>
+            <SparkleIcon className="w-4 h-4" />
             {label}
           </>
         )}
@@ -96,7 +79,7 @@ export default function AiGeneratorButton({
           role="dialog"
           aria-modal="true"
           aria-label="AI 생성 확인"
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-72 bg-background rounded-xl shadow-lg border border-gray-100 p-5 lg:absolute lg:top-auto lg:left-0 lg:bottom-full lg:mb-2 lg:translate-x-0 lg:translate-y-0"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-72 bg-background rounded-xl shadow-lg border border-gray-100 p-5 md:absolute md:top-auto md:left-0 md:bottom-full md:mb-2 md:translate-x-0 md:translate-y-0"
         >
           <p className="text-sm text-gray-700 mb-4 leading-relaxed text-center">
             기존 내용을 AI가 생성한 내용으로
@@ -125,7 +108,7 @@ export default function AiGeneratorButton({
       {/* confirm 모달 외부 클릭 닫기 (모바일: 딤 처리) */}
       {showConfirm && (
         <div
-          className="fixed inset-0 z-10 bg-black/20 lg:bg-transparent"
+          className="fixed inset-0 z-10 bg-black/20 md:bg-transparent"
           aria-hidden="true"
           onClick={handleCancel}
         />

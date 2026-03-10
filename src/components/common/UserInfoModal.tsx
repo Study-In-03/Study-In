@@ -93,7 +93,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
             {/* 헤더 행: 지역칩 | 신고하기 */}
             <div className="w-full flex items-center justify-between mb-6">
               {profile.preferred_region ? (
-                <span className="text-[12px] text-gray-600 bg-[#F3F5FA] rounded-full px-3 py-1">
+                <span className="text-sm text-gray-700 bg-gray-100 rounded-full px-3 py-1">
                   {profile.preferred_region.location}
                 </span>
               ) : (
@@ -101,7 +101,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
               )}
               <button
                 onClick={() => setIsReportOpen(true)}
-                className="text-[12px] text-[#8D9299] underline"
+                className="text-sm text-gray-500 underline"
               >
                 신고하기
               </button>
@@ -135,7 +135,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
                   {profile.github_username ? (
                     <GitHubCalendarBoundary username={profile.github_username} />
                   ) : (
-                    <p className="text-sm text-gray-400">GitHub 계정이 연동되지 않았어요.</p>
+                    <p className="text-sm text-gray-500">GitHub 계정이 연동되지 않았어요.</p>
                   )}
                 </div>
               </div>
@@ -155,7 +155,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400">등록된 관심 분야가 없어요.</p>
+                  <p className="text-sm text-gray-500">등록된 관심 분야가 없어요.</p>
                 )}
               </div>
             </div>

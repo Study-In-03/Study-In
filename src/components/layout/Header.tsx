@@ -80,7 +80,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
         <header className="bg-background border-b border-gray-300">
 
           {/* 모바일 */}
-          <div className="flex lg:hidden items-center justify-between h-14 px-4">
+          <div className="flex md:hidden items-center justify-between h-14 px-4">          
             <button onClick={() => setDrawerOpen(true)}>
               <HamburgerIcon className="w-7 h-7 text-surface" />
             </button>
@@ -94,7 +94,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
           </div>
 
           {/* 데스크탑 */}
-          <div className="hidden lg:flex items-center justify-center h-[80px]">
+          <div className="hidden md:flex items-center justify-center h-[80px]">
             <Link to="/">
               <LogoIcon className="h-[32px] w-auto" />
             </Link>
@@ -201,7 +201,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                   </button>
 
                   {dropdownOpen && (
-                    <div className="absolute right-0 top-[calc(100%+8px)] w-[130px] bg-background rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-[#D9DBE0] z-50 overflow-hidden py-1">
+                    <div className="absolute right-0 top-[calc(100%+8px)] w-[130px] bg-background rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-50 overflow-hidden py-1">
 
                       <button
                         onClick={() => {
@@ -222,7 +222,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                         }}
                         className="w-full h-[40px] flex items-center px-2"
                       >
-                        <span className="w-full h-[30px] flex items-center px-[10px] bg-[#F3F5FA] text-surface text-base rounded-[8px]">
+                        <span className="w-full h-[30px] flex items-center px-[10px] bg-gray-100 text-surface text-base rounded-[8px]">
                           마이페이지
                         </span>
                       </button>

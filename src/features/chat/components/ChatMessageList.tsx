@@ -34,30 +34,31 @@ export default function ChatMessageList({ studyPk }: ChatMessageListProps) {
             )}
 
             {messages.map((msg, index) => {
-                const nextMsg = messages[index + 1];
+                const prevMsg = messages[index - 1];
                 const showDate =
-                    !nextMsg ||
-                    new Date(nextMsg.created).toDateString() !==
+                    !prevMsg ||
+                    new Date(prevMsg.created).toDateString() !==
                         new Date(msg.created).toDateString();
 
                 return (
                     <React.Fragment key={msg.pk}>
-                        {showDate && (
-                            <SystemMessage
-                                type="date"
-                                content={new Date(msg.created).toLocaleDateString('ko-KR', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                })}
-                            />
-                        )}
                         {msg.chat_type === 'notice' ? (
                             <SystemMessage type="notice" content={msg.message || ''} />
                         ) : (
                             <ChatBubble
                                 message={msg}
                                 isMine={msg.user?.pk === myPk}
+                            />
+                        )}
+                        {showDate && (
+                            <SystemMessage
+                                key={`date-${msg.pk}`}
+                                type="date"
+                                content={new Date(msg.created).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                })}
                             />
                         )}
                     </React.Fragment>

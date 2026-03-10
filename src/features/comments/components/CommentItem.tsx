@@ -70,10 +70,10 @@ const CommentItem = ({
 
   const profileImg =
     comment.user && !isWithdrawnUser(comment.user) && isNormalUser(comment.user)
-      ? getFullUrl(comment.user.profile.profile_img) || "/default-profile.png"
+      ? getFullUrl(comment.user.profile.profile_img) || withdrawnProfileImg
       : comment.user && isWithdrawnUser(comment.user)
         ? withdrawnProfileImg
-        : "/default-profile.png";
+        : withdrawnProfileImg;
 
   const handleUpdate = () => {
     if (!editContent.trim()) return;

@@ -4,8 +4,8 @@ import LeftArrowIcon from '@/assets/base/icon-Left-arrow.svg?react';
 import PeopleIcon from '@/assets/base/icon-people.svg?react';
 import HomeIcon from '@/assets/base/icon-Home.svg?react';
 import DotsIcon from '@/assets/base/icon-dots.svg?react';
-import ImportIcon from '@/assets/base/icon-asset-import.svg?react';
-import { axiosInstance } from '@/api/axios';
+import ImportIcon from '@/assets/base/icon-square-empty.svg?react';
+import { leaveStudy } from '@/api/study';
 
 interface ChatHeaderProps {
     studyPk: number;
@@ -21,10 +21,10 @@ interface ChatHeaderProps {
 const StudyStatusBadge = ({ status }: { status: string }) => {
     const statusColors: Record<string, string> = {
         "모집 중": "bg-primary",
+        "모집 완료": "bg-gray-500",
         "진행 중": "bg-warning",
-        "마감": "bg-error",
-        "종료": "bg-gray-700",
-    };
+        "완료": "bg-error",
+        };
 
     return (
         <span className={`mr-3 px-[10px] py-[3px] text-xs font-regular text-background rounded-[26px] shrink-0 ${statusColors[status] || 'bg-gray-700'}`}>
@@ -51,7 +51,7 @@ export default function ChatHeader({
     const handleLeaveStudy = async () => {
         if (!window.confirm("정말 이 스터디를 나가시겠습니까?")) return;
         try {
-            await axiosInstance.delete(`/study/${studyPk}/participate/`);
+            await leaveStudy(studyPk);
             alert("스터디 탈퇴가 완료되었습니다.");
             navigate('/');
         } catch (error: any) {

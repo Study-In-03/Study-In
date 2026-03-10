@@ -79,20 +79,20 @@ const Modal = () => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-        <div className="relative z-10 w-[400px] rounded-[10px] bg-background shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-[#D9DBE0] overflow-hidden">
+        <div className="relative z-10 w-[400px] rounded-[10px] bg-background shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 overflow-hidden">
           <p className="whitespace-pre-line text-center text-lg text-black leading-6 py-9 px-6">
             준회원은 참여할 수 없어요.{"\n"}프로필 생성을 완료해 주세요.
           </p>
-          <div className="flex border-t border-[#D9DBE0]">
+          <div className="flex border-t border-gray-300">
             <button
               onClick={() => { onConfirm?.(); closeModal(); }}
-              className="flex-1 h-[50px] bg-primary text-background text-lg font-medium border-r border-[#D9DBE0]"
+              className="flex-1 h-[50px] bg-primary text-background text-lg font-medium border-r border-gray-300"
             >
               프로필 생성하기
             </button>
             <button
               onClick={closeModal}
-              className="flex-1 h-[50px] bg-background text-[#47494D] text-lg font-medium"
+              className="flex-1 h-[50px] bg-background text-gray-700 text-lg font-medium"
             >
               취소
             </button>

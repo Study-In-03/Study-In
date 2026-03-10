@@ -46,7 +46,7 @@ export interface Study {
   title: string;
   is_offline: boolean;
   location: string | null;
-  difficulty: '초급' | '중급' | '고급' | { id: number; name: string };
+  difficulty: string;
   topic: string;
   status: '모집 중' | '모집 완료' | '진행 중' | '완료';
   current_participants: number;

@@ -5,7 +5,7 @@ import DotsIcon from '@/assets/base/icon-dots.svg?react';
 import HomeIcon from '@/assets/base/icon-Home.svg?react';
 import PersonIcon from '@/assets/base/icon-person.svg?react';
 import { getStudy } from '@/api/study';
-import { axiosInstance } from '@/api/axios';
+import { leaveStudy } from '@/api/study';;
 import { getFullUrl } from '@/api/upload';
 
 interface MemberProfile {
@@ -56,7 +56,7 @@ export default function ChatSidebar({ onClose }: ChatSidebarProps) {
     const handleLeaveStudy = async () => {
         if (!window.confirm("정말 이 스터디를 나가시겠습니까?")) return;
         try {
-            await axiosInstance.delete(`/study/${study_pk}/participate/`);
+            await leaveStudy(Number(study_pk));
             alert("스터디 탈퇴가 완료되었습니다.");
             if (onClose) onClose();
             navigate('/');

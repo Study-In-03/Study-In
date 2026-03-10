@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useStudyList } from "../hooks/useStudyList";
 import StudyCard from "./StudyCard";
 import { useNavigate } from "react-router-dom";
-import leftIcon from "@/assets/base/icon-left.svg";
+import LeftIcon from "@/assets/base/icon-left.svg?react";
+import RightIcon from "@/assets/base/icon-right.svg?react";
 
 interface StudyListProps {
   selectedCategory: string;
@@ -51,7 +52,7 @@ function Pagination({
         className="w-8 h-8 flex items-center justify-center rounded-full disabled:opacity-30 hover:bg-gray-100"
         aria-label="이전 페이지"
       >
-        <img src={leftIcon} alt="이전" className="w-4 h-4" />
+        <LeftIcon className="w-4 h-4 text-gray-300" />
       </button>
 
       {getPageNumbers().map((p, i) =>
@@ -83,7 +84,7 @@ function Pagination({
         className="w-8 h-8 flex items-center justify-center rounded-full disabled:opacity-30 hover:bg-gray-100 rotate-180"
         aria-label="다음 페이지"
       >
-        <img src={leftIcon} alt="다음" className="w-4 h-4" />
+        <RightIcon className="w-4 h-4 text-gray-300" />
       </button>
     </div>
   );
@@ -147,13 +148,13 @@ export default function StudyList({
           <p className="text-[18px] font-bold text-surface text-center">
             아직 열린 스터디가 없어요.
           </p>
-          <p className="text-[16px] text-[#47494D] text-center">
+          <p className="text-lg text-gray-700 text-center">
             첫 스터디를 직접 만들어 보세요!
           </p>
         </div>
         <button
           onClick={() => navigate("/study/create")}
-          className="w-[250px] h-[50px] bg-primary text-white text-[16px] font-medium rounded-[8px]"
+          className="w-[250px] h-[50px] bg-primary text-background text-lg font-medium rounded-[8px]"
         >
           스터디 만들기
         </button>
@@ -162,7 +163,7 @@ export default function StudyList({
 
   return (
     <>
-      <div ref={topRef} className={`grid grid-cols-2 ${cols === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"} gap-[10px] md:gap-6 md:px-4`}>
+      <div ref={topRef} className={`grid grid-cols-2 ${cols === 3 ? "md:grid-cols-3" : "md:grid-cols-4"} gap-[10px] md:gap-6 md:px-4`}>
         {studies.map((study) => (
           <StudyCard key={study.id} study={study} large={large} />
         ))}

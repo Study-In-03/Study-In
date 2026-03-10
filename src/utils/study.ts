@@ -1,12 +1,5 @@
 import type { Study } from '@/types/study';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-
-export function toAbsoluteUrl(path: string | null | undefined): string {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `${BASE_URL}${path}`;
-}
+import { getFullUrl } from '@/api/upload'
 
 type RawStudy = {
   id: number;
@@ -27,12 +20,12 @@ export function normalizeStudy(s: RawStudy): Study {
   return {
     id: s.id,
     title: s.title,
-    thumbnail: toAbsoluteUrl(s.thumbnail),
+    thumbnail: getFullUrl(s.thumbnail ?? null),
     is_offline: s.is_offline ?? false,
     location: s.study_location?.location ?? null,
     difficulty: (typeof s.difficulty === 'object' ? s.difficulty?.name : s.difficulty) ?? '',
     topic: (typeof s.subject === 'object' ? s.subject?.name : s.subject) ?? '',
-    status: s.study_status?.name === '완료' ? '종료' : (s.study_status?.name ?? ''),
+    status: (s.study_status?.name ?? '') as Study['status'],
     current_participants: s.participant_count ?? s.current_participants ?? 0,
     is_liked: s.user_liked ?? s.is_liked ?? false,
   } as Study;

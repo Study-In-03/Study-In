@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { axiosInstance } from '@/api/axios';
+import { getStudy, joinStudy } from '@/api/study';
 import { storage } from '@/utils/storage';
 import { StudyApiData, likeStudy, unlikeStudy } from '@/api/study';
 import { useAssociateGuard } from '@/hooks/useAssociateGuard';
 
-import heartIcon from "@/assets/base/icon-heart.svg";
-import heartFillIcon from "@/assets/base/icon-heart-fill.svg";
-import shareIcon from "@/assets/base/icon-Share.svg";
+import HeartIcon from "@/assets/base/icon-heart.svg?react";
+import HeartFillIcon from "@/assets/base/icon-heart-fill.svg?react";
+import ShareIcon from "@/assets/base/icon-Share.svg?react";
 
 import CommentSection from "@/features/comments/components/CommentSection";
 
@@ -30,15 +30,14 @@ export default function StudyDetail() {
       if (!studyId) return;
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get(`/study/${studyId}/`);
-        setStudyDetail(response.data);
+        const data = await getStudy(Number(studyId));
+        setStudyDetail(data);
 
         // 참여 여부 초기값
-        const alreadyJoined = response.data.participants.some((p: any) => p.id === myPk);
+        const alreadyJoined = data.participants.some((p: any) => p.id === myPk);
         if (alreadyJoined) setIsJoined(true);
 
-        // 좋아요 초기값: like_users 배열에 내 pk가 있으면 true
-        const alreadyLiked = response.data.like_users?.includes(myPk) ?? false;
+        const alreadyLiked = data.like_users?.includes(myPk) ?? false;
         setLiked(alreadyLiked);
       } catch (error) {
         console.error("데이터 로드 실패:", error);
@@ -78,7 +77,7 @@ export default function StudyDetail() {
     }
 
     try {
-      await axiosInstance.post(`/study/${studyId}/participate/`);
+      await joinStudy(Number(studyId));
       setIsJoined(true);
       alert("스터디에 성공적으로 참여되었습니다!");
     } catch (error: any) {
@@ -182,7 +181,7 @@ export default function StudyDetail() {
         <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
 
           <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-background text-base">
-            <img src={shareIcon} className="h-5 w-5" />
+            <ShareIcon className="h-5 w-5" />
             공유
           </button>
 
@@ -191,7 +190,7 @@ export default function StudyDetail() {
             disabled={isLikeLoading}
             className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border border-gray-300"
           >
-            <img src={liked ? heartFillIcon : heartIcon} className="h-5 w-5" />
+            {liked ? <HeartFillIcon className="h-5 w-5" /> : <HeartIcon className="h-5 w-5" />}
           </button>
 
           <button

@@ -1,30 +1,24 @@
 import { useState, useEffect } from 'react';
 import { getMyStudies, getParticipatingStudies, getMyClosedStudies, getLikedStudies } from '@/api/study';
-import { toAbsoluteUrl } from '@/utils/study';
+import { normalizeStudy } from '@/utils/study';
+import type { Study } from '@/types/study';
 
-export interface MyStudyItem {
-  id: number;
-  title: string;
-  thumbnail: string | null;
-  study_status: { id: number; name: string };
-  is_offline?: boolean;
-  location?: string;
-  difficulty?: { id: number; name: string };
-  subject?: { id: number; name: string };
-  recruitment?: number;
-  current_participants?: number;
-  is_liked?: boolean;
-  start_date?: string;
-  end_date?: string;
-}
+type TabKey = 'my' | 'joined' | 'ended' | 'liked';
 
-export const useMyStudies = (endpoint: string | null) => {
-  const [studies, setStudies] = useState<MyStudyItem[]>([]);
+const API_MAP: Record<TabKey, () => Promise<any[]>> = {
+  my: getMyStudies,
+  joined: getParticipatingStudies,
+  ended: getMyClosedStudies,
+  liked: getLikedStudies,
+};
+
+export const useMyStudies = (tab: TabKey | null) => {
+  const [studies, setStudies] = useState<Study[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!endpoint) {
+    if (!tab) {
       setStudies([]);
       return;
     }
@@ -34,16 +28,9 @@ export const useMyStudies = (endpoint: string | null) => {
       setIsLoading(true);
       setError(null);
       try {
-        const API_MAP: Record<string, () => Promise<any[]>> = {
-          '/study/my-study/': getMyStudies,
-          '/study/my-participating-study/': getParticipatingStudies,
-          '/study/my-closed-study/': getMyClosedStudies,
-          '/study/my-like-study/': getLikedStudies,
-        };
-        const fetcher = API_MAP[endpoint];
-        const raw = fetcher ? await fetcher() : [];
+        const raw = await API_MAP[tab]();
         if (!cancelled) {
-          setStudies(raw.map((s: MyStudyItem) => ({ ...s, thumbnail: toAbsoluteUrl(s.thumbnail) })));
+          setStudies(raw.map(normalizeStudy));
         }
       } catch {
         if (!cancelled) setError('스터디 목록을 불러오는 데 실패했습니다.');
@@ -53,10 +40,8 @@ export const useMyStudies = (endpoint: string | null) => {
     };
 
     fetchStudies();
-    return () => {
-      cancelled = true;
-    };
-  }, [endpoint]);
+    return () => { cancelled = true; };
+  }, [tab]);
 
   return { studies, isLoading, error };
 };

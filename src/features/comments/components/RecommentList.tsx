@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Recomment } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
-import { axiosInstance } from "@/api/axios";
+import { createReport } from "@/api/report";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
 import IconSend from "@/assets/base/icon-Send.svg?react";
@@ -79,7 +79,7 @@ const RecommentList = ({
   // report_reason 7(기타)로 고정, 필요 시 신고 사유 선택 UI 추가 가능
   const handleReport = async (recommentPk: number) => {
     try {
-      await axiosInstance.post("/report/", {
+      await createReport({
         report_reason: 7,
         report_content: "대댓글 신고",
         reported_recomment: recommentPk,
@@ -108,9 +108,8 @@ const RecommentList = ({
         const profileImg = isWithdrawnUser(recomment.user)
           ? withdrawnProfileImg
           : isNormalUser(recomment.user)
-            ? getFullUrl(recomment.user.profile.profile_img) ||
-              "/default-profile.png"
-            : "/default-profile.png";
+            ? getFullUrl(recomment.user.profile.profile_img) || withdrawnProfileImg
+            : withdrawnProfileImg;
 
         return (
           <div
@@ -286,10 +285,7 @@ const RecommentList = ({
       {showInput && (
         <div className="flex items-center gap-[12px] mt-[16px]">
           <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0" />
-          <div
-            className="flex-1 flex items-center overflow-hidden"
-            style={{ height: "40px", borderRadius: "8px", outline: "1px solid #D9DBE0", outlineOffset: "-1px" }}
-          >
+          <div className="h-10 rounded-[8px] border border-gray-300 flex-1 flex items-center overflow-hidden">
             <div className="flex-1 flex items-center px-[16px] h-full min-w-0">
               {taggedUser && (
                 <span className="text-primary text-base font-medium flex-shrink-0 mr-1">
@@ -302,16 +298,14 @@ const RecommentList = ({
                 onChange={(e) => setReplyInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
                 placeholder="답글을 입력하세요"
-                className="w-full text-base focus:outline-none bg-transparent"
-                style={{ color: "text-gray-500", lineHeight: "24px" }}
+                className="w-full text-base focus:outline-none bg-transparent leading-6"
                 autoFocus
               />
             </div>
             <button
               onClick={handleSubmitReply}
               disabled={!replyInput.trim()}
-              className="flex-shrink-0 flex items-center justify-center"
-              style={{ width: "50px", height: "50px", backgroundColor: "bg-gray-300" }}
+              className="flex-shrink-0 flex items-center justify-center w-[50px] h-[50px] bg-gray-300"
             >
               <IconSend className="w-[26px] h-[26px] text-background" />
             </button>

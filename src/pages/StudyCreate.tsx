@@ -136,7 +136,7 @@ export default function StudyCreate() {
       <StudyCreateTopBar isValid={isValid} isSubmitting={isSubmitting || uploading} />
 
       {/* ── 폼 ── */}
-      <main className="max-w-[1200px] mx-auto pb-10">
+      <main className="max-w-[1190px] mx-auto pb-10">
         {apiError && (
           <div className="mx-4 mt-4 p-3 bg-error-light border border-error-border rounded-lg text-sm text-error">
             {apiError}

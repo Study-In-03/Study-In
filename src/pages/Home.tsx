@@ -49,7 +49,7 @@ export default function Home() {
   const [nickname, setNickname] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
-  const { studies: myStudies } = useMyStudies(isLoggedIn ? '/study/my-participating-study/' : null);
+  const { studies: myStudies } = useMyStudies(isLoggedIn ? 'joined' : null);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -95,10 +95,9 @@ export default function Home() {
                       </div>
                       {/* 상태 뱃지 */}
                       <div className="flex items-center gap-1 mt-2">
-                        <IconSpeaker className={`w-4 h-4 shrink-0 ${STATUS_COLOR[study.study_status.name] ?? "text-gray-400"}`} />
-                        <span className={`text-sm font-bold ${STATUS_COLOR[study.study_status.name] ?? "text-gray-400"}`}>
-                          {study.study_status.name === "모집 중" ? "모집 중!" : study.study_status.name}
-                          {calcDDay(study.start_date, study.end_date) && ` (${calcDDay(study.start_date, study.end_date)})`}
+                        <IconSpeaker className={`w-4 h-4 shrink-0 ${STATUS_COLOR[study.status] ?? "text-gray-500"}`} />
+                        <span className={`text-sm font-bold ${STATUS_COLOR[study.status] ?? "text-gray-500"}`}>
+                          {study.status === "모집 중" ? "모집 중!" : study.status}
                         </span>
                       </div>
                       {/* 제목 */}
@@ -195,7 +194,7 @@ export default function Home() {
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-5 py-2 rounded-full text-[14px] font-semibold transition-all ${
+                        className={`px-5 py-2 rounded-full text-base font-semibold transition-all ${
                           activeTab === tab
                             ? "bg-primary text-background shadow-sm"
                             : "bg-gray-100 text-gray-500 hover:bg-gray-200"
@@ -226,8 +225,8 @@ export default function Home() {
               studies={myStudies.map((s) => ({
                 id: s.id,
                 title: s.title,
-                status: s.study_status.name as "진행 중" | "모집 중",
-                dDay: calcDDay(s.start_date, s.end_date),
+                status: s.status as "진행 중" | "모집 중",
+                dDay: "",
                 image: s.thumbnail ?? "",
               }))}
             />

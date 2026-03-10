@@ -39,7 +39,7 @@ const NotFound = () => {
 
             <button
               onClick={() => navigate("/")}
-              className="px-6 py-2 bg-primary text-white rounded-md"
+              className="px-6 py-2 bg-primary text-background rounded-md"
             >
               메인으로
             </button>

@@ -15,20 +15,25 @@ export default function Chat() {
     const { isLoggedIn } = useAuthStore();
     const [hasStudy, setHasStudy] = useState<boolean | null>(null);
     const [participatingCount, setParticipatingCount] = useState(0);
-
+    const [studyStatus, setStudyStatus] = useState<string>('');
     const [isRoomListOpen, setIsRoomListOpen] = useState(false);
     const [isMemberSidebarOpen, setIsMemberSidebarOpen] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn) {
             getParticipatingStudies()
-                .then((studies) => setHasStudy(studies.length > 0))
+                .then((studies) => {
+                    setHasStudy(studies.length > 0);
+                    const current = studies.find((s: any) => String(s.pk) === study_pk);
+                    if (current) setStudyStatus(current.study_status?.name ?? '')
+                })
                 .catch(() => setHasStudy(false));
         }
     }, [isLoggedIn]);
 
     // 실제 데이터 존재 여부 판별
     const isNoData = !isLoggedIn || (hasStudy !== null && hasStudy === false) || !study_pk;
+    const isChatLoading = isLoggedIn && hasStudy === null && !!study_pk;
 
     // WebSocket URL: wss://api.wenivops.co.kr/services/studyin-chat/chat/study/{study_pk}/?token={jwt}
     // 메시지 포맷: { type: "text" | "image" | "file", message: string }
@@ -78,7 +83,7 @@ export default function Chat() {
                         <ChatHeader
                             studyPk={Number(study_pk)}
                             title={undefined}
-                            statusName="진행 중"
+                            statusName={studyStatus}
                             isRoomListOpen={isRoomListOpen}
                             onBack={() => setIsRoomListOpen(true)}
                             onToggleSidebar={() => setIsMemberSidebarOpen(!isMemberSidebarOpen)}
@@ -95,14 +100,18 @@ export default function Chat() {
                         <ChatHeader
                             studyPk={Number(study_pk)}
                             title={!isNoData ? "스터디 채팅방" : undefined}
-                            statusName="진행 중"
+                            statusName={studyStatus}
                             isRoomListOpen={isRoomListOpen}
                             onBack={() => setIsRoomListOpen(true)}
                             onToggleSidebar={() => setIsMemberSidebarOpen(!isMemberSidebarOpen)}
                             slot="center"
                         />
                     </div>
-                    {isNoData ? (
+                    {isChatLoading ? (
+                        <div className="flex-1 flex items-center justify-center text-gray-500 text-base font-regular">
+                            로딩 중...
+                        </div>
+                    ) : isNoData ? (
                         <ChatEmptyState isLoggedIn={isLoggedIn} />
                     ) : (
                         <>

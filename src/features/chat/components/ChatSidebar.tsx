@@ -3,9 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CrownIcon from '@/assets/base/icon-crown-fill.svg?react';
 import DotsIcon from '@/assets/base/icon-dots.svg?react';
 import HomeIcon from '@/assets/base/icon-Home.svg?react';
-import PersonIcon from '@/assets/base/icon-person.svg?react';
-import { getStudy } from '@/api/study';
-import { leaveStudy } from '@/api/study';;
+import EmptyProfileIcon from '@/assets/base/icon-empty-profile.svg?react';
+import { getStudy, leaveStudy } from '@/api/study';
 import { getFullUrl } from '@/api/upload';
 
 interface MemberProfile {
@@ -70,8 +69,17 @@ export default function ChatSidebar({ onClose }: ChatSidebarProps) {
 
     const totalMembers = studyData ? studyData.participants.length + 1 : 0;
 
-    if (isLoading) return <div className="p-4 text-gray-500 text-sm">로딩 중...</div>;
-    if (!studyData) return <div className="p-4 text-gray-500 text-sm font-regular">데이터가 없습니다.</div>;
+    // 수정 후
+if (isLoading) return (
+    <div className="flex-1 flex items-center justify-center text-gray-500 text-base font-regular">
+        로딩 중...
+    </div>
+);
+if (!studyData) return (
+    <div className="flex-1 flex items-center justify-center text-gray-500 text-base font-regular">
+        데이터가 없습니다.
+    </div>
+);
 
     return (
         <div className="flex flex-col h-full bg-background">
@@ -127,7 +135,7 @@ export default function ChatSidebar({ onClose }: ChatSidebarProps) {
                                 alt="방장"
                             />
                         ) : (
-                            <PersonIcon className="w-6 h-6 text-gray-500 opacity-50" />
+                            <EmptyProfileIcon className="w-full h-ful" />
                         )}
                     </div>
                     <span className="text-base font-medium text-surface truncate flex-1">
@@ -147,7 +155,7 @@ export default function ChatSidebar({ onClose }: ChatSidebarProps) {
                                     alt="멤버"
                                 />
                             ) : (
-                                <PersonIcon className="w-6 h-6 text-gray-500 opacity-50" />
+                                <EmptyProfileIcon className="w-full h-ful" />
                             )}
                         </div>
                         <span className="text-base font-regular text-surface truncate flex-1">

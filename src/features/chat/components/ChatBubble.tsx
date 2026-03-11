@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import personIcon from '@/assets/base/icon-person.svg'; 
 import CrownIcon from '@/assets/base/icon-crown-fill.svg?react';
 import CopyIcon from '@/assets/base/icon-copy.svg?react';
 import CheckIcon from '@/assets/base/icon-square-Check.svg?react';
+import EmptyProfileIcon from '@/assets/base/icon-empty-profile.svg?react';
 import { getFullUrl } from '@/api/upload';
 import { ChatMessage } from '@/types/chat';
 
@@ -60,14 +60,10 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
                         <img 
                             src={getFullUrl(profileImg)} 
                             alt={`${sender} 프로필`} 
-                            className="object-cover" 
+                            className="w-full h-full object-cover" 
                         />
                     ) : (
-                        <img 
-                            src={personIcon} 
-                            alt="기본 프로필" 
-                            className= "opacity-40" 
-                        />
+                        <EmptyProfileIcon className="w-full h-full" />
                     )}
                 </div>
             )}
@@ -76,8 +72,8 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
                 
                 {/* 이름 및 시간 */}
                 {!isMine && (
-                    <div className="flex items-center mb-1 gap-1">
-                        <span className="text-sm text-gray-700 font-regular">{sender}</span>
+                    <div className="flex items-center mb-1 gap-2">
+                        <span className="text-sm text-gray-700 font-regular gap-1">{sender}</span>
                         {isOwner && (
                             <CrownIcon className="w-4 h-4 text-warning shrink-0" />
                         )}
@@ -94,9 +90,9 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
 
                     {/* 말풍선 본문 */}
                     <div>
-                        {/* 1. 이미지 타입인 경우 */}
+                        {/* 이미지 타입인 경우 */}
                         {message.chat_type === 'image' && message.image_url ? (
-                            <div className="max-w-[250px] rounded-[8px] overflow-hidden border border-gray-200">
+                            <div className="max-w-[440px] rounded-[8px] overflow-hidden">
                                 <img 
                                     src={getFullUrl(message.image_url)} 
                                     alt="채팅 이미지" 
@@ -104,17 +100,19 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
                                 />
                             </div>
                         ) : message.chat_type === 'file' && message.file_url ? (
-                            /* 2. 파일 타입인 경우 */
+                            /* 파일 타입인 경우 (수정 필요) */
                             <a 
                                 href={message.file_url} 
                                 target="_blank" 
                                 rel="noreferrer"
                                 className="flex items-center gap-2 p-3 bg-gray-100 rounded-[8px] border border-gray-300 hover:bg-gray-200 transition-colors"
                             >
-                                <span className="text-sm font-medium text-surface">📁 파일 다운로드</span>
+                                <span className="text-sm font-medium text-surface">
+                                    📁 {message.file_url.split('/').pop() || '파일 다운로드'}
+                                </span>
                             </a>
                         ) : isCode ? (
-                            /* 3. 코드형 텍스트 메시지 (기존 디자인) */
+                            /* 코드형 텍스트 메시지 (수정 필요) */
                             <div className="bg-gray-700 rounded-[8px] p-3 w-full max-w-[306px] md:max-w-full overflow-hidden">
                                 <div className="group">
                                     <div className="flex justify-between items-center ">
@@ -140,15 +138,15 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
                                 </div>
                             </div>
                         ) : (
-                            /* 4. 일반 텍스트 메시지 (기존 디자인) */
-                            <div className={`p-3 rounded-[8px] ${isMine ? 'bg-primary text-background' : 'bg-gray-100'}`}>
-                                <p className={`text-base font-regular leading-snug break-all ${text.includes('http') ? 'text-blue-400 underline' : ''}`}>
+                            /* 일반 텍스트 메시지 */
+                            <div className={`bg-gray-100`}>
+                                <p className={`text-base font-regular leading-snug break-all ${text.includes('http') ? 'text-primary underline' : ''}`}>
                                     {displayedText}
                                 </p>
                                 {isLongText && (
                                     <button 
                                         onClick={() => setIsExpanded(!isExpanded)}
-                                        className={`text-base font-medium underline mt-1 ${isMine ? 'text-background/70' : 'text-gray-500'}`}
+                                        className={`text-base font-medium underline mt-1 text-gray-500 hover:text-gray-700`}
                                     >
                                         {isExpanded ? '접기' : '...더보기'}
                                     </button>

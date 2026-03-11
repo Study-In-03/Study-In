@@ -54,13 +54,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 z-[90] md:hidden"
           onClick={onClose}
         />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-50 md:hidden flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-[100] md:hidden flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

@@ -1,20 +1,13 @@
 import { useState, useEffect } from 'react'
-import BtnCloseIcon from '@/assets/base/icon-btn-X.svg?react'
 import LeftIcon from '@/assets/base/icon-left.svg?react'
 import RightIcon from '@/assets/base/icon-right.svg?react'
 import MyPageSidebar from '@/components/common/MyPageSidebar'
-import {
-  getNotifications,
-  deleteNotification,
-  readNotification,
-  Notification as NotificationType,
-} from '@/api/notification'
+import { useNotificationStore } from '@/store/notificationStore'
 
 const PAGE_SIZE = 10
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState<NotificationType[]>([])
-  const [totalCount, setTotalCount] = useState(0)
+  const { notifications, totalCount, fetch, markRead, remove } = useNotificationStore()
   const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,39 +16,23 @@ const Notification = () => {
   const unreadCount = notifications.filter((n) => !n.checked).length
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      setIsLoading(true)
-      try {
-        const data = await getNotifications(currentPage)
-        setNotifications(data.results)
-        setTotalCount(data.count)
-      } catch {
-        setError('알림을 불러오는 데 실패했어요.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchNotifications()
+    setIsLoading(true)
+    fetch(currentPage)
+      .catch(() => setError('알림을 불러오는 데 실패했어요.'))
+      .finally(() => setIsLoading(false))
   }, [currentPage])
 
-  const handleDelete = async (notificationId: number) => {
+  const handleDelete = async (id: number) => {
     try {
-      await deleteNotification(notificationId)
-      setNotifications((prev) => prev.filter((n) => n.notification_id !== notificationId))
-      setTotalCount((prev) => prev - 1)
+      await remove(id)
     } catch {
       setError('알림 삭제에 실패했어요.')
     }
   }
 
-  const handleRead = async (notificationId: number) => {
+  const handleRead = async (id: number) => {
     try {
-      await readNotification(notificationId)
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.notification_id === notificationId ? { ...n, checked: true } : n
-        )
-      )
+      await markRead(id)
     } catch {
       setError('알림 읽음 처리에 실패했어요.')
     }
@@ -89,12 +66,12 @@ const Notification = () => {
     }
 
     return (
-      <div className="flex flex-col gap-4">
-        <h2 className="text-base font-medium text-gray-900 md:text-left text-center">
+      <div className="border border-gray-300 rounded-xl px-4 pt-5 pb-4 md:px-10 md:pt-10 md:pb-10 flex flex-col gap-4 md:gap-[30px]">
+        <h2 className="text-base md:text-2xl font-bold text-gray-900 text-center md:text-left">
           확인하지 않은 알림{' '}
-          <span className="text-primary font-bold">{unreadCount}개</span>
+          <span className="text-primary">{unreadCount}개</span>
         </h2>
-        <div className="border border-gray-300 rounded-xl px-5 py-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2 md:gap-[10px]">
           {notifications.length === 0 ? (
             <div className="flex justify-center py-8 text-gray-500 text-sm">
               알림이 없어요.
@@ -104,27 +81,56 @@ const Notification = () => {
               <div
                 key={notification.notification_id}
                 onClick={() => !notification.checked && handleRead(notification.notification_id)}
-                className="relative cursor-pointer"
+                className="cursor-pointer"
               >
-                {!notification.checked && (
-                  <div className="absolute -left-2 top-0 w-2 h-2 rounded-full bg-error z-10" />
-                )}
-                <div className={`flex items-start gap-2 border border-gray-300 rounded-lg px-3 py-3 ${
-                  notification.checked ? 'bg-gray-100' : 'bg-background'
+                {/* 모바일 */}
+                <div className={`md:hidden relative h-[80px] rounded-lg ${
+                  notification.checked
+                    ? 'bg-gray-100'
+                    : 'bg-background outline outline-1 outline-gray-300'
                 }`}>
-                  <div className="flex-1 flex flex-col gap-1">
-                    <p className="text-sm text-gray-900">{notification.content}</p>
-                    <p className="text-xs text-primary">{formatDate(notification.created)}</p>
+                  <div className="absolute inset-0 p-[10px]">
+                    <div className="flex flex-col gap-1">
+                      <p className={`w-[calc(100%-28px)] text-sm leading-5 ${notification.checked ? 'text-gray-700' : 'text-surface'}`}>
+                        {notification.content}
+                      </p>
+                      <p className={`text-xs leading-4 ${notification.checked ? 'text-gray-500' : 'text-primary'}`}>
+                        {formatDate(notification.created)}
+                      </p>
+                    </div>
                   </div>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(notification.notification_id)
-                    }}
-                    className="shrink-0"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(notification.notification_id) }}
+                    className="absolute right-[10px] top-[10px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-white text-xs leading-none"
                   >
-                    <BtnCloseIcon className="w-4 h-4 opacity-25" />
+                    ×
                   </button>
+                  {!notification.checked && (
+                    <div className="absolute left-0 top-0 w-2 h-2 rounded-full bg-error z-10" />
+                  )}
+                </div>
+
+                {/* 데스크탑 */}
+                <div className={`hidden md:flex relative items-center min-h-10 px-3 pr-[110px] rounded-lg ${
+                  notification.checked
+                    ? 'bg-gray-100'
+                    : 'bg-background outline outline-1 outline-gray-300'
+                }`}>
+                  <p className={`flex-1 text-sm leading-5 py-[10px] ${notification.checked ? 'text-gray-700' : 'text-surface'}`}>
+                    {notification.content}
+                  </p>
+                  <p className={`absolute right-[50px] top-[12px] text-xs leading-4 whitespace-nowrap ${notification.checked ? 'text-gray-500' : 'text-primary'}`}>
+                    {formatDate(notification.created)}
+                  </p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(notification.notification_id) }}
+                    className="absolute right-[11px] top-[11px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-white text-xs leading-none"
+                  >
+                    ×
+                  </button>
+                  {!notification.checked && (
+                    <div className="absolute left-0 top-0 w-2 h-2 rounded-full bg-error z-10" />
+                  )}
                 </div>
               </div>
             ))
@@ -132,23 +138,23 @@ const Notification = () => {
         </div>
 
         {/* 페이지네이션 */}
-        <div className="flex justify-center items-center gap-4 mt-2">
+        <div className="flex justify-center items-center gap-[10px]">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className={currentPage === 1 ? 'text-gray-300' : 'text-gray-500'}
+            className={currentPage === 1 ? 'text-gray-300' : 'text-gray-700'}
           >
-            <LeftIcon className="w-4 h-4" />
+            <LeftIcon className="w-5 h-5" />
           </button>
-          <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">
+          <span className="px-[11px] py-[5px] rounded-[30px] bg-primary text-background text-sm font-bold leading-5">
             {currentPage}
           </span>
           <button
             onClick={() => setCurrentPage((p) => Math.min(Math.max(totalPages, 1), p + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
-            className={currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-500'}
+            className={currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-700'}
           >
-            <RightIcon className="w-4 h-4" />
+            <RightIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -156,9 +162,9 @@ const Notification = () => {
   }
 
   return (
-    <div className="flex gap-8 py-6">
+    <div className="flex gap-8 px-4 md:px-0 py-6">
       <MyPageSidebar />
-      <div className="flex-1 min-w-0 px-0 md:px-0">
+      <div className="flex-1 min-w-0">
         {renderContent()}
       </div>
     </div>

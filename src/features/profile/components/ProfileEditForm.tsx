@@ -383,10 +383,10 @@ const ProfileEditForm = () => {
             </div>
           </div>
 
-          {/* 관심 분야 태그 */}
+          {/* 관심 분야 */}
           <div className="flex items-start">
             <label className="text-sm font-medium text-gray-700 w-24 shrink-0 pt-2">
-              관심 분야 태그
+              관심 분야
             </label>
             <div className="flex flex-col gap-2 flex-1">
               <div className="border border-gray-300 rounded-lg px-3 py-2 flex flex-wrap gap-2 items-center">

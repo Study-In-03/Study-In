@@ -102,11 +102,13 @@ export default function Search() {
   const initialType = location.pathname.startsWith('/local') ? '내지역'
     : location.pathname.startsWith('/online') ? '온라인' : '';
 
+  const initialSubject = searchParams.get('subject') || '';
+
   const [inputValue, setInputValue] = useState(initialQuery);
   const [query, setQuery] = useState(initialQuery);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const [subjects, setSubjects] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<string[]>(initialSubject ? [initialSubject] : []);
   const [difficulties, setDifficulties] = useState<string[]>([]);
   const [days, setDays] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>(initialType ? [initialType] : []);
@@ -160,11 +162,13 @@ export default function Search() {
     setQuery(initialQuery);
     const t = initialType ? [initialType] : [];
     setTypes(t);
+    const s = initialSubject ? [initialSubject] : [];
+    setSubjects(s);
     setPage(1);
-    if (initialQuery) {
-      fetchResults({ q: initialQuery, subjects: [], difficulties: [], days: [], types: t, statuses: [], page: 1 });
+    if (initialQuery || initialSubject) {
+      fetchResults({ q: initialQuery, subjects: s, difficulties: [], days: [], types: t, statuses: [], page: 1 });
     }
-  }, [initialQuery, initialType]);
+  }, [initialQuery, initialType, initialSubject]);
 
   const handleSearch = () => {
     setQuery(inputValue);
@@ -299,7 +303,13 @@ export default function Search() {
       {searched && (
         <>
           <h2 className="text-3xl font-bold mb-4">
-            <span className="text-primary">{query}</span> 검색결과
+            {query ? (
+              <><span className="text-primary">{query}</span> 검색결과</>
+            ) : subjects.length > 0 ? (
+              <><span className="text-primary">{subjects[0]}</span> 카테고리 검색결과</>
+            ) : (
+              <>검색결과</>
+            )}
           </h2>
 
           {isLoading ? (
@@ -308,7 +318,7 @@ export default function Search() {
             <div className="flex flex-col items-center py-16 gap-[20px]">
               <div className="flex flex-col items-center gap-[10px]">
                 <p className="text-xl font-bold text-gray-700 text-center">
-                  <span className="text-error">{query}</span>에 대한 검색결과가 없습니다.
+                  <span className="text-error">{query || subjects[0] || ''}</span>에 대한 검색결과가 없습니다.
                 </p>
                 <p className="text-lg font-regular text-gray-700 text-center">원하시는 스터디가 없나요? 스터디를 직접 만들어 보세요!</p>
               </div>

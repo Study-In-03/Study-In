@@ -3,7 +3,7 @@ import { getMyStudies, getParticipatingStudies, getMyClosedStudies, getLikedStud
 import { normalizeStudy } from '@/utils/study';
 import type { Study } from '@/types/study';
 
-type TabKey = 'my' | 'joined' | 'ended' | 'liked';
+export type TabKey = 'my' | 'joined' | 'ended' | 'liked';
 
 const API_MAP: Record<TabKey, () => Promise<any[]>> = {
   my: getMyStudies,

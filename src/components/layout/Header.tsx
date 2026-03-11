@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, NavLink, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
-import { getNotifications, deleteNotification } from '@/api/notification';
-import type { Notification } from '@/api/notification';
+import { useNotificationStore } from '@/store/notificationStore';
 import { storage } from '@/utils/storage';
 import { useAssociateGuard } from '@/hooks/useAssociateGuard';
 import useOutsideClick from '@/hooks/useOutsideClick';
@@ -78,7 +77,7 @@ export default function Header({ variant }: HeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notifications, fetch: fetchNotifications, markRead, remove: storeRemove } = useNotificationStore();
   const profileImg = useProfileImage(isLoggedIn);
   const unreadCount = notifications.filter((n) => !n.checked).length;
   const [searchHistory, setSearchHistory] = useState<string[]>(loadSearchHistory);
@@ -99,14 +98,11 @@ export default function Header({ variant }: HeaderProps) {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    getNotifications()
-      .then((data) => setNotifications(data.results))
-      .catch(() => {});
+    fetchNotifications().catch(() => {});
   }, [isLoggedIn]);
 
   const handleDeleteNotification = async (id: number): Promise<void> => {
-    await deleteNotification(id);
-    setNotifications((prev) => prev.filter((n) => n.notification_id !== id));
+    await storeRemove(id);
   };
 
 
@@ -269,13 +265,19 @@ export default function Header({ variant }: HeaderProps) {
                         <p className="text-sm text-gray-500 text-center py-4">알림이 없습니다.</p>
                       ) : (
                         notifications.slice(0, 5).map((n) => (
-                          <div key={n.notification_id} className="relative">
+                          <div
+                            key={n.notification_id}
+                            className="relative cursor-pointer"
+                            onClick={() => !n.checked && markRead(n.notification_id)}
+                          >
                             {!n.checked && (
                               <span className="absolute top-0 left-0 w-2 h-2 bg-error rounded-full z-10" />
                             )}
-                            <div className={`w-full p-[10px] rounded-[8px] pr-8 ${n.checked ? 'bg-gray-100' : 'bg-background border border-gray-300'}`}>
-                              <p className={`text-sm leading-5 ${n.checked ? 'text-gray-700' : 'text-surface'}`}>{n.content}</p>
-                              <p className={`text-xs mt-1 ${n.checked ? 'text-gray-500' : 'text-primary'}`}>{formatNotifTime(n.created)}</p>
+                            <div className={`w-full p-[10px] pr-8 rounded-[8px] ${n.checked ? 'bg-gray-100' : 'bg-background outline outline-1 outline-gray-300'}`}>
+                              <div className="flex flex-col gap-1">
+                                <p className={`text-sm leading-5 ${n.checked ? 'text-gray-700' : 'text-surface'}`}>{n.content}</p>
+                                <p className={`text-xs leading-4 ${n.checked ? 'text-gray-500' : 'text-primary'}`}>{formatNotifTime(n.created)}</p>
+                              </div>
                             </div>
                             <button
                               onClick={() => handleDeleteNotification(n.notification_id)}

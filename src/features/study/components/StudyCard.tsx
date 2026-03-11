@@ -51,7 +51,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
         <div className="flex items-center gap-1">
           <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
           <span className={`text-sm font-bold md:text-lg md:font-normal ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
-            {study.status === "모집 중" ? "모집 중!" : study.status}
+            {study.status === "모집 중" ? "모집 중!" : study.status === "완료" ? "종료" : study.status}
           </span>
         </div>
         <span className="text-xs md:text-sm bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700">
@@ -70,7 +70,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
         {/* 종료 오버레이 */}
         {study.status === "완료" && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <span className="text-background text-sm font-medium">완료된 스터디입니다 :)</span>
+            <span className="text-background text-sm font-medium">종료된 스터디입니다 :)</span>
           </div>
         )}
         {/* 하트 버튼 */}

@@ -19,6 +19,7 @@ type RawStudy = {
   study_status?: { name: string };
   participant_count?: number;
   current_participants?: number;
+  participants?: unknown[];
   user_liked?: boolean;
   is_liked?: boolean;
 };
@@ -33,7 +34,7 @@ export function normalizeStudy(s: RawStudy): Study {
     difficulty: (typeof s.difficulty === 'object' ? s.difficulty?.name : s.difficulty) ?? '',
     topic: (typeof s.subject === 'object' ? s.subject?.name : s.subject) ?? '',
     status: s.study_status?.name === '완료' ? '종료' : (s.study_status?.name ?? ''),
-    current_participants: s.participant_count ?? s.current_participants ?? 0,
+    current_participants: s.participant_count ?? s.current_participants ?? s.participants?.length ?? 0,
     is_liked: s.user_liked ?? s.is_liked ?? false,
   } as Study;
 }

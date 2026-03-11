@@ -72,7 +72,7 @@
 ### 4. 1 개발 일정 (WBS)
 
 ```mermaid
-%%{init: { 'gantt': { 'barHeight': 40, 'fontSize': 10, 'sectionFontSize': 10, 'barGap': 0 } } }%%
+%%{init: { 'gantt': { 'barHeight': 30, 'fontSize': 10, 'sectionFontSize': 10, 'barGap': 0 } } }%%
 gantt
     title Study-In 플렛폼 개발 계획 (2/24 ~ 3/13)
     dateFormat YYYY-MM-DD
@@ -100,7 +100,7 @@ gantt
 
 <br>
 
-### 4. 2 작업 과정
+### 4. 2 개발 작업 과정
 
 ### 4. 2. 1 사전 기획 및 요구사항 분해
 
@@ -143,6 +143,8 @@ gantt
 |                        |    신고 시스템    |      스터디, 사용자, 댓글에 대한 공통 신고하기 API 및 폼 구현       |   B2   |          E3(공통 모달)에 부착           | 선택 |
 
 ---
+ <div align="right"><b>*</b>&nbsp;&nbsp; E1 강수민 &nbsp;&nbsp; E2 강주현 &nbsp;&nbsp; E3 최서원 &nbsp;&nbsp; B1 강수정 &nbsp;&nbsp; B2 권하리 &nbsp;&nbsp; B3 박외숙</div> |
+
 
 - #### 전공자 / 경험자 역할 (Core & Infrastructure)
 
@@ -194,7 +196,7 @@ npm install
 
 #### 3. 환경 변수 설정
 
-- .env 파일 생성 후 아래 내용 추가
+- .env 파일 생성 후 아래 내용 추가 -> .ignore 파일에 저장
 
 <div align="center">
 
@@ -248,23 +250,26 @@ npm run dev
 
 ## 🏠 메인 페이지
 
-![Home](screenshots/home.png)
+<div style="display: flex; justify-content: center; gap: 30px;">
+  <img src="src/assets/images/main-1.gif" style="height: 240px;" alt="과정" />
+  <img src="src/assets/images/main-2.gif" style="height: 240px;" alt="결과" />
+</div>
 
 ## 🎠 배너 Carousel
 
-![Banner](screenshots/banner.gif)
+<div style="display: flex; justify-content: center; gap:40px;">
+  <img src="src/assets/images/banner-1.gif" style="height: 120px;" alt="과정" />
+  <img src="src/assets/images/banner-2.gif" style="height: 120px;" alt="결과" />
+</div>
 
-## <img src="./src/assets/base/icon-location.svg" style= "color:bg-primary; width:24px; height:24px;"/> 지역 스터디 페이지
+## <img src="./src/assets/base/icon-location.svg" style= "color:bg-primary; width:24px; height:24px;"/> 내 지역 & 온라인 스터디 페이지
 
-![Local](screenshots/local.png)
-
-## 💻 온라인 스터디 페이지
-
-![Online](screenshots/online.png)
+<div align="center">
+<img src="src/assets/images/local-online.gif" style="width: 240px;" alt="과정" /> </div>
 
 <br><br>
 
-# 📂 프로젝트 구조
+## 📂 프로젝트 구조
 
 ```mermade
 📦 studyin-frontend

@@ -123,7 +123,11 @@ export default function Home() {
           </button>
           <div className="grid grid-cols-4 gap-5 mt-[30px] px-[9px]">
             {categories.map((category) => (
-              <button key={category.id} className="flex flex-col items-center gap-2">
+              <button
+                key={category.id}
+                onClick={() => navigate(`/search?subject=${encodeURIComponent(category.name)}`)}
+                className="flex flex-col items-center gap-2"
+              >
                 <div className="w-[70px] h-[70px] rounded-[12px] bg-gray-100 flex items-center justify-center">
                   <img src={category.icon} alt={category.name} className="w-[62px] h-[62px] object-contain" />
                 </div>
@@ -172,6 +176,7 @@ export default function Home() {
                   {categories.map((category) => (
                     <button
                       key={category.id}
+                      onClick={() => navigate(`/search?subject=${encodeURIComponent(category.name)}`)}
                       className="flex flex-col items-center shrink-0 gap-3 group"
                     >
                       <div className="w-[60px] h-[60px] rounded-2xl bg-gray-50 flex items-center justify-center transition-all group-hover:bg-primary/10">

@@ -89,12 +89,12 @@ const Notification = () => {
     }
 
     return (
-      <div className="flex flex-col gap-4">
-        <h2 className="text-base font-medium text-gray-900 md:text-left text-center">
+      <div className="border border-gray-300 rounded-xl px-4 pt-5 pb-4 flex flex-col gap-4">
+        <h2 className="text-base font-bold text-gray-900 text-center">
           확인하지 않은 알림{' '}
-          <span className="text-primary font-bold">{unreadCount}개</span>
+          <span className="text-primary">{unreadCount}개</span>
         </h2>
-        <div className="border border-gray-300 rounded-xl px-5 py-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           {notifications.length === 0 ? (
             <div className="flex justify-center py-8 text-gray-500 text-sm">
               알림이 없어요.
@@ -104,51 +104,57 @@ const Notification = () => {
               <div
                 key={notification.notification_id}
                 onClick={() => !notification.checked && handleRead(notification.notification_id)}
-                className="relative cursor-pointer"
+                className="relative h-[80px] cursor-pointer"
               >
-                {!notification.checked && (
-                  <div className="absolute -left-2 top-0 w-2 h-2 rounded-full bg-error z-10" />
-                )}
-                <div className={`flex items-start gap-2 border border-gray-300 rounded-lg px-3 py-3 ${
-                  notification.checked ? 'bg-gray-100' : 'bg-background'
+                <div className={`absolute inset-0 p-[10px] rounded-lg ${
+                  notification.checked
+                    ? 'bg-gray-100'
+                    : 'bg-background outline outline-1 outline-gray-300'
                 }`}>
-                  <div className="flex-1 flex flex-col gap-1">
-                    <p className="text-sm text-gray-900">{notification.content}</p>
-                    <p className="text-xs text-primary">{formatDate(notification.created)}</p>
+                  <div className="flex flex-col gap-1">
+                    <p className={`w-[calc(100%-28px)] text-sm leading-5 ${notification.checked ? 'text-gray-700' : 'text-surface'}`}>
+                      {notification.content}
+                    </p>
+                    <p className={`text-xs text-right leading-4 ${notification.checked ? 'text-gray-500' : 'text-primary'}`}>
+                      {formatDate(notification.created)}
+                    </p>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(notification.notification_id)
-                    }}
-                    className="shrink-0"
-                  >
-                    <BtnCloseIcon className="w-4 h-4 opacity-25" />
-                  </button>
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDelete(notification.notification_id)
+                  }}
+                  className="absolute right-[10px] top-[10px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-white text-xs leading-none"
+                >
+                  ×
+                </button>
+                {!notification.checked && (
+                  <div className="absolute left-0 top-0 w-2 h-2 rounded-full bg-error z-10" />
+                )}
               </div>
             ))
           )}
         </div>
 
         {/* 페이지네이션 */}
-        <div className="flex justify-center items-center gap-4 mt-2">
+        <div className="flex justify-center items-center gap-[10px]">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className={currentPage === 1 ? 'text-gray-300' : 'text-gray-500'}
+            className={currentPage === 1 ? 'text-gray-300' : 'text-gray-700'}
           >
-            <LeftIcon className="w-4 h-4" />
+            <LeftIcon className="w-5 h-5" />
           </button>
-          <span className="w-8 h-8 rounded-full bg-primary text-background text-sm flex items-center justify-center">
+          <span className="px-[11px] py-[5px] rounded-[30px] bg-primary text-background text-sm font-bold leading-5">
             {currentPage}
           </span>
           <button
             onClick={() => setCurrentPage((p) => Math.min(Math.max(totalPages, 1), p + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
-            className={currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-500'}
+            className={currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-700'}
           >
-            <RightIcon className="w-4 h-4" />
+            <RightIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -156,7 +162,7 @@ const Notification = () => {
   }
 
   return (
-    <div className="flex gap-8 py-6">
+    <div className="flex gap-8 px-4 md:px-0 py-6">
       <MyPageSidebar />
       <div className="flex-1 min-w-0 px-0 md:px-0">
         {renderContent()}

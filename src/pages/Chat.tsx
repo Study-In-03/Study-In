@@ -41,7 +41,8 @@ export default function Chat() {
     }, [isLoggedIn, study_pk]);
 
     // 실제 데이터 존재 여부 판별
-    const isNoData = !isLoggedIn || (hasStudy !== null && hasStudy === false) || !study_pk;
+    const isNoData = !isLoggedIn || (hasStudy !== null && hasStudy === false);
+    const isNoRoomSelected = isLoggedIn && !study_pk; // 로그인은 됐지만 채팅방 미선택
     const isChatLoading = isLoggedIn && hasStudy === null && !!study_pk;
 
     // ChatMessageList가 준비되면 sendMessage를 ref에 저장
@@ -106,8 +107,8 @@ export default function Chat() {
             {/* 채팅 본체 */}
             <div className={`flex-1 min-h-0 flex ${isRoomListOpen ? 'hidden md:flex' : 'flex'}`}>
 
-                {/* 왼쪽 사이드바 */}
-                <aside className="hidden md:flex flex-col w-[calc((100vw-1190px)/2)] min-w-[200px] max-w-[300px] border-r border-gray-300 bg-background overflow-hidden shrink-0">
+                {/* 왼쪽 사이드바: 스터디 없거나 로그인 안 됐을 때 숨김 */}
+                <aside className={`${isNoData ? 'hidden' : 'hidden md:flex'} flex-col w-[calc((100vw-1190px)/2)] min-w-[200px] max-w-[300px] border-r border-gray-300 bg-background overflow-hidden shrink-0`}>
                     <div className="h-[50px] flex items-center justify-between px-4 border-b border-gray-300 shrink-0">
                         <ChatHeader
                             title={undefined}
@@ -124,10 +125,10 @@ export default function Chat() {
                 </aside>
 
                 {/* 가운데 채팅 영역 */}
-                <main className={`flex-1 min-w-0 flex flex-col overflow-hidden md:bg-gray-100 ${isNoData ? 'bg-background' : 'bg-gray-100'}`}>
+                <main className={`flex-1 min-w-0 flex flex-col overflow-x-hidden md:bg-gray-100 ${isNoData ? 'bg-background' : 'bg-gray-100'}`}>
                     <div className="relative shrink-0">
                         <ChatHeader
-                            title={!isNoData ? "스터디 채팅방" : undefined}
+                            title={!isNoData && !isNoRoomSelected ? "스터디 채팅방" : undefined}
                             statusName={studyStatus}
                             isRoomListOpen={isRoomListOpen}
                             onBack={() => setIsRoomListOpen(true)}
@@ -142,6 +143,24 @@ export default function Chat() {
                         </div>
                     ) : isNoData ? (
                         <ChatEmptyState isLoggedIn={isLoggedIn} />
+                    ) : isNoRoomSelected ? (
+                        <>
+                            {/* 모바일: 상단 바 */}
+                            <div className="md:hidden h-[50px] flex items-center justify-between w-full px-4 border-b border-gray-300 shrink-0 bg-background">
+                                <h2 className="text-sm font-medium text-surface">
+                                    참여 중인 스터디 <span className="text-surface">-</span> <span className="text-primary font-bold">{participatingCount}개</span>
+                                </h2>
+                                <button className="text-gray-500 hover:text-primary-light transition-colors">
+                                    <ImportIcon className="w-[21px] h-[21px]" />
+                                </button>
+                            </div>
+                            {/* 모바일: 스터디 목록 바로 표시 */}
+                            <div className="flex-1 overflow-y-auto md:hidden">
+                                <ChatRoomList onCountChange={setParticipatingCount} />
+                            </div>
+                            {/* 데스크탑: 회색 배경만 */}
+                            <div className="hidden md:flex flex-1" />
+                        </>
                     ) : (
                         <>
                             <ChatMessageList
@@ -154,10 +173,10 @@ export default function Chat() {
                     )}
                 </main>
 
-                {/* 오른쪽 사이드바 */}
+                {/* 오른쪽 사이드바: 스터디 없거나 로그인 안 됐거나 방 미선택 시 데스크탑에서 숨김 */}
                 <aside className={`
                     fixed top-[56px] right-0 bottom-0 z-[70]
-                    md:relative md:top-0 md:flex md:flex-col
+                    ${!isNoData && !isNoRoomSelected ? 'md:relative md:top-0 md:flex md:flex-col' : 'md:hidden'}
                     w-[280px] md:w-[calc((100vw-1190px)/2)] md:min-w-[200px] md:max-w-[300px]
                     bg-background border-l border-gray-300 transition-transform duration-300 shrink-0
                     ${isMemberSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}

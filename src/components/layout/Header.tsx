@@ -315,7 +315,7 @@ export default function Header({ variant }: HeaderProps) {
                 </button>
 
                 {isLoggedIn && dropdownOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+8px)] w-[130px] bg-background rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-50 overflow-hidden py-1">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+8px)] w-[130px] bg-background rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-[80] overflow-hidden py-1">
                     <button
                       onClick={() => { setDropdownOpen(false); withAssociateGuard(() => navigate('/study/create')); }}
                       className="w-full h-[40px] flex items-center px-2"

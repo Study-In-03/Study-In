@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createReport, REPORT_REASONS, ReportTargetType } from '@/api/report'
+import { useSnackbarStore } from '@/store/snackbarStore'
 
 interface ReportModalProps {
   isOpen: boolean
@@ -13,7 +14,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isSuccess, setIsSuccess] = useState(false)
+  const { showSnackbar } = useSnackbarStore()
 
   if (!isOpen) return null
 
@@ -40,7 +41,8 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
         ...(targetType === 'comment' && { reported_comment: targetId }),
         ...(targetType === 'recomment' && { reported_recomment: targetId }),
       })
-      setIsSuccess(true)
+      showSnackbar()
+      handleClose()
     } catch {
       setError('신고 접수에 실패했어요. 다시 시도해주세요.')
     } finally {
@@ -52,7 +54,6 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
     setSelectedReason(null)
     setContent('')
     setError(null)
-    setIsSuccess(false)
     onClose()
   }
 
@@ -63,19 +64,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
 
         <h2 className="text-base font-bold text-gray-900 text-center">신고하기</h2>
 
-        {isSuccess ? (
-          <div className="flex flex-col items-center gap-3 py-4">
-            <p className="text-sm font-medium text-gray-900">신고가 접수되었어요.</p>
-            <p className="text-xs text-gray-500 text-center">검토 후 조치를 취할게요.</p>
-            <button
-              onClick={handleClose}
-              className="w-full py-2 bg-primary text-background rounded-lg text-sm font-medium mt-2"
-            >
-              확인
-            </button>
-          </div>
-        ) : (
-          <>
+        <>
             <div className="flex flex-col gap-2">
               {REPORT_REASONS.map((reason) => (
                 <button
@@ -126,8 +115,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
                 취소
               </button>
             </div>
-          </>
-        )}
+        </>
       </div>
     </div>
   )

@@ -11,7 +11,7 @@ export type ModalType =
   | 'user-info'         // 유저 정보 모달
   | 'report';           // 신고 모달 (확인 없이 바로)
 
-export type ConfirmType = 'logout' | 'delete' | 'report' | 'associate' | 'study-create' | 'study-delete';
+export type ConfirmType = 'logout' | 'delete' | 'report' | 'associate' | 'associate-join' | 'study-create' | 'study-delete';
 
 interface ModalState {
   isOpen: boolean;

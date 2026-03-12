@@ -6,12 +6,11 @@ import { StudyApiData, likeStudy, unlikeStudy } from '@/api/study';
 import { useAssociateGuard } from '@/hooks/useAssociateGuard';
 import { getFullUrl } from '@/api/upload';
 import { useModalStore } from '@/store/modalStore';
-
 import SpeakerIcon from "@/assets/base/icon-speaker.svg?react";
+import CrownIcon from "@/assets/base/icon-crown-fill.svg?react";
 import HeartIcon from "@/assets/base/icon-heart.svg?react";
 import HeartFillIcon from "@/assets/base/icon-heart-fill.svg?react";
 import ShareIcon from "@/assets/base/icon-Share.svg?react";
-
 import CommentSection from "@/features/comments/components/CommentSection";
 
 export default function StudyDetail() {
@@ -128,7 +127,7 @@ export default function StudyDetail() {
           </div>
         </div>
         <button
-          onClick={() => withAssociateGuard(handleJoinOrChat)}
+          onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
           className="w-full h-11 rounded-lg bg-primary text-background font-medium"
         >
           {primaryButtonText}
@@ -205,7 +204,10 @@ export default function StudyDetail() {
                   </div>
                   <div className="flex flex-col justify-center gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-gray-900">{leaderProfile.nickname}</span>
+                      <span className="flex items-center gap-1">
+                        <span className="font-bold text-gray-900">{leaderProfile.nickname}</span>
+                        <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                      </span>
                       {studyDetail.study_location && (
                         <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{studyDetail.study_location.location}</span>
                       )}
@@ -328,7 +330,10 @@ export default function StudyDetail() {
               </div>
               <div className="flex flex-col justify-center gap-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-gray-900 text-sm">{leaderProfile.nickname}</span>
+                  <span className="flex items-center gap-1">
+                    <span className="font-bold text-gray-900 text-sm">{leaderProfile.nickname}</span>
+                    <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                  </span>
                   {studyDetail.study_location && (
                     <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{studyDetail.study_location.location}</span>
                   )}
@@ -373,7 +378,7 @@ export default function StudyDetail() {
               {liked ? <HeartFillIcon className="w-5 h-5 text-error" /> : <HeartIcon className="w-5 h-5 text-gray-500" />}
             </button>
             <button
-              onClick={() => withAssociateGuard(handleJoinOrChat)}
+              onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
               className="h-[50px] flex-1 rounded-lg bg-primary text-background font-medium"
             >
               {primaryButtonText}

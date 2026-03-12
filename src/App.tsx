@@ -4,6 +4,7 @@ import Router from "./routes/Router";
 import { useAuthStore } from '@/store/authStore';
 import { getProfile } from '@/api/profile';
 import { storage } from '@/utils/storage';
+import Snackbar from '@/components/common/Snackbar';
 
 function App() {
   const { isLoggedIn, user, setUser } = useAuthStore();
@@ -21,6 +22,7 @@ function App() {
   return (
     <>
       <Router />
+      <Snackbar />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useModalStore } from "@/store/modalStore";
 import { useAuthStore } from "@/store/authStore";
@@ -29,12 +29,12 @@ const Modal = () => {
     onEdit,
     closeModal,
     openConfirm,
+    openModal,
     targetId,
     reportTargetType,
   } = useModalStore();
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,21 +45,9 @@ const Modal = () => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  if (!isOpen && !isReportModalOpen) return null;
+  if (!isOpen) return null;
 
-  // 신고 모달 (바텀시트 → 신고하기 클릭 후)
-  if (isReportModalOpen && targetId !== null && reportTargetType !== null) {
-    return (
-      <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        targetType={reportTargetType}
-        targetId={targetId}
-      />
-    );
-  }
-
-  // 신고 모달 (바로 열기)
+  // 신고 모달
   if (modalType === "report" && isOpen && targetId !== null && reportTargetType !== null) {
     return (
       <ReportModal
@@ -77,24 +65,27 @@ const Modal = () => {
   }
 
   // 준회원 알럿 모달
-  if (modalType === "confirm" && confirmType === "associate") {
+  if (modalType === "confirm" && (confirmType === "associate" || confirmType === "associate-join")) {
+    const message = confirmType === "associate-join"
+      ? "준회원은 참여할 수 없어요.\n프로필 생성을 완료해주세요."
+      : "준회원은 댓글을 작성할 수 없어요.\n프로필 생성을 완료해 주세요.";
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-        <div className="relative z-10 w-[400px] rounded-[10px] bg-background shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 overflow-hidden">
-          <p className="whitespace-pre-line text-center text-lg text-black leading-6 py-9 px-6">
-            준회원은 참여할 수 없어요.{"\n"}프로필 생성을 완료해 주세요.
+        <div className="relative z-10 w-full max-w-[320px] rounded-[10px] bg-background shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 overflow-hidden">
+          <p className="whitespace-pre-line text-center text-sm text-black leading-6 py-7 px-5">
+            {message}
           </p>
           <div className="flex border-t border-gray-300">
             <button
               onClick={() => { onConfirm?.(); closeModal(); }}
-              className="flex-1 h-[50px] bg-primary text-background text-lg font-medium border-r border-gray-300"
+              className="flex-1 h-11 bg-primary text-background text-sm font-medium border-r border-gray-300"
             >
               프로필 생성하기
             </button>
             <button
               onClick={closeModal}
-              className="flex-1 h-[50px] bg-background text-gray-700 text-lg font-medium"
+              className="flex-1 h-11 bg-background text-gray-700 text-sm font-medium"
             >
               취소
             </button>
@@ -194,56 +185,36 @@ const Modal = () => {
   const renderItems = () => {
     switch (modalType) {
       case 'comment-mine':
-        return (
-          <button
-            onClick={() => {
-              const deleteCallback = onConfirm; // 닫기 전에 미리 저장
-              closeModal();
-              openConfirm('delete', () => deleteCallback?.());
-            }}
-            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
-          >
-            삭제
-          </button>
-        );
-      case 'comment-other':
-      case 'study-other':
-        return (
-          <button
-            onClick={() => {
-              closeModal();
-              setIsReportModalOpen(true);
-            }}
-            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
-          >
-            신고하기
-          </button>
-        );
       case 'study-mine':
         return (
           <>
-            {/* 수정: onEdit 콜백 연결 */}
             <button
-              onClick={() => {
-                closeModal();
-                onEdit?.();
-              }}
+              onClick={() => { closeModal(); onEdit?.(); }}
               className="w-full py-4 text-center text-base text-gray-700 font-medium border-b border-gray-100"
             >
               수정
             </button>
-            {/* 삭제: onConfirm 콜백 연결 */}
             <button
               onClick={() => {
                 const deleteCallback = onConfirm;
                 closeModal();
-                openConfirm("delete", () => deleteCallback?.());
+                openConfirm('delete', () => deleteCallback?.());
               }}
               className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
             >
               삭제
             </button>
           </>
+        );
+      case 'comment-other':
+      case 'study-other':
+        return (
+          <button
+            onClick={() => openModal('report', targetId ?? undefined, undefined, reportTargetType ?? undefined)}
+            className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
+          >
+            신고
+          </button>
         );
       case 'header':
         return (

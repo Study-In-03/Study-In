@@ -3,7 +3,9 @@ import type { Comment } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
+import IconSend from "@/assets/base/icon-Send.svg?react";
 import DotsIcon from "@/assets/base/icon-dots.svg?react";
+import CrownIcon from "@/assets/base/icon-crown-fill.svg?react";
 import RecommentList from "./RecommentList";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
@@ -49,7 +51,8 @@ const CommentItem = ({
 }: CommentItemProps) => {
   // 가시성 로직 계산
   const isAuthor = comment.user ? isNormalUser(comment.user) && comment.user.id === currentUserId : false;
-  const isLeader = currentUserId === leaderId
+  const isLeader = currentUserId === leaderId;
+  const isCommentAuthorLeader = comment.user && isNormalUser(comment.user) && comment.user.id === leaderId;
 
   // 비밀 댓글이 아니거나, 본인이 작성자이거나, 본인이 스터디장인 경우 보임
   const canSeeContent = !comment.is_secret || isAuthor || isLeader;
@@ -65,21 +68,14 @@ const CommentItem = ({
 
   const isDeleted = !!comment.is_delete;
 
-  // 닉네임 추출
   const nickname = comment.user
-    ? isWithdrawnUser(comment.user)
-      ? "미지의 사용자"
-      : isNormalUser(comment.user)
-        ? comment.user.profile.nickname
-        : comment.user.profile.nickname
+    ? isWithdrawnUser(comment.user) ? "미지의 사용자" : comment.user.profile.nickname
     : "익명";
 
   const profileImg =
     comment.user && !isWithdrawnUser(comment.user) && isNormalUser(comment.user)
       ? getFullUrl(comment.user.profile.profile_img) || withdrawnProfileImg
-      : comment.user && isWithdrawnUser(comment.user)
-        ? withdrawnProfileImg
-        : withdrawnProfileImg;
+      : withdrawnProfileImg;
 
   const handleUpdate = () => {
     if (!editContent.trim()) return;
@@ -116,10 +112,13 @@ const CommentItem = ({
           <div className="md:hidden">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[10px]">
-                <span
-                  className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
-                >
-                  {nickname}
+                <span className="flex items-center gap-1">
+                  <span className={`text-base font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}>
+                    {nickname}
+                  </span>
+                  {isCommentAuthorLeader && (
+                    <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                  )}
                 </span>
                 {!isDeleted && (
                   <button
@@ -158,10 +157,13 @@ const CommentItem = ({
           {/* 웹 */}
           <div className="hidden md:flex items-start justify-between gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className={`text-sm font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}
-              >
-                {nickname}
+              <span className="flex items-center gap-1">
+                <span className={`text-sm font-bold ${isDeleted ? "text-gray-500" : "text-surface"}`}>
+                  {nickname}
+                </span>
+                {isCommentAuthorLeader && (
+                  <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                )}
               </span>
               {isAuthor && (
                 <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
@@ -184,16 +186,23 @@ const CommentItem = ({
               <div className="flex items-center gap-3 flex-shrink-0">
                 {isAuthor ? (
                   <>
+                    {isEditing ? (
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="text-sm text-gray-500 underline"
+                      >
+                        취소
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-sm text-gray-500 underline"
+                      >
+                        수정
+                      </button>
+                    )}
                     <button
-                      onClick={() => setIsEditing(true)}
-                      className="text-sm text-gray-500 underline"
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={() =>
-                        openConfirm("delete", () => onDelete(comment.id))
-                      }
+                      onClick={() => openConfirm("delete", () => onDelete(comment.id))}
                       className="text-sm text-gray-500 underline"
                     >
                       삭제
@@ -220,32 +229,26 @@ const CommentItem = ({
 
           {/* 내용 or 수정 입력창 */}
           {isEditing ? (
-            <div className="mt-2 h-[50px] flex items-center border border-[#D9DBE0] rounded-[8px] overflow-hidden">
+            <div className="mt-2 h-[50px] rounded-[8px] border border-[#D9DBE0] flex items-center overflow-hidden">
               <input
                 type="text"
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleUpdate()}
-                className="flex-1 px-4 text-base focus:outline-none"
+                placeholder="댓글 수정하기"
+                className="flex-1 px-4 text-base text-gray-500 focus:outline-none min-w-0"
+                autoFocus
               />
-              <div className="flex items-center gap-3 px-4 flex-shrink-0 border-l border-[#D9DBE0] h-full">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="text-sm text-gray-500 underline"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleUpdate}
-                  className="text-sm text-primary underline"
-                >
-                  저장
-                </button>
-              </div>
+              <button
+                onClick={handleUpdate}
+                className="flex-shrink-0 flex items-center justify-center w-[50px] h-[50px] bg-[#D9DBE0]"
+              >
+                <IconSend className="w-[26px] h-[26px] text-background" />
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2 mt-[10px]">
-              {comment.is_secret && (
+              {comment.is_secret && canSeeContent && (
                 <IconLock className="w-4 h-4 text-[#5C8EF2] flex-shrink-0" />
               )}
               <p className={`text-base break-all ${isDeleted ? "text-gray-400" : "text-surface"}`}>
@@ -262,6 +265,8 @@ const CommentItem = ({
         <RecommentList
           recomments={comment.recomments ?? []}
           commentPk={comment.id}
+          leaderId={leaderId}
+          parentIsSecret={comment.is_secret ?? false}
           onCreateRecomment={onCreateRecomment}
           onUpdateRecomment={onUpdateRecomment}
           onDeleteRecomment={onDeleteRecomment}

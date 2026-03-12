@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { Recomment } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
-import { createReport } from "@/api/report";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
+import CrownIcon from "@/assets/base/icon-crown-fill.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
 import IconSend from "@/assets/base/icon-Send.svg?react";
 import DotsIcon from "@/assets/base/icon-dots.svg?react";
@@ -31,6 +31,8 @@ interface RecommentListProps {
     isSecret: boolean,
   ) => void;
   onDeleteRecomment: (commentPk: number, recommentPk: number) => void;
+  leaderId: number;
+  parentIsSecret?: boolean;
   showInput: boolean;
   onCloseInput: () => void;
   taggedUser?: TaggedUser;
@@ -52,6 +54,8 @@ const RecommentList = ({
   onCreateRecomment,
   onUpdateRecomment,
   onDeleteRecomment,
+  leaderId,
+  parentIsSecret,
   showInput,
   onCloseInput,
   taggedUser,
@@ -70,25 +74,9 @@ const RecommentList = ({
 
   const handleSubmitReply = () => {
     if (!replyInput.trim()) return;
-    onCreateRecomment(commentPk, replyInput, false, taggedUser?.id);
+    onCreateRecomment(commentPk, replyInput, parentIsSecret ?? false, taggedUser?.id);
     setReplyInput("");
     onCloseInput();
-  };
-
-  // 대댓글 신고 — POST /report/ 연동
-  // report_reason 7(기타)로 고정, 필요 시 신고 사유 선택 UI 추가 가능
-  const handleReport = async (recommentPk: number) => {
-    try {
-      await createReport({
-        report_reason: 7,
-        report_content: "대댓글 신고",
-        reported_recomment: recommentPk,
-      });
-      alert("신고가 접수되었습니다.");
-    } catch (error: any) {
-      const msg = error.response?.data?.error || "신고에 실패했습니다.";
-      alert(msg);
-    }
   };
 
   return (
@@ -101,9 +89,7 @@ const RecommentList = ({
 
         const nickname = isWithdrawnUser(recomment.user)
           ? "미지의 사용자"
-          : isNormalUser(recomment.user)
-            ? recomment.user.profile.nickname
-            : recomment.user.profile.nickname;
+          : recomment.user.profile.nickname;
 
         const profileImg = isWithdrawnUser(recomment.user)
           ? withdrawnProfileImg
@@ -146,8 +132,13 @@ const RecommentList = ({
                   <div className="flex items-start justify-between gap-1">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-surface">
-                          {nickname}
+                        <span className="flex items-center gap-1">
+                          <span className="text-sm font-bold text-surface">
+                            {nickname}
+                          </span>
+                          {isNormalUser(recomment.user) && recomment.user.id === leaderId && (
+                            <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                          )}
                         </span>
                         {isAuthor && (
                           <span className="text-xs text-primary border border-primary rounded px-2 py-1 leading-none">
@@ -198,27 +189,15 @@ const RecommentList = ({
                     {/* 웹 전용: 수정/삭제/신고 (수정 중엔 취소/삭제) */}
                     <div className="hidden md:flex gap-3 flex-shrink-0">
                       {isAuthor ? (
-                        editingId === recomment.recomment_id ? (
-                          <>
+                        <>
+                          {editingId === recomment.recomment_id ? (
                             <button
                               onClick={() => setEditingId(null)}
                               className="text-sm text-gray-500 underline"
                             >
                               취소
                             </button>
-                            <button
-                              onClick={() =>
-                                openConfirm("delete", () =>
-                                  onDeleteRecomment(commentPk, recomment.recomment_id),
-                                )
-                              }
-                              className="text-sm text-gray-500 underline"
-                            >
-                              삭제
-                            </button>
-                          </>
-                        ) : (
-                          <>
+                          ) : (
                             <button
                               onClick={() => {
                                 setEditingId(recomment.recomment_id);
@@ -228,22 +207,22 @@ const RecommentList = ({
                             >
                               수정
                             </button>
-                            <button
-                              onClick={() =>
-                                openConfirm("delete", () =>
-                                  onDeleteRecomment(commentPk, recomment.recomment_id),
-                                )
-                              }
-                              className="text-sm text-gray-500 underline"
-                            >
-                              삭제
-                            </button>
-                          </>
-                        )
+                          )}
+                          <button
+                            onClick={() =>
+                              openConfirm("delete", () =>
+                                onDeleteRecomment(commentPk, recomment.recomment_id),
+                              )
+                            }
+                            className="text-sm text-gray-500 underline"
+                          >
+                            삭제
+                          </button>
+                        </>
                       ) : (
                         <button
                           onClick={() =>
-                            openConfirm("report", () => handleReport(recomment.recomment_id))
+                            openModal('report', recomment.recomment_id, undefined, 'recomment')
                           }
                           className="text-sm text-gray-500 underline"
                         >
@@ -301,9 +280,12 @@ const RecommentList = ({
       {showInput && (
         <div className="mt-[16px]">
           <div className="h-[50px] rounded-[8px] border border-[#D9DBE0] flex items-center overflow-hidden">
-            <div className="flex-1 flex items-center px-[16px] h-full min-w-0">
+            <div className="flex-1 flex items-center px-[16px] h-full min-w-0 gap-1">
+              {parentIsSecret && (
+                <IconLock className="w-4 h-4 text-[#5C8EF2] flex-shrink-0" />
+              )}
               {taggedUser && (
-                <span className="text-primary text-base font-medium flex-shrink-0 mr-1">
+                <span className="text-primary text-base font-medium flex-shrink-0">
                   @{taggedUser.nickname}
                 </span>
               )}
@@ -312,7 +294,7 @@ const RecommentList = ({
                 value={replyInput}
                 onChange={(e) => setReplyInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
-                placeholder="답글을 입력하세요"
+                placeholder={parentIsSecret ? "비밀 답글을 입력하세요" : "답글을 입력하세요"}
                 className="w-full text-base text-gray-500 focus:outline-none bg-transparent leading-6"
                 autoFocus
               />

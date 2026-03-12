@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useComments from "../hooks/useComments";
+import { useAssociateGuard } from "@/hooks/useAssociateGuard";
 import CommentInput from "./CommentInput";
 import CommentItem from "./CommentItem";
 
@@ -11,6 +12,7 @@ interface CommentSectionProps {
 
 const CommentSection = ({ studyPk, currentUserId, leaderId }: CommentSectionProps) => {
   const navigate = useNavigate();
+  const { withAssociateGuard } = useAssociateGuard();
   const {
     comments,
     loading,
@@ -33,7 +35,7 @@ const CommentSection = ({ studyPk, currentUserId, leaderId }: CommentSectionProp
 
       {/* 모바일: 작성하기 버튼 */}
       <button
-        onClick={() => navigate(`/study/${studyPk}/comment/write`)}
+        onClick={() => withAssociateGuard(() => navigate(`/study/${studyPk}/comment/write`))}
         className="md:hidden w-full h-10 border border-gray-300 rounded-[8px] text-base font-medium text-surface text-center mb-[30px]"
       >
         작성하기

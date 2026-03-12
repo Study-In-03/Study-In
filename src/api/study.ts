@@ -1,5 +1,6 @@
 import { axiosInstance } from './axios';
 import type { StudyFormState } from '@/types/study';
+import { uploadImage } from './upload';
 
 export interface StudyApiData {
   id: number;
@@ -66,20 +67,6 @@ const SUBJECT_MAP: Record<string, { id: number; name: string }> = {
   '특강':        { id: 7, name: '특강' },
   '기타':        { id: 8, name: '기타' },
 };
-
-/**
- * 썸네일 이미지를 업로드하고 서버 경로 반환.
- */
-export async function uploadStudyThumbnail(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('image', file);
-  const res = await axiosInstance.post<{ image_url: string }>(
-    '/file-uploader/image/',
-    formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } },
-  );
-  return res.data.image_url;
-}
 
 /** form + thumbnail → API payload 공통 빌더 */
 function buildStudyPayload(
@@ -251,7 +238,9 @@ export async function getMyStudies(): Promise<StudyApiData[]> {
 }
 
 /** 내 마감된 스터디 조회 - GET /study/my-closed-study/ */
-export async function getMyClosedStudies(): Promise<StudyApiData[]> {
-  const res = await axiosInstance.get<StudyApiData[]>('/study/my-closed-study/');
+export async function getMyClosedStudies(): Promise<StudyListResponse> {
+  const res = await axiosInstance.get<StudyListResponse>('/study/my-study/', {
+    params: { study_status: 4 }
+  });
   return res.data;
 }

@@ -28,7 +28,9 @@ axiosInstance.interceptors.request.use(
             '/accounts/register/',
             '/accounts/email-verifications/',
             '/accounts/emails/check/',
-            '/accounts/password-reset/',
+            '/accounts/password-reset/verify/',   
+            '/accounts/password-reset/confirm/',  
+            '/accounts/password-reset/',            
             '/accounts/nicknames/',
         ];
 
@@ -56,8 +58,10 @@ axiosInstance.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             // 로그아웃 상태에서도 허용할 API인지 확인
-            const skipRedirectUrls = ['/accounts/login/', '/study/']; 
-            const isSkipUrl = skipRedirectUrls.some((url) => originalRequest.url === url || originalRequest.url === `${url}/`);
+            const skipRedirectUrls = ['/accounts/login/', '/study/'];
+            const isSkipUrl = skipRedirectUrls.some(
+                (url) => originalRequest.url?.startsWith(url)
+            );
 
             if (isSkipUrl && originalRequest.method === 'get') {
                 return Promise.reject(error);
@@ -89,8 +93,9 @@ axiosInstance.interceptors.response.use(
             // 토큰 갱신 로직 시작 (기존 로직 유지)
             try {
                 // API 명세에 따른 토큰 갱신 요청 (슬래시 포함)
+                const baseURL = axiosInstance.defaults.baseURL;
                 const refreshResponse = await axios.post(
-                    `${axiosInstance.defaults.baseURL}/accounts/token/refresh/`,
+                    `${baseURL}/accounts/token/refresh/`, // 명세서 준수: 끝에 슬래시 포함
                     { refresh: refreshToken }
                 );
                 

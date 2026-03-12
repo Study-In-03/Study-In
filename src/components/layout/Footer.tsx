@@ -22,7 +22,7 @@ const SIMPLE_FOOTER_PATHS = [
   '/profile/create',
 ];
 
-// 웹(lg 이상)에서 푸터를 완전히 숨길 경로
+// 웹(md 이상)에서 푸터를 완전히 숨길 경로
 const NO_DESKTOP_FOOTER_PATHS = [
   '/register',
 ];
@@ -35,8 +35,8 @@ export default function Footer() {
   return (
     <footer className="border-t border-gray-300">
 
-      {/* 모바일 푸터 (lg 미만) */}
-      <div className="lg:hidden pt-[30px] pb-6">
+      {/* 모바일 푸터 (md 미만) */}
+      <div className="md:hidden pt-[30px] pb-6">
         <div className="flex flex-col items-center">
 
           {/* 링크 2컬럼 */}
@@ -97,9 +97,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 데스크탑 풀 푸터 - 로그인/회원가입 페이지 제외 (lg 이상) */}
+      {/* 데스크탑 풀 푸터 - 로그인/회원가입 페이지 제외 (md 이상) */}
       {!isSimpleFooter && !isNoDesktopFooter && (
-        <div className="hidden lg:block py-[50px]">
+        <div className="hidden md:block py-[50px]">
           <div className="max-w-[1190px] mx-auto">
 
             {/* 상단: 링크 컬럼 3개 + 소셜 아이콘 */}
@@ -179,9 +179,9 @@ export default function Footer() {
         </div>
       )}
 
-      {/* 데스크탑 심플 푸터 - 로그인 페이지 (lg 이상) */}
+      {/* 데스크탑 심플 푸터 - 로그인 페이지 (md 이상) */}
       {isSimpleFooter && (
-        <div className="hidden lg:flex flex-col items-center gap-[12px] bg-background pt-10 pb-6">
+        <div className="hidden md:flex flex-col items-center gap-[12px] bg-background pt-10 pb-6">
           <div className="flex items-center gap-[10px]">
             {POLICY_LINKS.map(({ label, href }, index) => (
               <span key={label} className="flex items-center gap-[10px]">

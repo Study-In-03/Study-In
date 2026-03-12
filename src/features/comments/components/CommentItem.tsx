@@ -10,6 +10,8 @@ import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
 
 interface CommentItemProps {
   comment: Comment;
+  leaderId: number;
+  currentUserId: number | null;
   onUpdate: (commentPk: number, content: string, isSecret: boolean) => void;
   onDelete: (commentPk: number) => void;
   onCreateRecomment: (
@@ -36,13 +38,22 @@ const formatDate = (dateStr: string) => {
 };
 
 const CommentItem = ({
-  comment,
+  comment, 
+  leaderId, 
+  currentUserId,
   onUpdate,
   onDelete,
   onCreateRecomment,
   onUpdateRecomment,
   onDeleteRecomment,
 }: CommentItemProps) => {
+  // 가시성 로직 계산
+  const isAuthor = comment.user ? isNormalUser(comment.user) && comment.user.id === currentUserId : false;
+  const isLeader = currentUserId === leaderId
+
+  // 비밀 댓글이 아니거나, 본인이 작성자이거나, 본인이 스터디장인 경우 보임
+  const canSeeContent = !comment.is_secret || isAuthor || isLeader;
+
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [editIsSecret, setEditIsSecret] = useState(comment.is_secret ?? false);
@@ -53,11 +64,6 @@ const CommentItem = ({
   const { openConfirm, openModal } = useModalStore();
 
   const isDeleted = !!comment.is_delete;
-  const isAuthor =
-    !!comment.user &&
-    !isWithdrawnUser(comment.user) &&
-    isNormalUser(comment.user) &&
-    comment.user.is_author;
 
   // 닉네임 추출
   const nickname = comment.user
@@ -86,10 +92,10 @@ const CommentItem = ({
       <div className="flex gap-[10px]">
         {comment.is_secret && !isAuthor ? (
           <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
-        ) : !isWithdrawnUser(comment.user!) && isNormalUser(comment.user!) && !isAuthor ? (
+        ) : (comment.user && !isWithdrawnUser(comment.user) && isNormalUser(comment.user) && !isAuthor) ? (
           <button
             className="flex-shrink-0"
-            onClick={() => openModal('user-info', comment.user && isNormalUser(comment.user) ? comment.user.id : undefined)}
+            onClick={() => openModal('user-info', isNormalUser(comment.user) ? comment.user.id : undefined)}
           >
             <img
               src={profileImg}
@@ -239,11 +245,15 @@ const CommentItem = ({
             </div>
           ) : (
             <div className="flex items-center gap-2 mt-[10px]">
-              {comment.is_secret && isAuthor && (
+              {comment.is_secret && (
                 <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
               )}
               <p className="text-base break-all text-gray-700">
-                {isDeleted ? "삭제된 댓글입니다." : comment.content}
+                {comment.is_delete 
+                  ? "삭제된 댓글입니다." 
+                  : canSeeContent 
+                    ? comment.content 
+                    : "비밀 댓글입니다."} 
               </p>
             </div>
           )}

@@ -76,7 +76,7 @@ export const useStudyList = (
     };
 
     fetchStudies();
-  }, [category, searchTerm, activeTab, page, locationId]);
+  }, [category, searchTerm, activeTab, page, locationId, offline]);
 
   return { studies, isLoading, error, totalCount, totalPages };
 };

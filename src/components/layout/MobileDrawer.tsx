@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-import { getNotifications } from "@/api/notification";
+import { useNotificationStore } from "@/store/notificationStore";
 import { storage } from "@/utils/storage";
 import { useModalStore } from "@/store/modalStore";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
@@ -10,6 +10,7 @@ import LeftArrowIcon from "@/assets/base/icon-Left-arrow.svg?react";
 import defaultProfileSrc from "@/assets/base/icon-empty-profile.svg";
 import { getProfile, type UserProfile } from "@/api/profile";
 import { getFullUrl } from "@/api/upload";
+import { useAssociateGuard } from '@/hooks/useAssociateGuard';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -20,20 +21,15 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { isLoggedIn, logout } = useAuthStore();
   const navigate = useNavigate();
   const { openConfirm } = useModalStore();
-  const [unreadCount, setUnreadCount] = useState(0);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { withAssociateGuard } = useAssociateGuard();
+  const { notifications, fetch: fetchNotifications } = useNotificationStore();
+  const unreadCount = notifications.filter((n) => !n.checked).length;
 
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    const fetchUnread = async () => {
-      try {
-        const data = await getNotifications();
-        setUnreadCount(data.results.filter((n) => !n.checked).length);
-      } catch {
-        // 에러 무시
-      }
-    };
+    fetchNotifications();
 
     const fetchProfile = async () => {
       const userId = storage.getUserId();
@@ -45,22 +41,20 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         // 에러 무시
       }
     };
-
-    fetchUnread();
     fetchProfile();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchNotifications]);
 
   return (
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 z-[90] md:hidden"
           onClick={onClose}
         />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-50 md:hidden flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-[100] md:hidden flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -171,20 +165,24 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           >
             스터디인 홈
           </Link>
-          <Link
-            to="/local"
-            onClick={onClose}
-            className="px-[30px] py-[15px] text-sm text-surface"
+          <button
+            onClick={() => {
+              onClose();
+              withAssociateGuard(() => navigate('/local'));
+            }}
+            className="px-[30px] py-[15px] text-sm text-left text-surface"
           >
             내지역 스터디
-          </Link>
-          <Link
-            to="/online"
-            onClick={onClose}
-            className="px-[30px] py-[15px] text-sm text-surface"
+          </button>
+          <button
+            onClick={() => {
+              onClose();
+              withAssociateGuard(() => navigate('/online'));
+            }}
+            className="px-[30px] py-[15px] text-sm text-left text-surface"
           >
             온라인 스터디
-          </Link>
+          </button>
         </nav>
 
         {/* 로그인 시: 구분선 + 로그아웃 */}
@@ -195,7 +193,6 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               onClick={() => {
                 onClose();
                 openConfirm('logout', () => {
-                  storage.clearAuth();
                   logout();
                   navigate('/login');
                 });

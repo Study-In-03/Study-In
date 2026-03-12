@@ -11,6 +11,17 @@ export interface CreateReportRequest {
   reported_recomment?: number
 }
 
+export interface ReportListItem {
+  id: number;
+  user: { id: number; email: string };
+  report_reason: string;
+  report_content: string;
+  reported_study: number | null;
+  reported_user: number | null;
+  reported_comment: number | null;
+  reported_recomment: number | null;
+}
+
 export interface CreateReportResponse {
   id: number
   user: { id: number; email: string }
@@ -35,4 +46,9 @@ export const REPORT_REASONS = [
 export async function createReport(data: CreateReportRequest): Promise<CreateReportResponse> {
   const res = await axiosInstance.post<CreateReportResponse>('/report/', data)
   return res.data
+}
+
+export async function getReports(): Promise<ReportListItem[]> {
+  const res = await axiosInstance.get<ReportListItem[]>('/report/');
+  return res.data;
 }

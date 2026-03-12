@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      /* 레이아웃 크기 세팅 */
+      screens: {
+        'md': '834px',  // 모바일/태블릿 전환 기준
+        'lg': '1190px', // 웹 컨텐츠 최대 너비 기준
+      },
       /* 폰트 세팅 */
       fontFamily: {
         sans: ["Spoqa Han Sans Neo", "Noto Sans KR", "sans-serif"],

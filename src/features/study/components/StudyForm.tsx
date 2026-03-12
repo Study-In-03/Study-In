@@ -8,6 +8,7 @@ import iconHelpCircle from "@/assets/base/icon-help-circle.svg";
 import radioBtnOff from "@/assets/base/radio-btn-OFF.svg";
 import radioBtnOn from "@/assets/base/radio-btn-ON.svg";
 import iconBtnX from "@/assets/base/icon-btn-X.svg";
+import DownIcon from "@/assets/base/icon-down.svg?react";
 import type { StudyFormState, StudyFormErrors, StudyDay } from "@/types/study";
 import AiGeneratorButton from "@/features/study/components/AiGeneratorButton";
 
@@ -138,14 +139,7 @@ function SelectPicker({
         <span className={`text-[14px] font-regular ${value ? "text-gray-900" : "text-gray-500"}`}>
           {value || placeholder}
         </span>
-        <svg
-          className={`w-4 h-4 shrink-0 text-gray-300 transition-transform ${open ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <DownIcon className="w-4 h-4 shrink-0 text-gray-300" />
       </button>
 
       {open && (
@@ -283,7 +277,7 @@ export default function StudyForm({
 }: StudyFormProps) {
   const [isTagFocused, setIsTagFocused] = useState(false);
   const [isDateOpen, setIsDateOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
+  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia("(min-width: 768px)").matches);
   const [aiValidationMsg, setAiValidationMsg] = useState<string | null>(null);
 
   function handleAiGenerate() {
@@ -304,7 +298,7 @@ export default function StudyForm({
   }
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia("(min-width: 768px)");
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);

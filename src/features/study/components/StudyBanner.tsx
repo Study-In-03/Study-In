@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import banner1 from "../../../assets/main-banner-1.png";
-import banner2 from "../../../assets/main-banner-2.png";
-import banner3 from "../../../assets/main-banner-3.png";
+import { useState, useEffect } from "react";
+import banner1 from "@/assets/main-banner-1.png";
+import banner2 from "@/assets/main-banner-2.png";
+import banner3 from "@/assets/main-banner-3.png";
 import bannerBg from "@/assets/base/banner.svg";
 import character1 from "@/assets/Character-1.png";
 import character2 from "@/assets/Character-2.png";

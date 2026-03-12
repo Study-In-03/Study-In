@@ -1,21 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { GitHubCalendar } from "react-github-calendar";
-import useUpload from "@/hooks/useUpload";
-import { getFullUrl } from "@/api/upload";
-import {
-  getProfile,
-  updateProfile,
-  checkNickname,
-  getMemberType,
-} from "@/api/profile";
-import { getRegions, Region } from "@/api/auth";
-import { storage } from "@/utils/storage";
-import { useAuthStore } from "@/store/authStore";
+import { useProfileForm } from "@/features/profile/hooks/useProfileForm";
 import ImageIcon from "@/assets/base/icon-Image.svg?react";
 import CheckIcon from "@/assets/base/icon-Check.svg?react";
 import CheckFillIcon from "@/assets/base/icon-Check-fill.svg?react";
 import iconBtnX from "@/assets/base/icon-btn-X.svg";
+import DownIcon from "@/assets/base/icon-down.svg?react";
 
 const TAG_OPTIONS = [
   "Python",
@@ -30,77 +20,35 @@ const TAG_OPTIONS = [
 ];
 const MAX_BIO_LENGTH = 80;
 
-type Tag = { id?: number; name: string };
-
 const ProfileCreateForm = () => {
-  const navigate = useNavigate();
-  const { uploading, handleImageUpload } = useUpload();
-  const { setIsAssociateMember } = useAuthStore();
-
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [nickname, setNickname] = useState("");
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [nicknameMessage, setNicknameMessage] = useState<string | null>(null);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-  const [isNicknameFocused, setIsNicknameFocused] = useState(false);
+  const [isNicknameFocused, setIsNicknameFocused] = useState(false); // import { useState } from "react" 필요
   const [isNicknameTouched, setIsNicknameTouched] = useState(false);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [bio, setBio] = useState("");
-  const [github, setGithub] = useState("");
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [tagInput, setTagInput] = useState("");
   const [isTagFocused, setIsTagFocused] = useState(false);
   const [isRegionUnlocked, setIsRegionUnlocked] = useState(false);
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
   const [isGithubLinked, setIsGithubLinked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
 
-  useEffect(() => {
-    getRegions()
-      .then((data) => setRegions(data))
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const userId = storage.getUserId();
-      if (!userId) return;
-      try {
-        const data = await getProfile(userId);
-        setNickname(data.nickname ?? "");
-        setName(data.name ?? "");
-        setPhone(data.phone ?? "");
-        setBio(data.introduction ?? "");
-        setGithub(data.github_username ?? "");
-        setSelectedTags(data.tag ?? []);
-        if (data.preferred_region) {
-          setSelectedRegionId(data.preferred_region.id);
-        }
-        if (data.profile_img) {
-          setProfileImg(getFullUrl(data.profile_img));
-          setProfileImgPath(data.profile_img);
-        }
-        const emailFromStorage = storage.getEmail();
-        if (emailFromStorage) setEmail(emailFromStorage);
-      } catch {
-        setApiError("프로필을 불러오는 데 실패했어요.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  const isNicknameValid = nickname.length >= 2;
-  const isGithubValid = github === "" || /^[a-zA-Z0-9-]+$/.test(github);
+  const {
+    profileImg,
+    nickname, setNickname,
+    isNicknameChecked, setIsNicknameChecked,
+    nicknameMessage, setNicknameMessage,
+    isNicknameAvailable, setIsNicknameAvailable,
+    email, name, setName,
+    phone, setPhone,
+    bio, setBio,
+    github, setGithub,
+    selectedTags, setSelectedTags,
+    tagInput, setTagInput,
+    isLoading, isSaving,
+    apiError,
+    regions, selectedRegionId, setSelectedRegionId,
+    isNicknameValid, isGithubValid,
+    uploading,
+    handleCheckNickname, removeTag, addCustomTag,
+    handleImageChange, handleSave,
+  } = useProfileForm();
 
   const filteredTagOptions = TAG_OPTIONS.filter(
     (t) =>
@@ -117,81 +65,7 @@ const ProfileCreateForm = () => {
     name !== "" &&
     phone !== "";
 
-  // 닉네임 입력 시 500ms debounce 자동 중복 체크
-  useEffect(() => {
-    if (!isNicknameValid) return;
-    const timer = setTimeout(async () => {
-      const result = await checkNickname(nickname);
-      setIsNicknameChecked(true);
-      setIsNicknameAvailable(result.available);
-      setNicknameMessage(result.message);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [nickname, isNicknameValid]);
-
-  const handleCheckNickname = async () => {
-    const result = await checkNickname(nickname);
-    setIsNicknameChecked(true);
-    setIsNicknameAvailable(result.available);
-    setNicknameMessage(result.message);
-  };
-
-  const removeTag = (tagName: string) => {
-    setSelectedTags(selectedTags.filter((t) => t.name !== tagName));
-  };
-
-  const addCustomTag = () => {
-    if (
-      tagInput.trim() &&
-      !selectedTags.find((t) => t.name === tagInput.trim())
-    ) {
-      setSelectedTags([...selectedTags, { name: tagInput.trim() }]);
-      setTagInput("");
-    }
-  };
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = await handleImageUpload(file);
-    if (url) {
-      setProfileImgPath(url);
-      setProfileImg(getFullUrl(url));
-    }
-  };
-
-  const handleSave = async () => {
-    const userId = storage.getUserId();
-    if (!userId) return;
-    setIsSaving(true);
-    setApiError(null);
-    try {
-      await updateProfile(userId, {
-        nickname,
-        name,
-        phone,
-        introduction: bio,
-        github_username: github,
-        profile_img: profileImgPath ?? undefined,
-        tag: selectedTags,
-        preferred_region: selectedRegionId
-          ? { id: selectedRegionId }
-          : undefined,
-      });
-      try {
-        const res = await getMemberType();
-        setIsAssociateMember(res.is_associate_member);
-      } catch {
-        // 회원 타입 조회 실패는 저장 성공에 영향 없음
-      }
-      navigate("/profile");
-    } catch {
-      setApiError("저장에 실패했어요. 다시 시도해주세요.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
+  
   if (isLoading) {
     return (
       <div className="flex justify-center py-16 text-gray-500 text-sm">
@@ -387,7 +261,7 @@ const ProfileCreateForm = () => {
                           ? regions.find((r) => r.id === selectedRegionId)?.location
                           : "지역 선택"}
                       </span>
-                      <svg className={`w-4 h-4 text-gray-500 transition-transform ${isRegionDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                      <DownIcon className="w-4 h-4 text-gray-500" />
                     </button>
                     {isRegionDropdownOpen && (
                       <ul className="absolute z-50 left-0 right-0 mt-1 bg-background border border-gray-300 rounded-[8px] shadow-lg max-h-[200px] overflow-y-auto">
@@ -607,7 +481,7 @@ const ProfileCreateForm = () => {
       {/* 저장 버튼 */}
       <div className="flex flex-col items-center gap-[30px]">
         <button
-          onClick={handleSave}
+          onClick={() => handleSave()}
           disabled={!isSaveEnabled || isSaving}
           className={`w-[250px] h-[50px] rounded-[8px] text-base font-medium ${
             isSaveEnabled && !isSaving

@@ -1,4 +1,4 @@
-const CHATGPT_API_URL = 'https://dev.wenivops.co.kr/services/openai-api';
+const CHATGPT_API_URL = import.meta.env.VITE_AI_API_URL ?? 'https://dev.wenivops.co.kr/services/openai-api';
 
 export interface AiContext {
   title: string;
@@ -10,9 +10,9 @@ export interface AiContext {
 }
 
 const DIFFICULTY_LABEL: Record<string, string> = {
-  beginner: '초급',
-  intermediate: '중급',
-  advanced: '고급',
+  '초급': '초급',
+  '중급': '중급',
+  '고급': '고급',
 };
 
 function buildMessages(context: AiContext, field: 'introduction' | 'schedule') {

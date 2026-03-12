@@ -3,6 +3,7 @@ import CodeIcon from '@/assets/base/icon-code.svg?react';
 import EmojiIcon from '@/assets/base/icon-emoji.svg?react';
 import ImageIcon from '@/assets/base/icon-Image.svg?react';
 import SendIcon from '@/assets/base/icon-Send.svg?react';
+import DeleteIcon from '@/assets/base/icon-btn-X-blue.svg?react';
 import useUpload from '@/hooks/useUpload';
 
 interface ChatInputProps {
@@ -11,17 +12,20 @@ interface ChatInputProps {
 
 export default function ChatInput({ onSendMessage }: ChatInputProps) {
     const [message, setMessage] = useState('');
-    const { uploading, handleImageUpload, error } = useUpload(); 
+    const [previewImages, setPreviewImages] = useState<{ file: File; url: string }[]>([]);
+    const { uploading, handleImageUpload, error } = useUpload();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // 텍스트 메시지 전송 핸들러
     const handleSendText = () => {
-        if (!message.trim()) return;
-        onSendMessage(message, 'text'); //
+        if (!message.trim() && previewImages.length === 0) return;
+        if (previewImages.length > 0) {
+            handleSendWithImages();
+            return;
+        }
+        onSendMessage(message, 'text');
         setMessage('');
     };
 
-    // 엔터키 전송 지원
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -29,41 +33,70 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
         }
     };
 
-    // 이미지 파일 선택 및 업로드 핸들러
-    const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        // handleImageUpload를 통해 서버에 업로드 후 URL 획득
-        const url = await handleImageUpload(file); 
-        
-        if (url) {
-            // 업로드 성공 시 WebSocket으로 이미지 메시지 전송
-            onSendMessage(url, 'image'); 
-        }
-        
-        // input 초기화 (같은 파일 재선택 가능하도록)
+        const previewUrl = URL.createObjectURL(file);
+        setPreviewImages((prev) => [...prev, { file, url: previewUrl }]);
         e.target.value = '';
     };
 
-    return (
-        <div className="lg:p-5 shrink-0">
+    const handleSendWithImages = async () => {
+        for (const img of previewImages) {
+            const uploadedUrl = await handleImageUpload(img.file);
+            if (uploadedUrl) onSendMessage(uploadedUrl, 'image');
+            URL.revokeObjectURL(img.url);
+        }
+        setPreviewImages([]);
+        if (message.trim()) {
+            onSendMessage(message, 'text');
+            setMessage('');
+        }
+    };
 
-            {/* 에러 메시지 표시 (수정 필요) */}
+    return (
+        <div className="md:pb-5 md:px-5 shrink-0">
+
             {error && <p className="text-xs text-error mb-2 px-2">{error}</p>}
 
-            <div className="flex items-center bg-background border border-gray-300 md:rounded-[8px] px-4 py-3">
-                
+            {/* 이미지 미리보기 패널 */}
+            {previewImages.length > 0 && (
+                <div className="border border-gray-300 md:rounded-t-[8px] bg-background px-3 py-3">
+                    <div className="flex gap-3 flex-wrap">
+                        {previewImages.map((img, i) => (
+                            <div key={i} className="relative w-[180px] h-[160px]">
+                                <img
+                                    src={img.url}
+                                    alt="미리보기"
+                                    className="w-full h-full object-cover rounded-[4px] border border-gray-300 hover:border-gray-700"
+                                />
+                                <button
+                                    onClick={() => {
+                                        URL.revokeObjectURL(img.url);
+                                        setPreviewImages((prev) => prev.filter((_, idx) => idx !== i));
+                                    }}
+                                    className="absolute -top-2 -right-2"
+                                >
+                                    <DeleteIcon className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* 입력창 */}
+            <div className={`flex items-center bg-background border border-gray-300 px-4 py-3 md:rounded-b-[8px]`}>
                 <button className="text-gray-500 hover:text-primary-light transition-colors shrink-0">
                     <CodeIcon className="w-[26px] h-[26px]" />
                 </button>
 
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={uploading ? "업로드 중..." : "메시지를 입력하세요."} 
+                    placeholder={uploading ? "업로드 중..." : "메시지를 입력하세요."}
                     disabled={uploading}
                     className="flex-1 outline-none ml-4 font-regular text-lg text-surface placeholder:text-gray-300"
                 />
@@ -73,16 +106,15 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
                         <EmojiIcon className="w-[26px] h-[26px]" />
                     </button>
 
-                    {/* 이미지 업로드 버튼 및 숨겨진 Input */}
-                    <input 
+                    <input
                         type="file"
                         ref={fileInputRef}
                         onChange={onImageChange}
                         accept="image/*"
                         className="hidden"
                     />
-                        
-                    <button 
+
+                    <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploading}
                         className="text-gray-500 hover:text-primary-light transition-colors"
@@ -92,15 +124,16 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
 
                     <div className="w-[2px] h-[26px] bg-gray-300" />
 
-                    <button 
+                    <button
                         onClick={handleSendText}
-                        disabled={!message.trim() || uploading}
-                        className={`transition-colors ${message.trim() && !uploading ? 'text-primary' : 'text-gray-300'}`}
+                        disabled={(!message.trim() && previewImages.length === 0) || uploading}
+                        className={`transition-colors ${(message.trim() || previewImages.length > 0) && !uploading ? 'text-primary' : 'text-gray-300'}`}
                     >
                         <SendIcon className="w-[26px] h-[26px]" />
                     </button>
                 </div>
             </div>
+
         </div>
     );
 }

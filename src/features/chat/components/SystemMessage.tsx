@@ -1,10 +1,9 @@
 interface SystemMessageProps {
     type: 'date' | 'notice';
     content: string | null;
-    isLastNotice?: boolean;
 }
 
-export default function SystemMessage({ type, content, isLastNotice }: SystemMessageProps) {
+export default function SystemMessage({ type, content }: SystemMessageProps) {
     // 데이터가 없을 경우 렌더링 방지
     if (!content) return null;
 
@@ -21,7 +20,7 @@ export default function SystemMessage({ type, content, isLastNotice }: SystemMes
 
     // 시스템 알림
     return (
-        <div className={`flex justify-center ${isLastNotice ? 'mb-6' : 'mb-1'}`}>
+        <div className={`flex justify-center mb-1`}>
             <div className="bg-background border border-primary text-primary text-sm font-regular px-[13px] py-[5px] rounded-[26px]">
                 <span>📢</span>
                 <span>{content}</span>

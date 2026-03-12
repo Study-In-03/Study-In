@@ -24,7 +24,9 @@ export const loginApi = async (data: LoginRequest): Promise<LoginResponse> => {
 
 // 이메일 중복 확인 API
 export const checkEmailDuplicate = async (email: string) => {
-    const response = await axiosInstance.get(`/accounts/emails/check/?email=${email}`);
+    const response = await axiosInstance.get(`/accounts/emails/check/`, {
+        params: { email }
+    });
     return response.data;
 };
 
@@ -50,10 +52,10 @@ export const registerApi = async (data: { email: string; password: string }) => 
 };
 
 // 비밀번호 재설정 - 인증코드 확인 (1단계)
-export const verifyPasswordResetCode = async (email: string, verification_uuid: string) => {
+export const verifyPasswordResetCode = async (email: string, code: string) => {
     const response = await axiosInstance.post('/accounts/password-reset/verify/', {
         email,
-        verification_uuid,
+        code,
     });
     return response.data;
 };
@@ -96,5 +98,10 @@ export interface Region {
 
 export const getRegions = async (): Promise<Region[]> => {
     const response = await axiosInstance.get<Region[]>('/accounts/regions/');
+    return response.data;
+};
+
+export const sendPasswordResetEmail = async (email: string) => {
+    const response = await axiosInstance.post('/accounts/password-reset/', { email });
     return response.data;
 };

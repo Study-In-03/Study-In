@@ -27,12 +27,12 @@ export default function StudyCreateTopBar({ isValid, isSubmitting = false, onVie
 
   return (
     <div className="w-full bg-background border-b border-gray-300">
-      <div className="max-w-[1190px] mx-auto h-[56px] lg:h-[60px] px-4 flex items-center justify-end gap-[8px]">
+      <div className="max-w-[1190px] mx-auto h-[56px] md:h-[60px] px-4 flex items-center justify-end gap-[8px]">
         {onViewStudy && (
           <button
             type="button"
             onClick={onViewStudy}
-            className="w-[110px] lg:w-40 h-10 border border-gray-300 rounded-lg text-sm font-medium text-surface bg-background transition-colors hover:bg-gray-100"
+            className="w-[110px] md:w-40 h-10 border border-gray-300 rounded-lg text-sm font-medium text-surface bg-background transition-colors hover:bg-gray-100"
           >
             스터디 보기
           </button>

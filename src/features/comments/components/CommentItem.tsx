@@ -249,7 +249,7 @@ const CommentItem = ({
                 <IconLock className="w-4 h-4 text-primary flex-shrink-0" />
               )}
               <p className="text-base break-all text-gray-700">
-                {comment.is_deleted 
+                {comment.is_delete 
                   ? "삭제된 댓글입니다." 
                   : canSeeContent 
                     ? comment.content 

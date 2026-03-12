@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getStudy, joinStudy } from '@/api/study';
 import { storage } from '@/utils/storage';
@@ -20,11 +20,12 @@ export default function StudyDetail() {
 
   const [liked, setLiked] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
+  const [joinSuccess, setJoinSuccess] = useState(false);
   const [studyDetail, setStudyDetail] = useState<StudyApiData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
 
-  const myPk = Number(storage.getUserId());
+  const myPk = useMemo(() => Number(storage.getUserId()), []);
   const isLeader = studyDetail?.leader?.id === myPk;
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function StudyDetail() {
       }
     };
     fetchDetail();
-  }, [studyId, myPk]);
+  }, [studyId]);
 
   const handleLike = async () => {
     if (!studyId || isLikeLoading) return;
@@ -72,8 +73,8 @@ export default function StudyDetail() {
     }
     try {
       await joinStudy(Number(studyId));
-      setIsJoined(true);
-      alert("스터디에 성공적으로 참여되었습니다!");
+      setJoinSuccess(true);
+      setTimeout(() => setJoinSuccess(false), 3000);
     } catch (error: any) {
       const errorMsg = error.response?.data?.error || "참여 신청 중 오류가 발생했습니다.";
       alert(errorMsg);
@@ -131,7 +132,16 @@ export default function StudyDetail() {
           {primaryButtonText}
         </button>
         <div className="flex gap-2">
-          <button className="flex-1 h-10 flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
+          <button 
+              onClick={() => {
+                  if (navigator.share) {
+                      navigator.share({ title: studyDetail.title, url: window.location.href });
+                  } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert("링크가 복사되었습니다.");
+                  }
+              }}
+              className="flex-1 h-10 flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
             <ShareIcon className="w-4 h-4" />
             공유하기
           </button>
@@ -209,7 +219,11 @@ export default function StudyDetail() {
               {/* 댓글 */}
               <section className="rounded-xl border border-gray-300 bg-background p-5">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">그룹장에게 질문하기</h2>
-                <CommentSection studyPk={studyDetail.id} />
+                <CommentSection
+                  studyPk={studyDetail.id}
+                  leaderId={studyDetail.leader.id}
+                  currentUserId={myPk}
+                />
               </section>
             </div>
 
@@ -328,7 +342,11 @@ export default function StudyDetail() {
           {/* 그룹장에게 질문하기 */}
           <section className="bg-background rounded-xl p-4">
             <h2 className="text-lg font-bold text-gray-900 mb-3">그룹장에게 질문하기</h2>
-            <CommentSection studyPk={studyDetail.id} />
+            <CommentSection
+              studyPk={studyDetail.id}
+              leaderId={studyDetail.leader.id}
+              currentUserId={myPk}
+            />
           </section>
 
         </div>
@@ -336,7 +354,16 @@ export default function StudyDetail() {
         {/* 모바일 하단 바 */}
         <div className="fixed bottom-0 left-0 right-0 border-t bg-background z-10">
           <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
-            <button className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
+            <button 
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: studyDetail.title, url: window.location.href });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("링크가 복사되었습니다.");
+                }
+              }}
+              className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
               <ShareIcon className="w-4 h-4" />
               공유
             </button>

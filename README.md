@@ -1,4 +1,4 @@
-# Study-In-03
+# 📖 Study-In : AI 기반 스터디 매칭 플랫폼 (Team Project 03)
 
 ## 프로젝트 개요
 
@@ -10,46 +10,47 @@
 
 - **배포주소** : <https://study-in.netlify.app/>
 
-- **Test Account**
-<div align="center">
-
-| User ID |       이메일       |      닉네임      | 회원유형 |               설명               |
-| :-----: | :----------------: | :--------------: | :------: | :------------------------------: |
-|  90001  | associate@test.com | 개리<br>(준회원) |  준회원  |          일부 기능 제한          |
-|  90002  | regular1@test.com  |      라이캣      |  정회원  |  Python/Django <br>스터디 리더   |
-|  90003  | regular2@test.com  |       빙키       |  정회원  | React/JavaScript<br> 스터디 리더 |
-|  90004  | regular3@test.com  |      웨이드      |  정회원  |     알고리즘<br> 스터디 리더     |
-
-</div>
-
 ## 1. Study-In Service
 
 스터디인 서비스는 함께 공부할 스터디 멤버를 찾는 사람들에게 아주 유익한 스터디 매칭 플랫폼입니다.
 
-- 원하는 주제와 난이도의 스터디를 개설할 수 도 있고, 참가 인원이나 구성 요건 등을 정하여 효율적인 학습 활동을 할 수 있습니다.
-- 스터디를 직접 생성하여 스터디장이 되어 멤버를 모집할 수 있고, 관심 있는 스터디에 참가하여 함께 공부할 수도 있습니다.
+---
+
+### 1-1. 기업 프로젝트 배경
+
+본 프로젝트는 **(주)위니브(WENIV)**에서 제공한 실무형 API와 피그마 디자인을 기반으로 진행된 기업 연계 프로젝트입니다. </br>
+단순히 기능을 구현하는 것을 넘어, 실제 서비스 환경에서의 확장성 있는 아키텍처 설계와 AI 에이전트를 활용한 개발 생산성 극대화를 목표로 하였습니다.
+
+---
+
+### 1-2. 개발 목적
+- ### 학습 격차 해소
+  온/오프라인 스터디를 효율적으로 매칭하여 학습자 간의 정보 비대칭을 해결합니다.
+- ### AI 기반 자동화
+  ChatGPT API를 활용하여 번거로운 커리큘럼 작성을 자동화함으로써 사용자 경험(UX)을 혁신합니다.
+- ### 실시간 소통
+  WebSocket 기반의 실시간 채팅으로 커뮤니티 활성도를 높입니다.
+
+### 1-2. 기능
+
+- 원하는 주제와 난이도의 스터디를 개설할 수 있습니다.
+- 참가 인원이나 구성 요건 등을 정하여 효율적인 학습 활동을 할 수 있습니다.
+- 스터디를 직접 생성하여 스터디장이 되어 멤버를 모집할 수 있습니다.
+- 관심 있는 스터디에 참가하여 함께 공부할 수도 있습니다.
 - 스터디 상세 페이지에서는 스터디 정보, 일정, 참가자 목록 등을 확인할 수 있으며, 댓글을 통해 스터디장과 소통이 가능합니다.
 - 참가한 스터디 내 채팅방에서 실시간으로 멤버들과 대화를 나눌 수 있습니다. 또한 스터디 참가, 댓글 등의 활동에 대한 알림을 받아볼 수 있습니다.
 - 마음에 드는 스터디를 발견했다면 좋아요를 눌러 저장해두고, 검색 기능을 통해 더 쉽고 빠르게 원하는 조건의 스터디를 찾아볼 수도 있습니다.
-  <br><br><br>
 
 ## 2. 기술 스택(Tech Stack)
 
-<br>
-
-| 역할                  | 기술                                                                                                                                                                                                    | 기능                                                 |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------- |
-| **Core**              | <img src="https://img.shields.io/badge/React_18-20232A?style=flat&logo=react&logoColor=61DAFB"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white"/> | 컴포넌트 기반 SPA 개발 및 정적 타입 안정성 확보      |
-| **Build Tool**        | <img src="https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white"/>                                                                                                              | 빠른 HMR 및 번들링 최적화                            |
-| **API Communication** | <img src="https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white"/>                                                                                                            | 인터셉터 기반 JWT 자동 주입 및 토큰 갱신 처리        |
-| **Routing**           | <img src="https://img.shields.io/badge/React_Router_DOM-CA4245?style=flat&logo=reactrouter&logoColor=white"/>                                                                                           | SPA 환경에서 Public / Private Route 분리             |
-| **Styling**           | <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white"/>                                                                                               | 유틸리티 퍼스트 기반 디자인 시스템 구축              |
-| **State Management**  | <img src="https://img.shields.io/badge/Zustand-000000?style=flat&logo=react&logoColor=white"/>                                                                                                          | 인증 상태, 알림, 모달 등 전역 상태 관리              |
-| **Real-time**         | <img src="https://img.shields.io/badge/WebSocket-010101?style=flat&logo=socketdotio&logoColor=white"/>                                                                                                  | 실시간 채팅 기능 구현                                |
-| **Backend**           | <img src="https://nodejs.org/static/images/logo.svg" width="80"/>                                                                                                                                       | JavaScript 서버 실행 환경                            |
-| **AI Integration**    | <img src="https://img.shields.io/badge/ChatGPT_API-10A37F?style=flat&logo=openai&logoColor=white"/>                                                                                                     | AI 기반 커리큘럼 및 소개글 자동 생성 (스트리밍 처리) |
-| **Collaboration**     | <img src="./src/assets/base/icon-github.png" style="width:30px; height:30px"/> <img src="./src/assets/base/icon-figma.svg" style="width:30px; height:30px"/>                                            | 코드, 디자인 협업                                    |
-| **Deploy**            | <img src="https://img.shields.io/badge/Netlify-00C7B7?style=flat&logo=netlify&logoColor=white"/>                                                                                                        | 지속적 배포(CI/CD) 및 SPA 정적 웹 호스팅             |
+| 이름 | 역할 | 담당 기능 및 문제 해결 (Task) |
+| :--- | :--- | :--- |
+| **강수민** | **Leader / Infra** | JWT 인증 시스템(Interceptor), WebSocket 채팅 엔진 구축, 전역 상태(Zustand) 설계 |
+| **강주현** | **AI / Search** | AI 연동 파이프라인(ChatGPT API), 다중 필터링 검색 로직 구현 |
+| **최서원** | **Common UI** | 공통 모달/레이아웃 시스템, 알림(Notification) 서비스, 이미지 최적화 처리 |
+| **강수정** | **Feature CRUD** | 스터디 상세 페이지(조회/참여/탈퇴), 좋아요 기능 및 데이터 정합성 관리 |
+| **권하리** | **UI / Flow** | 메인 피드 및 페이지네이션, 검색어 하이라이팅 처리, 채팅 UI 인터렉션 |
+| **박외숙** | **MyPage / Home** | 배너 캐러셀(Carousel), 마이페이지(프로필/관심스터디), 회원 등급 전환 로직 |
 
 ---
 

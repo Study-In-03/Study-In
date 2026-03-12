@@ -255,7 +255,7 @@ export default function Header({ variant }: HeaderProps) {
                 </button>
 
                 {isLoggedIn && notificationOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+8px)] w-[358px] bg-background rounded-[12px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-50">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+8px)] w-[358px] bg-background rounded-[12px] shadow-[0px_5px_15px_rgba(71,73,77,0.10)] border border-gray-300 z-[80]">
                     <div className="px-5 pt-5 pb-3">
                       <span className="text-base font-bold text-surface">확인하지 않은 알림 </span>
                       <span className="text-base font-bold text-primary">{unreadCount}개</span>

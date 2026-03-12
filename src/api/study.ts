@@ -1,5 +1,6 @@
 import { axiosInstance } from './axios';
 import type { StudyFormState } from '@/types/study';
+import { uploadImage } from './upload';
 
 export interface StudyApiData {
   id: number;
@@ -66,20 +67,6 @@ const SUBJECT_MAP: Record<string, { id: number; name: string }> = {
   '특강':        { id: 7, name: '특강' },
   '기타':        { id: 8, name: '기타' },
 };
-
-/**
- * 썸네일 이미지를 업로드하고 서버 경로 반환.
- */
-export async function uploadStudyThumbnail(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('image', file);
-  const res = await axiosInstance.post<{ image_url: string }>(
-    '/file-uploader/image/',
-    formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } },
-  );
-  return res.data.image_url;
-}
 
 /** form + thumbnail → API payload 공통 빌더 */
 function buildStudyPayload(
@@ -244,14 +231,16 @@ export async function leaveStudy(studyId: number): Promise<{ detail: string }> {
   return res.data;
 }
 
-/** 내가 만든 스터디 조회 - GET /study/my-study/ */
+/** 내가 만든 스터디 조회 - results 배열만 반환하도록 수정 */
 export async function getMyStudies(): Promise<StudyApiData[]> {
-  const res = await axiosInstance.get<StudyApiData[]>('/study/my-study/');
-  return res.data;
+  const res = await axiosInstance.get<StudyApiData[]>('/study/my-study/'); 
+  // API 명세에 따라 만약 객체로 온다면 res.data.results를 반환해야 합니다.
+  // 현재 코드 구조상 배열로 기대하고 있으므로 아래와 같이 안전하게 처리합니다.
+  return Array.isArray(res.data) ? res.data : (res.data as any).results;
 }
 
-/** 내 마감된 스터디 조회 - GET /study/my-closed-study/ */
+/** 내 마감된 스터디 조회 */
 export async function getMyClosedStudies(): Promise<StudyApiData[]> {
-  const res = await axiosInstance.get<StudyApiData[]>('/study/my-closed-study/');
-  return res.data;
+  const res = await axiosInstance.get<any>('/study/my-closed-study/');
+  return res.data.results || res.data;
 }

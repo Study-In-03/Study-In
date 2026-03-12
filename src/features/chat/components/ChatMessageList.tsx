@@ -6,13 +6,20 @@ import { storage } from '@/utils/storage';
 
 interface ChatMessageListProps {
     studyPk: number;
+    leaderId?: number;   
+    onSendReady?: (sendMessage: (content: string, type: 'text' | 'image' | 'file') => void) => void;
 }
 
-export default function ChatMessageList({ studyPk }: ChatMessageListProps) {
-    const { messages, isLoading, scrollRef } = useChatHistory(studyPk);
+export default function ChatMessageList({ studyPk, leaderId, onSendReady }: ChatMessageListProps) {
+    const { messages, isLoading, scrollRef, sendMessage } = useChatHistory(studyPk);
 
     // number로 변환 — string이면 === 비교 시 항상 false가 되어 내 메시지가 상대방으로 표시됨
     const myPk = Number(storage.getUserId());
+
+    // sendMessage를 부모(Chat.tsx)로 전달
+    React.useEffect(() => {
+        if (onSendReady) onSendReady(sendMessage);
+    }, [sendMessage, onSendReady]);
 
     if (isLoading) {
         return (
@@ -25,7 +32,7 @@ export default function ChatMessageList({ studyPk }: ChatMessageListProps) {
     return (
         <div
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-4 flex flex-col-reverse"
+            className="flex-1 overflow-y-auto p-4 flex flex-col"
         >
             {messages.length === 0 && (
                 <div className="text-center text-gray-500 py-10 text-base font-regular">
@@ -42,14 +49,6 @@ export default function ChatMessageList({ studyPk }: ChatMessageListProps) {
 
                 return (
                     <React.Fragment key={msg.pk}>
-                        {msg.chat_type === 'notice' ? (
-                            <SystemMessage type="notice" content={msg.message || ''} />
-                        ) : (
-                            <ChatBubble
-                                message={msg}
-                                isMine={msg.user?.pk === myPk}
-                            />
-                        )}
                         {showDate && (
                             <SystemMessage
                                 key={`date-${msg.pk}`}
@@ -59,6 +58,15 @@ export default function ChatMessageList({ studyPk }: ChatMessageListProps) {
                                     month: 'long',
                                     day: 'numeric',
                                 })}
+                            />
+                        )}
+                        {msg.chat_type === 'notice' ? (
+                            <SystemMessage type="notice" content={msg.message || ''} />
+                        ) : (
+                            <ChatBubble
+                                message={msg}
+                                isMine={msg.user?.pk === myPk}
+                                isOwner={msg.user?.pk === leaderId}
                             />
                         )}
                     </React.Fragment>

@@ -1,24 +1,25 @@
-import StudyBanner from "../features/study/components/StudyBanner";
-import StudyProfileCard from "../features/study/components/StudyProfileCard";
-import StudyListSection from "../features/study/components/StudyList";
-import { useState, useEffect } from "react";
-import iconTopBtn from "@/assets/base/icon-top-btn.svg";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { useStudyProfileCard } from "@/features/study/hooks/useStudyProfileCard";
 import { useMyStudies } from "@/features/profile/hooks/useMyStudies";
-import { getProfile } from "@/api/profile";
-import { storage } from "@/utils/storage";
+import { STATUS_COLOR } from "@/constants/study";
+
+import StudyBanner from "@/features/study/components/StudyBanner";
+import StudyProfileCard from "@/features/study/components/StudyProfileCard";
+import StudyListSection from "@/features/study/components/StudyList";
+
 import searchIcon from "@/assets/base/icon-Search.svg";
 import IconSpeaker from "@/assets/base/icon-speaker.svg?react";
-import { STATUS_COLOR } from "@/constants/study";
-import iconSpecial from "../assets/category/subject_특강.svg";
-import iconConcept from "../assets/category/subject_개념학습-2.svg";
-import iconApply from "../assets/category/subject_응용활용.svg";
-import iconProject from "../assets/category/subject_프로젝트.svg";
-import iconChallenge from "../assets/category/subject_챌린지.svg";
-import iconExam from "../assets/category/subject_자격증시험.svg";
-import iconJob from "../assets/category/subject_취업코테.svg";
-import iconEtc from "../assets/category/subject_기타.svg";
+import iconTopBtn from "@/assets/base/icon-top-btn.svg";
+import iconSpecial from "@/assets/category/subject_특강.svg";
+import iconConcept from "@/assets/category/subject_개념학습-2.svg";
+import iconApply from "@/assets/category/subject_응용활용.svg";
+import iconProject from "@/assets/category/subject_프로젝트.svg";
+import iconChallenge from "@/assets/category/subject_챌린지.svg";
+import iconExam from "@/assets/category/subject_자격증시험.svg";
+import iconJob from "@/assets/category/subject_취업코테.svg";
+import iconEtc from "@/assets/category/subject_기타.svg";
 
 const categories = [
   { id: 1, name: "특강", icon: iconSpecial },
@@ -31,36 +32,12 @@ const categories = [
   { id: 8, name: "기타", icon: iconEtc },
 ];
 
-function calcDDay(startDate?: string, endDate?: string): string {
-  const ref = endDate ?? startDate;
-  if (!ref) return "";
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(ref);
-  target.setHours(0, 0, 0, 0);
-  const diff = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  if (diff === 0) return "D-Day";
-  return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`;
-}
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState("최신 스터디");
-  const [profileImg, setProfileImg] = useState<string | undefined>(undefined);
-  const [nickname, setNickname] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
+  const { userName, userImage, studies: sidebarStudies, isLoading: sidebarLoading } = useStudyProfileCard();
   const { studies: myStudies } = useMyStudies(isLoggedIn ? 'joined' : null);
-
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    const userId = storage.getUserId();
-    if (!userId) return;
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    getProfile(userId).then((profile) => {
-      setNickname(profile.nickname);
-      setProfileImg(profile.profile_img ? baseUrl + profile.profile_img : undefined);
-    }).catch(() => {});
-  }, [isLoggedIn]);
 
   return (
     <>
@@ -218,22 +195,17 @@ export default function Home() {
                 </div>
               </>
             ) : (
-              <div className="w-full aspect-[880/300] bg-gray-200 rounded-[12px]" />
+              <StudyBanner />
             )}
           </div>
 
           <aside className="w-full md:w-[290px] sticky top-24">
             <StudyProfileCard
               isLoggedIn={isLoggedIn}
-              userName={nickname}
-              userImage={profileImg}
-              studies={myStudies.map((s) => ({
-                id: s.id,
-                title: s.title,
-                status: s.status as "진행 중" | "모집 중",
-                dDay: "",
-                image: s.thumbnail ?? "",
-              }))}
+              isLoading={sidebarLoading}
+              userName={userName}
+              userImage={userImage}
+              studies={sidebarStudies}
             />
           </aside>
         </div>

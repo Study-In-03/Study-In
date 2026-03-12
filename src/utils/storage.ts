@@ -19,15 +19,6 @@ export const storage = {
     setUserId: (id: number) => localStorage.setItem(USER_ID_KEY, String(id)),
     removeUserId: () => localStorage.removeItem(USER_ID_KEY),
 
-    // 로그아웃 시 한 번에 싹 비우기
-    clearAuth: () => {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        localStorage.removeItem(USER_ID_KEY);
-        localStorage.removeItem(USER_EMAIL_KEY);
-        localStorage.removeItem('nickname');
-    },
-
     // 이메일 관리
     getEmail: () => localStorage.getItem(USER_EMAIL_KEY),   
     setEmail: (email: string) => localStorage.setItem(USER_EMAIL_KEY, email),
@@ -38,4 +29,15 @@ export const storage = {
     setNickname: (nickname: string) => localStorage.setItem('nickname', nickname),
     removeNickname: () => localStorage.removeItem('nickname'),
 
+    getIsAssociate: () => localStorage.getItem('is_associate') === 'true',
+    setIsAssociate: (val: boolean) => localStorage.setItem('is_associate', String(val)),
+
+    clearAuth: () => {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        localStorage.removeItem(USER_ID_KEY);
+        localStorage.removeItem(USER_EMAIL_KEY);
+        localStorage.removeItem('nickname');
+        localStorage.removeItem('is_associate');
+    },
 };

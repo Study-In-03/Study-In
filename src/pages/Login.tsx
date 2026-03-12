@@ -7,7 +7,6 @@ import kakaoLogo from '@/assets/base/Logo-kakao-message.svg';
 import googleLogo from '@/assets/base/Logo-Google.svg';
 import IconX from '@/assets/base/icon-X.svg?react';
 import { validateEmail } from '@/features/auth/utils/authValidators';
-import { usePasswordResetEmail } from '@/features/auth/hooks/usePasswordResetEmail';
 
 type SnsProvider = { name: string; logo: string; logoClass?: string; bgClass: string };
 
@@ -25,12 +24,10 @@ export default function Login() {
     // 비밀번호 찾기 상태
     const [fpEmail, setFpEmail] = useState('');
     const [fpEmailError, setFpEmailError] = useState('');
-    const { verifyCode, isLoading: fpLoading, apiError: fpApiError, setApiError: setFpApiError } = usePasswordResetEmail();
 
     const handleFpEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setFpEmail(value);
-        if (fpApiError) setFpApiError(null);
         if (value.length === 0) setFpEmailError('');
         else if (!validateEmail(value)) setFpEmailError('이메일 형식이 올바르지 않습니다.');
         else setFpEmailError('');
@@ -39,19 +36,15 @@ export default function Login() {
     const isFpValid = fpEmail.length > 0 && validateEmail(fpEmail);
 
     const handleSendEmail = async () => {
-        if (!isFpValid || fpLoading) return;
-        const isSuccess = await verifyCode(fpEmail, '123456');
-        if (isSuccess) {
-            setShowForgotPassword(false);
-            navigate('/reset-password', { state: { email: fpEmail } });
-        }
+        if (!isFpValid) return;
+        setShowForgotPassword(false);
+        navigate('/reset-password', { state: { email: fpEmail } });
     };
 
     const handleCloseForgotPassword = () => {
         setShowForgotPassword(false);
         setFpEmail('');
         setFpEmailError('');
-        setFpApiError(null);
     };
 
     return (
@@ -169,20 +162,19 @@ export default function Login() {
                                 />
                                 {fpEmailError && <p className="text-error text-sm mt-2 absolute">{fpEmailError}</p>}
                             </div>
-                            {fpApiError && <p className="text-error text-xs text-center mt-6">{fpApiError}</p>}
                         </div>
 
                         <button
                             type="button"
                             onClick={handleSendEmail}
-                            disabled={!isFpValid || fpLoading}
+                            disabled={!isFpValid}
                             className={`w-full font-medium text-lg py-[18px] transition-colors ${
                                 isFpValid
                                     ? 'bg-primary text-background hover:bg-primary-light cursor-pointer'
                                     : 'bg-gray-300 text-background cursor-not-allowed'
                             }`}
                         >
-                            {fpLoading ? '발송 중...' : '이메일 보내기'}
+                            이메일 보내기
                         </button>
                     </div>
                 </div>

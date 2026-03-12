@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { getMyStudies, getParticipatingStudies, getMyClosedStudies, getLikedStudies } from '@/api/study';
 import { normalizeStudy } from '@/utils/study';
 import type { Study } from '@/types/study';
+import type { StudyApiData } from '@/api/study';
 
 export type TabKey = 'my' | 'joined' | 'ended' | 'liked';
 
-const API_MAP: Record<TabKey, () => Promise<any[]>> = {
+const API_MAP: Record<TabKey, () => Promise<StudyApiData[]>> = {
   my: getMyStudies,
   joined: getParticipatingStudies,
   ended: getMyClosedStudies,
@@ -30,9 +31,10 @@ export const useMyStudies = (tab: TabKey | null) => {
       try {
         const raw = await API_MAP[tab]();
         if (!cancelled) {
+          // raw가 배열임을 보장하므로 map 함수 사용 가능
           setStudies(raw.map(normalizeStudy));
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) setError('스터디 목록을 불러오는 데 실패했습니다.');
       } finally {
         if (!cancelled) setIsLoading(false);

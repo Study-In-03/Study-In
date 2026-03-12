@@ -10,12 +10,14 @@ const CONFIRM_LABELS: Record<string, string> = {
   logout: '로그아웃',
   delete: '삭제',
   report: '신고',
+  associate: '설정하러 가기',
 };
 
 const CONFIRM_MESSAGES: Record<string, string> = {
   logout: '정말 로그아웃 하시겠어요?',
   delete: '정말 삭제하시겠어요?\n삭제된 댓글은 복구할 수 없습니다.',
   report: '이 댓글을 신고하시겠어요?',
+  associate: '정회원 전용 서비스입니다.\n프로필 설정을 완료하시겠어요?',
 };
 
 const Modal = () => {
@@ -139,10 +141,9 @@ const Modal = () => {
         return (
           <button
             onClick={() => {
+              const deleteCallback = onConfirm; // 닫기 전에 미리 저장
               closeModal();
-              openConfirm('delete', () => {
-                useModalStore.getState().onConfirm?.();
-              });
+              openConfirm('delete', () => deleteCallback?.());
             }}
             className="w-full py-4 text-center text-base text-error font-medium border-b border-gray-100"
           >
@@ -207,7 +208,6 @@ const Modal = () => {
                 closeModal();
                 openConfirm("logout", () => {
                   logout();
-                  storage.clearAuth();
                   navigate("/");
                 });
               }}

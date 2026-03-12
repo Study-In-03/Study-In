@@ -16,7 +16,7 @@ function App() {
         .then(res => setUser({ pk: res.user, email: storage.getEmail() ?? '', nickname: res.nickname }))
         .catch(err => console.error('유저 정보 로드 실패:', err));
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, user, setUser]);
 
   return (
     <>

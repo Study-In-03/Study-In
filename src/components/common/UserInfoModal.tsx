@@ -4,7 +4,7 @@ import { getProfile, type UserProfile } from '@/api/profile';
 import { getFullUrl } from '@/api/upload';
 import ReportModal from '@/components/common/ReportModal';
 import defaultProfileImg from '@/assets/base/User-Profile-L.svg';
-import CloseIcon from '@/assets/base/icon-button-(X).svg?react';
+import CloseIcon from '@/assets/base/icon-btn-X-blue.svg?react';
 
 // throwOnError로 에러를 throw하면 에러 바운더리에서 catch해서 null 반환
 class GitHubCalendarBoundary extends Component<
@@ -122,7 +122,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
             {/* 콘텐츠 영역 */}
             <div className="mt-[30px] w-full flex flex-col gap-10">
               {/* 자기소개 */}
-              <div className="w-full border border-[#D9DBE0] rounded-xl px-4 py-4">
+              <div className="w-full border border-gray-300 rounded-xl px-4 py-4">
                 <p className="text-base text-gray-700 leading-6 whitespace-pre-line w-full">
                   {profile.introduction || '소개글이 없어요.'}
                 </p>

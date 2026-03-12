@@ -14,8 +14,12 @@ const CommentWritePage = () => {
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
-    await createComment(Number(studyId), { content, is_secret: isSecret });
-    navigate(-1);
+    try {
+      await createComment(Number(studyId), { content, is_secret: isSecret });
+      navigate(-1);
+    } catch {
+      alert("댓글 등록에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (

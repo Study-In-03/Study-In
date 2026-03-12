@@ -81,13 +81,12 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
                     </div>
                 )}
 
-                <div>
+                <div className={`flex items-end gap-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
                     {isMine && (
                         <span className="text-xs text-gray-500 mb-1 shrink-0">
                             {time}
                         </span>
                     )}
-
                     {/* 말풍선 본문 */}
                     <div>
                         {/* 이미지 타입인 경우 */}

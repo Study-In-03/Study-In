@@ -1,68 +1,45 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { STATUS_BG_COLOR } from '@/constants/study';
 import LeftArrowIcon from '@/assets/base/icon-Left-arrow.svg?react';
 import PeopleIcon from '@/assets/base/icon-people.svg?react';
 import HomeIcon from '@/assets/base/icon-Home.svg?react';
 import DotsIcon from '@/assets/base/icon-dots.svg?react';
 import ImportIcon from '@/assets/base/icon-square-empty.svg?react';
-import { leaveStudy } from '@/api/study';
 
 interface ChatHeaderProps {
-    studyPk: number;
     title?: string;
     statusName?: string;
     onBack?: () => void;
     onToggleSidebar?: () => void;
+    onLeave?: () => void;
     isRoomListOpen?: boolean;
-    leaderId?: number;
     participatingCount?: number;
     slot?: 'left' | 'center';
 }
 
 const StudyStatusBadge = ({ status }: { status: string }) => {
-    const statusColors: Record<string, string> = {
-        "모집 중": "bg-primary",
-        "모집 완료": "bg-gray-500",
-        "진행 중": "bg-warning",
-        "완료": "bg-error",
-        };
-
+    if (!status) return null;
     return (
-        <span className={`mr-3 px-[10px] py-[3px] text-xs font-regular text-background rounded-[26px] shrink-0 ${statusColors[status] || 'bg-gray-700'}`}>
+        <span className={`mr-3 px-[10px] py-[3px] text-xs font-regular text-background rounded-[26px] shrink-0 ${STATUS_BG_COLOR[status] || 'bg-gray-700'}`}>
             {status}
         </span>
     );
 };
 
 export default function ChatHeader({
-    studyPk,
     title,
-    statusName = "진행 중",
+    statusName = '',
     onBack,
     onToggleSidebar,
+    onLeave,            // 추가
     isRoomListOpen,
-    leaderId,
     participatingCount = 0,
     slot,
 }: ChatHeaderProps) {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const handleGoHome = () => navigate('/');
-
-    // 스터디 나가기 - DELETE /study/{study_pk}/participate/
-    const handleLeaveStudy = async () => {
-        if (!window.confirm("정말 이 스터디를 나가시겠습니까?")) return;
-        try {
-            await leaveStudy(studyPk);
-            alert("스터디 탈퇴가 완료되었습니다.");
-            navigate('/');
-        } catch (error: any) {
-            const errorMsg = error.response?.data?.error || "스터디 탈퇴에 실패했습니다.";
-            alert(errorMsg);
-        } finally {
-            setIsMenuOpen(false);
-        }
-    };
 
     if (slot === 'left') {
         return (
@@ -141,7 +118,7 @@ export default function ChatHeader({
                                         </button>
                                         <button
                                             className="w-[184px] text-left px-[10px] py-[5px] text-base font-regular rounded-[8px] text-error mt-1 hover:bg-gray-100"
-                                            onClick={handleLeaveStudy}
+                                            onClick={() => { setIsMenuOpen(false); onLeave?.(); }}
                                         >
                                             스터디 나가기
                                         </button>

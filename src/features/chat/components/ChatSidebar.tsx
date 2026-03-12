@@ -22,9 +22,10 @@ interface StudyDetail {
 
 interface ChatSidebarProps {
     onClose?: () => void;
+    onLeave?: () => void;
 }
 
-export default function ChatSidebar({ onClose }: ChatSidebarProps) {
+export default function ChatSidebar({ onClose, onLeave }: ChatSidebarProps) {
     const navigate = useNavigate();
     const { study_pk } = useParams();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,7 +96,7 @@ if (!studyData) return (
                             setIsMenuOpen(!isMenuOpen);
                         }}
                     >
-                        <DotsIcon className="w-6 h-6" />
+                        <DotsIcon className="w-6 h-6 md:hidden"/>
                     </button>
 
                     {isMenuOpen && (
@@ -114,7 +115,7 @@ if (!studyData) return (
                                 {/* 나가기 API 연동 */}
                                 <button
                                     className="w-[184px] text-left px-[10px] py-[5px] text-base font-regular rounded-[8px] text-error mt-1 hover:bg-gray-100"
-                                    onClick={handleLeaveStudy}
+                                    onClick={onLeave}
                                 >
                                     스터디 나가기
                                 </button>

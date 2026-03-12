@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getChatHistory } from '@/api/chat';
 import { ChatMessage } from '@/types/chat';
+import { useWebSocket } from './useWebSocket';
 
 export const useChatHistory = (studyPk: number) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -26,6 +27,19 @@ export const useChatHistory = (studyPk: number) => {
       });
     }
   }, []);
+
+  // 웹소켓 수신 메시지 처리
+  const handleNewMessage = useCallback((newMsg: ChatMessage) => {
+      setMessages((prev) => [...prev, newMsg]);
+      // 새 메시지 수신 시 맨 아래로 스크롤
+      setTimeout(() => scrollToBottom('smooth'), 50);
+  }, [scrollToBottom]);
+
+  // 웹소켓 연결
+  const { sendMessage } = useWebSocket({
+      studyPk,
+      onMessage: handleNewMessage,
+  });
 
   /**
    * 초기 채팅 내역을 불러오는 함수
@@ -81,12 +95,12 @@ export const useChatHistory = (studyPk: number) => {
 
   return {
     messages,
-    setMessages,    // WebSocket에서 새 메시지 올 때 사용: setMessages(prev => [...prev, newMsg])
     isLoading,
     error,
-    scrollRef,      // 채팅창 컨테이너 div에 연결
-    scrollToBottom, // 새 메시지 전송/수신 시 호출
+    scrollRef,
+    scrollToBottom,
+    sendMessage,    
     fetchMoreHistory,
-    hasNextPage
+    hasNextPage,
   };
 };

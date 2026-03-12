@@ -55,7 +55,7 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
     };
 
     return (
-        <div className="lg:pb-5 lg:px-5 shrink-0">
+        <div className="md:pb-5 md:px-5 shrink-0">
 
             {error && <p className="text-xs text-error mb-2 px-2">{error}</p>}
 

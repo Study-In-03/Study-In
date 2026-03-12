@@ -1,5 +1,3 @@
-// src/pages/StudyDetail.tsx
-
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getStudy, joinStudy } from '@/api/study';
@@ -122,12 +120,8 @@ export default function StudyDetail() {
   return (
     <div className="w-full min-h-screen bg-background">
 
-      {/* ══════════════════════════════
-          데스크탑 (md 이상)
-          ══════════════════════════════ */}
       <div className="hidden md:block">
 
-        {/* ① 썸네일 카드 */}
         <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-6">
           <div
             ref={thumbnailCardRef}
@@ -191,7 +185,6 @@ export default function StudyDetail() {
           </div>
         </div>
 
-        {/* ② 본문 */}
         <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-10 pb-6 flex gap-6 items-start">
 
           <div className="flex-1 min-w-0">
@@ -273,8 +266,6 @@ export default function StudyDetail() {
               </div>
             </div>
           </div>
-
-          {/* 사이드카드 */}
           <div className="w-[290px] shrink-0 sticky top-6 self-start">
             <div className="rounded-xl border border-gray-300 overflow-hidden bg-background">
               <div className="bg-primary px-4 py-3 flex items-center gap-2">
@@ -367,9 +358,6 @@ export default function StudyDetail() {
         </div>
       </div>
 
-      {/* ══════════════════════════════
-          모바일 (md 미만)
-          ══════════════════════════════ */}
       <div className="md:hidden pb-[80px]">
 
         <div className="mx-6 mt-4 rounded-xl border border-gray-300 overflow-hidden bg-background">

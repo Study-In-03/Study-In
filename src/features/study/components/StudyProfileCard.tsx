@@ -32,7 +32,7 @@ export default function StudyProfileCard({
   // 로그인 이전 (세 번째 사진 상황)
   if (!isLoggedIn) {
     return (
-      <div className="w-[280px] h-[300px] bg-gray-100 rounded-[12px] flex flex-col items-center justify-center p-6 border border-gray-100">
+      <div className="w-[280px] h-[300px] bg-gray-100 rounded-xl flex flex-col items-center justify-center p-6 border border-gray-100">
         <img src={defaultProfile} alt="프로필" className="w-20 h-20 rounded-full mb-4 object-cover" />
         <p className="text-gray-700 text-sm mb-6 text-center">
           스터디를 만들어
@@ -41,7 +41,7 @@ export default function StudyProfileCard({
         </p>
         <button
           onClick={() => navigate("/study/create")}
-          className="w-full py-3 bg-primary text-background rounded-[8px] font-bold flex items-center justify-center gap-2 hover:bg-primary-light transition-all active:scale-95"
+          className="w-full py-3 bg-primary text-background rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary-light transition-all active:scale-95"
         >
           스터디 만들기
         </button>
@@ -53,7 +53,7 @@ export default function StudyProfileCard({
   return (
     <div className="flex flex-col gap-6 w-[290px]">
       {/* 상단 프로필 카드 영역 */}
-      <div className="bg-blue-50/30 rounded-[12px] p-6 flex flex-col items-center border border-gray-100 shadow-sm">
+      <div className="bg-activation/30 rounded-xl p-6 flex flex-col items-center border border-gray-100 shadow-sm">
         <div className="relative mb-4">
           <img
             src={userImage || defaultProfile}
@@ -65,7 +65,7 @@ export default function StudyProfileCard({
         <h3 className="font-bold text-lg mb-6">{userName}</h3>
         <button
           onClick={() => navigate("/study/create")}
-          className="w-full py-3 bg-primary text-background rounded-[8px] font-bold flex items-center justify-center gap-2 hover:bg-primary-light"
+          className="w-full py-3 bg-primary text-background rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary-light"
         >
           스터디 만들기
         </button>
@@ -80,7 +80,7 @@ export default function StudyProfileCard({
 
         {studies.length > 0 ? (
           // 스터디가 있는 경우 (첫 번째 사진 상황)
-          <div className="flex flex-col gap-2 p-4 bg-background border border-gray-100 rounded-[12px]">
+          <div className="flex flex-col gap-2 p-4 bg-background border border-gray-100 rounded-xl">
             {studies.map((study) => (
               <div
                 key={study.id}
@@ -88,7 +88,7 @@ export default function StudyProfileCard({
               >
                 <img
                   src={study.image}
-                  className="w-[60px] h-[60px] rounded-[8px] object-cover shrink-0"
+                  className="w-[60px] h-[60px] rounded-lg object-cover shrink-0"
                   alt="스터디"
                 />
                 <div className="flex flex-col justify-center overflow-hidden">
@@ -106,7 +106,7 @@ export default function StudyProfileCard({
           </div>
         ) : (
           // 스터디가 없는 경우 (두 번째 사진 상황)
-          <div className="py-10 text-center bg-background border border-dashed border-gray-300 rounded-[12px]">
+          <div className="py-10 text-center bg-background border border-dashed border-gray-300 rounded-xl">
             <p className="text-gray-500 text-sm">
               아직 참여 중인 스터디가 없어요.
             </p>

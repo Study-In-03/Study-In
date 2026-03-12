@@ -15,6 +15,29 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
     const [previewImages, setPreviewImages] = useState<{ file: File; url: string }[]>([]);
     const { uploading, handleImageUpload, error } = useUpload();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const handleCodeInsert = () => {
+        const input = inputRef.current;
+        const selStart = input?.selectionStart ?? message.length;
+        const selEnd = input?.selectionEnd ?? message.length;
+        const selected = message.slice(selStart, selEnd);
+
+        if (selected) {
+            const newMsg = message.slice(0, selStart) + '```' + selected + '```' + message.slice(selEnd);
+            setMessage(newMsg);
+        } else if (message.trim()) {
+            setMessage('```' + message + '```');
+        } else {
+            setMessage('``` ```');
+            setTimeout(() => {
+                input?.setSelectionRange(3, 3);
+                input?.focus();
+            }, 0);
+            return;
+        }
+        input?.focus();
+    };
 
     const handleSendText = () => {
         if (!message.trim() && previewImages.length === 0) return;
@@ -87,11 +110,12 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
 
             {/* 입력창 */}
             <div className={`flex items-center bg-background border border-gray-300 px-4 py-3 md:rounded-b-[8px]`}>
-                <button className="text-gray-500 hover:text-primary-light transition-colors shrink-0">
+                <button onClick={handleCodeInsert} className="text-gray-500 hover:text-primary-light transition-colors shrink-0">
                     <CodeIcon className="w-[26px] h-[26px]" />
                 </button>
 
                 <input
+                    ref={inputRef}
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

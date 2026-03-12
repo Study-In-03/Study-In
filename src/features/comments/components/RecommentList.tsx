@@ -5,10 +5,11 @@ import { useModalStore } from "@/store/modalStore";
 import CommentArrowIcon from "@/assets/base/icon-comment-arrow.svg?react";
 import CrownIcon from "@/assets/base/icon-crown-fill.svg?react";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
-import IconSend from "@/assets/base/icon-Send.svg?react";
 import DotsIcon from "@/assets/base/icon-dots.svg?react";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
+import CommentInputField from "./CommentInputField";
+import { formatDate } from "@/utils/date";
 
 interface TaggedUser {
   id: number;
@@ -38,15 +39,6 @@ interface RecommentListProps {
   taggedUser?: TaggedUser;
   onRecommentReply?: (user: TaggedUser) => void;
 }
-
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
 
 const RecommentList = ({
   recomments,
@@ -105,7 +97,7 @@ const RecommentList = ({
             <CommentArrowIcon className="w-[22px] h-[26px] text-gray-300 flex-shrink-0 mt-2" />
 
             <div className="flex-1 min-w-0">
-              <div className="flex gap-[10px]">
+              <div className="flex gap-[10px] items-start">
                 {/* 프로필 이미지 */}
                 {recomment.is_secret && !isAuthor ? (
                   <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
@@ -234,30 +226,17 @@ const RecommentList = ({
 
                   {/* 내용 or 수정 입력창 */}
                   {editingId === recomment.recomment_id ? (
-                    <div className="mt-2 h-[50px] rounded-[8px] border border-[#D9DBE0] flex items-center overflow-hidden">
-                      <input
-                        type="text"
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" &&
-                          handleUpdate(recomment.recomment_id, recomment.is_secret)
-                        }
-                        placeholder="대댓글 수정하기"
-                        className="flex-1 px-4 text-base text-gray-500 focus:outline-none min-w-0"
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => handleUpdate(recomment.recomment_id, recomment.is_secret)}
-                        className="flex-shrink-0 flex items-center justify-center w-[50px] h-[50px] bg-[#D9DBE0]"
-                      >
-                        <IconSend className="w-[26px] h-[26px] text-background" />
-                      </button>
-                    </div>
+                    <CommentInputField
+                      value={editContent}
+                      onChange={setEditContent}
+                      onSubmit={() => handleUpdate(recomment.recomment_id, recomment.is_secret)}
+                      placeholder="대댓글 수정하기"
+                      className="mt-2"
+                    />
                   ) : (
                     <div className="flex items-center gap-2 mt-[10px]">
                       {recomment.is_secret && isAuthor && (
-                        <IconLock className="w-4 h-4 text-[#5C8EF2] flex-shrink-0" />
+                        <IconLock className="w-4 h-4 text-primary-light flex-shrink-0" />
                       )}
                       {recomment.tagged_user && (
                         <span className="text-primary text-base font-medium flex-shrink-0">
@@ -279,36 +258,25 @@ const RecommentList = ({
       {/* 답글 입력창 */}
       {showInput && (
         <div className="mt-[16px]">
-          <div className="h-[50px] rounded-[8px] border border-[#D9DBE0] flex items-center overflow-hidden">
-            <div className="flex-1 flex items-center px-[16px] h-full min-w-0 gap-1">
-              {parentIsSecret && (
-                <IconLock className="w-4 h-4 text-[#5C8EF2] flex-shrink-0" />
-              )}
-              {taggedUser && (
-                <span className="text-primary text-base font-medium flex-shrink-0">
-                  @{taggedUser.nickname}
-                </span>
-              )}
-              <input
-                type="text"
-                value={replyInput}
-                onChange={(e) => setReplyInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSubmitReply()}
-                placeholder={parentIsSecret ? "비밀 답글을 입력하세요" : "답글을 입력하세요"}
-                className="w-full text-base text-gray-500 focus:outline-none bg-transparent leading-6"
-                autoFocus
-              />
-            </div>
-            <button
-              onClick={handleSubmitReply}
-              disabled={!replyInput.trim()}
-              className="flex-shrink-0 flex items-center justify-center w-[50px] h-[50px] bg-[#D9DBE0]"
-            >
-              <IconSend className="w-[26px] h-[26px] text-background" />
-            </button>
-          </div>
+          <CommentInputField
+            value={replyInput}
+            onChange={setReplyInput}
+            onSubmit={handleSubmitReply}
+            placeholder={parentIsSecret ? "비밀 답글을 입력하세요" : "답글을 입력하세요"}
+            prefix={
+              <>
+                {parentIsSecret && (
+                  <IconLock className="w-4 h-4 text-primary-light flex-shrink-0" />
+                )}
+                {taggedUser && (
+                  <span className="text-primary text-base font-medium flex-shrink-0">
+                    @{taggedUser.nickname}
+                  </span>
+                )}
+              </>
+            }
+          />
         </div>
-
       )}
     </div>
   );

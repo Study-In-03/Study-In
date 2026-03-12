@@ -28,7 +28,7 @@ export default function Input({
                 } ${className}`}
             />
             {errorMessage && (
-                <p className="text-error text-xs mt-[6px]">{errorMessage}</p>
+                <p className="text-error text-base mt-[6px]">{errorMessage}</p>
             )}
         </div>
     );

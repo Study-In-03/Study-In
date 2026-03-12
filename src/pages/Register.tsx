@@ -13,7 +13,7 @@ export default function Register() {
             <main className="flex flex-col items-center mb-10">
                 {!isSuccess ? (
                     <>
-                        <h2 className="text-3xl font-bold text-black mt-10 mb-[60px]">회원가입</h2>
+                        <h2 className="text-3xl font-bold text-surface mt-10 mb-[60px]">회원가입</h2>
                         
                         {/* 폼 영역 */}
                         <div className="w-full max-w-[322px]">
@@ -27,7 +27,7 @@ export default function Register() {
                             <IconCheck className="w-[60px] h-[60px]" />
                         </div>
                         
-                        <h2 className="text-3xl font-bold text-black">회원가입 완료!</h2>
+                        <h2 className="text-3xl font-bold text-surface">회원가입 완료!</h2>
                         
                         <p className="text-base font-regular text-gray-700 mb-[10px] leading-relaxed">
                             스터디인 회원가입을 완료했어요.<br />

@@ -52,7 +52,7 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
             {/* 에러 메시지 표시 (수정 필요) */}
             {error && <p className="text-xs text-error mb-2 px-2">{error}</p>}
 
-            <div className="flex items-center bg-background border border-gray-300 lg:rounded-[8px] px-4 py-3">
+            <div className="flex items-center bg-background border border-gray-300 md:rounded-[8px] px-4 py-3">
                 
                 <button className="text-gray-500 hover:text-primary-light transition-colors shrink-0">
                     <CodeIcon className="w-[26px] h-[26px]" />

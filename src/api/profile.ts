@@ -32,7 +32,7 @@ export async function getMemberType(): Promise<{ is_associate_member: boolean }>
 
 export async function checkNickname(nickname: string): Promise<{ available: boolean; message: string }> {
   try {
-    const res = await axiosInstance.get(`/accounts/nicknames/?nickname=${nickname}`)
+    const res = await axiosInstance.get(`/accounts/nicknames/`, { params: { nickname } })
     return { available: true, message: res.data.data }
   } catch (error: any) {
     const message = error.response?.data?.error ?? '닉네임 확인에 실패했어요.'

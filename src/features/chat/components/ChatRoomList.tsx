@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { axiosInstance } from '@/api/axios';
+import { getParticipatingStudies } from '@/api/study';
 import { getFullUrl } from '@/api/upload';
 
 interface ChatRoomListProps {
@@ -24,10 +24,15 @@ export default function ChatRoomList({ onClose, onCountChange }: ChatRoomListPro
         const fetchStudies = async () => {
             try {
                 setIsLoading(true);
-                const response = await axiosInstance.get<ParticipatingStudy[]>('/study/my-participating-study/');
-                setStudies(response.data);
-                // 개수를 부모(ChatHeader)로 전달 → 중복 fetch 제거
-                onCountChange?.(response.data.length);
+                const data = await getParticipatingStudies();
+                // getParticipatingStudies는 StudyApiData[]를 반환하므로 필요한 필드만 추출
+                const mapped: ParticipatingStudy[] = data.map((s) => ({
+                id: s.id,
+                title: s.title,
+                thumbnail: s.thumbnail,
+                }));
+                setStudies(mapped);
+                onCountChange?.(mapped.length);
             } catch (error) {
                 console.error("참여 스터디 목록을 불러오지 못했습니다.", error);
             } finally {

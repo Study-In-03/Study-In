@@ -6,6 +6,8 @@ import bannerBg from "@/assets/base/banner.svg";
 import character1 from "@/assets/Character-1.png";
 import character2 from "@/assets/Character-2.png";
 import character3 from "@/assets/Character-3.png";
+import LeftIcon from "@/assets/base/icon-left.svg?react";
+import RightIcon from "@/assets/base/icon-right.svg?react";
 
 const banners = [banner1, banner2, banner3];
 
@@ -86,7 +88,7 @@ export default function StudyBanner() {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-[6px] h-[8px] rounded-full transition-all duration-300 ${
-              currentSlide === index ? "bg-background" : "bg-background/50"
+              currentSlide === index ? "bg-background" : "bg-gray-300"
             }`}
             aria-label={`${index + 1}번 슬라이드로 이동`}
           />
@@ -117,23 +119,19 @@ export default function StudyBanner() {
       {/* 좌측 화살표 */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white transition-all opacity-0 group-hover:opacity-100"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-all opacity-0 group-hover:opacity-100"
         aria-label="이전 슬라이드"
       >
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="10 2 3 8.5 10 15"></polyline>
-        </svg>
+        <LeftIcon className="w-[30px] h-[30px] text-background hover:text-gray-500" />
       </button>
 
       {/* 우측 화살표 */}
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white transition-all opacity-0 group-hover:opacity-100"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-all opacity-0 group-hover:opacity-100"
         aria-label="다음 슬라이드"
       >
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="2 2 9 8.5 2 15"></polyline>
-        </svg>
+        <RightIcon className="w-[30px] h-[30px] text-background hover:text-gray-500" />
       </button>
 
       {/* 인디케이터 */}
@@ -145,7 +143,7 @@ export default function StudyBanner() {
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
               currentSlide === index
                 ? "bg-background opacity-100 scale-110"
-                : "bg-background/40 hover:bg-background/60"
+                : "bg-gray-100 hover:bg-gray-300"
             }`}
             aria-label={`${index + 1}번 슬라이드로 이동`}
           />

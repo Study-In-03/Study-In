@@ -1,5 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react"; // Dispatch 추가
-// 1. SVG 아이콘 경로 설정
+import React, { Dispatch, SetStateAction } from "react"; 
 import iconSpecial from "@/assets/category/subject_특강.svg";
 import iconConcept from "@/assets/category/subject_개념학습-2.svg";
 import iconApplied from "@/assets/category/subject_응용활용.svg";
@@ -28,7 +27,6 @@ const CATEGORIES = [
   { id: "etc", label: "기타", icon: iconEtc },
 ];
 
-// props에서 searchTerm과 onSearchChange를 받아줍니다.
 const StudyFilter = ({ 
   selectedCategory, 
   onCategoryChange,
@@ -43,8 +41,7 @@ const StudyFilter = ({
           <button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            className="flex flex-col items-center group transition-all shrink-0"
-            style={{ width: '70px', height: '98px' }}
+            className="flex flex-col items-center group transition-all shrink-0 w-[70px] h-[98px]"
           >
             <div className={`w-[60px] h-[60px] rounded-[20px] flex items-center justify-center transition-all duration-200 mb-2 shadow-sm border
               ${selectedCategory === cat.id 
@@ -58,8 +55,8 @@ const StudyFilter = ({
               />
             </div>
             
-            <span className={`text-[13px] font-bold text-center break-keep leading-tight ${
-              selectedCategory === cat.id ? "text-primary" : "text-gray-700"
+            <span className={`text-base font-medium text-center break-keep leading-tight ${
+              selectedCategory === cat.id ? "text-primary-light" : "text-gray-700"
             }`}>
               {cat.label}
             </span>

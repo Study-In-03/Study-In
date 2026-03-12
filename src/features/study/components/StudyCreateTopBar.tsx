@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import iconDots from "@/assets/base/icon-dots.svg";
+import DotsIcon from "@/assets/base/icon-dots.svg?react";
 
 interface StudyCreateTopBarProps {
   isValid: boolean;
@@ -27,7 +27,7 @@ export default function StudyCreateTopBar({ isValid, isSubmitting = false, onVie
 
   return (
     <div className="w-full bg-background border-b border-gray-300">
-      <div className="max-w-[1200px] mx-auto h-[56px] lg:h-[60px] px-4 flex items-center justify-end gap-[8px]">
+      <div className="max-w-[1190px] mx-auto h-[56px] lg:h-[60px] px-4 flex items-center justify-end gap-[8px]">
         {onViewStudy && (
           <button
             type="button"
@@ -54,7 +54,7 @@ export default function StudyCreateTopBar({ isValid, isSubmitting = false, onVie
               onClick={() => setIsDropdownOpen((prev) => !prev)}
               className="w-[30px] h-[30px] flex items-center justify-center"
             >
-              <img src={iconDots} alt="더보기" className="w-[30px] h-[30px]" />
+              <DotsIcon className="w-[30px] h-[30px]" />
             </button>
             {isDropdownOpen && (
               <div className="absolute right-0 top-[38px] w-[160px] bg-background border border-gray-300 rounded-[10px] shadow-[0px_5px_15px_rgba(71,73,77,0.1)] z-20 py-1">

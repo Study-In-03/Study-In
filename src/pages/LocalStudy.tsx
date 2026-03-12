@@ -6,9 +6,9 @@ import { storage } from "@/utils/storage";
 import { useAuthStore } from "@/store/authStore";
 import type { PreferredRegion } from "@/types/user";
 import { STUDY_TABS, DEFAULT_STUDY_TAB } from "@/constants/study";
-import iconLocation from "../assets/base/icon-location.svg";
-import iconTriangleDown from "@/assets/base/icon-Triangle-Down.svg";
-import iconTriangleUp from "@/assets/base/icon-Triangle-Up.svg";
+import LocationIcon from "@/assets/base/icon-location.svg?react";
+import TriangleDownIcon from "@/assets/base/icon-Triangle-Down.svg?react";
+import TriangleUpIcon from "@/assets/base/icon-Triangle-Up.svg?react";
 
 export default function LocalStudy() {
   const navigate = useNavigate();
@@ -64,15 +64,11 @@ export default function LocalStudy() {
                   : "border border-gray-300"
               }`}
             >
-              <img src={iconLocation} alt="" className="w-5 h-5 ml-[14px] shrink-0 text-primary" />
+              <LocationIcon className="w-5 h-5 ml-[14px] shrink-0 text-primary" />
               <span className="flex-1 text-left ml-[6px] text-lg font-medium text-primary truncate">
                 {region.location}
               </span>
-              <img
-                src={dropdownOpen ? iconTriangleUp : iconTriangleDown}
-                alt=""
-                className="w-[18px] h-[18px] mr-[10px] shrink-0"
-              />
+              {dropdownOpen ? <TriangleUpIcon className="w-[18px] h-[18px] mr-[10px] shrink-0" /> : <TriangleDownIcon className="w-[18px] h-[18px] mr-[10px] shrink-0" />}
             </button>
 
             {/* 드롭다운 메뉴 */}

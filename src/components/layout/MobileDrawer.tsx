@@ -7,7 +7,7 @@ import { useModalStore } from "@/store/modalStore";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
 import NotificationIcon from "@/assets/base/icon-Notification.svg?react";
 import LeftArrowIcon from "@/assets/base/icon-Left-arrow.svg?react";
-import defaultProfileSrc from "@/assets/base/Ellipse 46.svg";
+import defaultProfileSrc from "@/assets/base/icon-empty-profile.svg";
 import { getProfile, type UserProfile } from "@/api/profile";
 import { getFullUrl } from "@/api/upload";
 
@@ -54,13 +54,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={onClose}
         />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-50 lg:hidden flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-[290px] bg-background z-50 md:hidden flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

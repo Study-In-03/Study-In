@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { axiosInstance } from "../../../api/axios";
+import { getStudies } from "@/api/study";
 import { Study } from "../../../types/study";
 import { normalizeStudy } from "@/utils/study";
 import { DEFAULT_STUDY_TAB, type StudyTab } from "@/constants/study";
@@ -18,6 +18,7 @@ export const useStudyList = (
   activeTab: string = DEFAULT_STUDY_TAB,
   page: number = 1,
   locationId?: number,
+  offline?: 0 | 1,
 ) => {
   const [studies, setStudies] = useState<Study[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,17 +32,14 @@ export const useStudyList = (
         setIsLoading(true);
         setError(null);
 
-        const response = await axiosInstance.get("/study/", {
-          params: {
-            search: searchTerm || undefined,
-            study_status: STATUS_MAP[activeTab as StudyTab] ?? undefined,
-            page,
-            limit: PAGE_SIZE,
-            study_location: locationId ?? undefined,
-          },
+        const raw = await getStudies({
+          search: searchTerm || undefined,
+          study_status: STATUS_MAP[activeTab as StudyTab] ?? undefined,
+          page,
+          study_location: locationId ?? undefined,
+          offline,
         });
 
-        const raw = response.data;
         const results = Array.isArray(raw.results)
           ? raw.results
           : Array.isArray(raw)

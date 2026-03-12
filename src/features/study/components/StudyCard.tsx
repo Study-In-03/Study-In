@@ -51,7 +51,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
         <div className="flex items-center gap-1">
           <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
           <span className={`text-sm font-bold md:text-lg md:font-normal ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
-            {study.status === "모집 중" ? "모집 중!" : study.status}
+            {study.status === "모집 중" ? "모집 중!" : study.status === "완료" ? "종료" : study.status}
           </span>
         </div>
         <span className="text-xs md:text-sm bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700">
@@ -68,9 +68,9 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
           alt="스터디 썸네일"
         />
         {/* 종료 오버레이 */}
-        {study.status === "종료" && (
+        {study.status === "완료" && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <span className="text-background text-sm font-medium">완료된 스터디입니다 :)</span>
+            <span className="text-background text-sm font-medium">종료된 스터디입니다 :)</span>
           </div>
         )}
         {/* 하트 버튼 */}
@@ -78,7 +78,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
           aria-label={isLiked ? "관심 스터디 해제" : "관심 스터디 추가"}
           onClick={handleLike}
           disabled={isLikeLoading}
-          className="absolute bottom-3 right-[10px] w-8 h-8 bg-white rounded-full flex items-center justify-center drop-shadow-[2px_2px_6px_rgba(0,0,0,0.1)]"
+          className="absolute bottom-3 right-[10px] w-8 h-8 bg-background rounded-full flex items-center justify-center drop-shadow-[2px_2px_6px_rgba(0,0,0,0.1)]"
         >
           {isLiked ? (
             <HeartFillIcon className="w-[22px] h-[22px] text-error" />
@@ -97,7 +97,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
         )}
         {study.difficulty && (
           <span className="text-xs md:text-sm border border-gray-300 rounded-full px-[10px] py-[2px] text-gray-700">
-            {typeof study.difficulty === 'object' ? study.difficulty.name : study.difficulty}
+            {study.difficulty}
           </span>
         )}
       </div>

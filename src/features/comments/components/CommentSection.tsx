@@ -5,10 +5,9 @@ import CommentItem from "./CommentItem";
 
 interface CommentSectionProps {
   studyPk: number;
-  leaderId?: number;
 }
 
-const CommentSection = ({ studyPk, leaderId }: CommentSectionProps) => {
+const CommentSection = ({ studyPk,}: CommentSectionProps) => {
   const navigate = useNavigate();
   const {
     comments,
@@ -48,7 +47,6 @@ const CommentSection = ({ studyPk, leaderId }: CommentSectionProps) => {
             <CommentItem
               key={comment.id}
               comment={comment}
-              leaderId={leaderId}
               onUpdate={handleUpdate}
               onDelete={handleDelete}
               onCreateRecomment={handleCreateRecomment}

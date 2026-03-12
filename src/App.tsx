@@ -1,18 +1,19 @@
 import './App.css'
 import { useEffect } from 'react';
 import Router from "./routes/Router";
-import Modal from '@/components/common/Modal';
 import { useAuthStore } from '@/store/authStore';
-import { axiosInstance } from '@/api/axios';
+import { getProfile } from '@/api/profile';
+import { storage } from '@/utils/storage';
 
 function App() {
   const { isLoggedIn, user, setUser } = useAuthStore();
 
   useEffect(() => {
-    // 로그인 상태인데 유저 정보가 없을 때만 호출
     if (isLoggedIn && !user) {
-      axiosInstance.get('/accounts/user/')  // 엔드포인트 확인 필요
-        .then(res => setUser(res.data))
+      const userId = storage.getUserId();
+      if (!userId) return;
+      getProfile(userId)
+        .then(res => setUser({ pk: res.user, email: storage.getEmail() ?? '', nickname: res.nickname }))
         .catch(err => console.error('유저 정보 로드 실패:', err));
     }
   }, [isLoggedIn]);

@@ -25,9 +25,11 @@ axiosInstance.interceptors.request.use(
         const noAuthUrls = [
             '/accounts/login/',
             '/accounts/token/refresh/',
-            '/accounts/register/',          
-            '/accounts/email-verifications/', 
-            '/accounts/emails/check/',       
+            '/accounts/register/',
+            '/accounts/email-verifications/',
+            '/accounts/emails/check/',
+            '/accounts/password-reset/',
+            '/accounts/nicknames/',
         ];
 
         // 현재 요청하려는 URL이 위 목록에 포함되어 있는지 확인
@@ -54,7 +56,7 @@ axiosInstance.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             // 로그아웃 상태에서도 허용할 API인지 확인
-            const skipRedirectUrls = ['/accounts/login/', '/studies/']; 
+            const skipRedirectUrls = ['/accounts/login/', '/study/']; 
             const isSkipUrl = skipRedirectUrls.some((url) => originalRequest.url === url || originalRequest.url === `${url}/`);
 
             if (isSkipUrl && originalRequest.method === 'get') {

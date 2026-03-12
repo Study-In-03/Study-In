@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { axiosInstance } from "@/api/axios";
-import { storage } from "@/utils/storage";
-import { StudyApiData, likeStudy, unlikeStudy } from "@/api/study";
-import { useAssociateGuard } from "@/hooks/useAssociateGuard";
-import { getFullUrl } from "@/api/upload";
+import { getStudy, joinStudy } from '@/api/study';
+import { storage } from '@/utils/storage';
+import { StudyApiData, likeStudy, unlikeStudy } from '@/api/study';
+import { useAssociateGuard } from '@/hooks/useAssociateGuard';
+import { getFullUrl } from '@/api/upload';
 
 import SpeakerIcon from "@/assets/base/icon-speaker.svg?react";
 import HeartIcon from "@/assets/base/icon-heart.svg?react";
@@ -45,13 +45,11 @@ export default function StudyDetail() {
       if (!studyId) return;
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get(`/study/${studyId}/`);
-        setStudyDetail(response.data);
-        const alreadyJoined = response.data.participants.some(
-          (p: any) => p.id === myPk
-        );
+        const data = await getStudy(Number(studyId));
+        setStudyDetail(data);
+        const alreadyJoined = data.participants.some((p: any) => p.id === myPk);
         if (alreadyJoined) setIsJoined(true);
-        const alreadyLiked = response.data.like_users?.includes(myPk) ?? false;
+        const alreadyLiked = data.like_users?.includes(myPk) ?? false;
         setLiked(alreadyLiked);
       } catch (error) {
         console.error("데이터 로드 실패:", error);
@@ -86,7 +84,7 @@ export default function StudyDetail() {
       return;
     }
     try {
-      await axiosInstance.post(`/study/${studyId}/participate/`);
+      await joinStudy(Number(studyId));
       setIsJoined(true);
       alert("스터디에 성공적으로 참여되었습니다!");
     } catch (error: any) {
@@ -121,8 +119,6 @@ export default function StudyDetail() {
 
   return (
     <div className="w-full min-h-screen bg-background">
-
-
       <div className="hidden md:block">
 
         <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-6">
@@ -139,7 +135,6 @@ export default function StudyDetail() {
                 />
               </div>
               <div className="flex-1 px-5 py-5 flex flex-col">
-
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2 flex-wrap">
@@ -163,11 +158,11 @@ export default function StudyDetail() {
                       <span key={tag.id}>#{tag.name} </span>
                     ))}
                   </p>
-                )
-                }
+                )}
                 {studyDetail.search_tag.length === 0 && (
                   <div className="flex-1" />
                 )}
+
                 <div className="flex justify-end gap-2">
                   <button className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 h-9 text-sm text-gray-700">
                     <ShareIcon className="w-4 h-4" />
@@ -184,7 +179,6 @@ export default function StudyDetail() {
                     }
                   </button>
                 </div>
-
               </div>
             </div>
           </div>
@@ -193,7 +187,6 @@ export default function StudyDetail() {
         <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-10 pb-6 flex gap-6 items-start">
 
           <div className="flex-1 min-w-0">
-
             <div className="py-5">
               <h2 className="text-base font-bold text-gray-900 mb-3">스터디 소개</h2>
               <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">
@@ -217,7 +210,6 @@ export default function StudyDetail() {
 
             <div className="border-t border-gray-300" />
 
-            {/* 그룹장 소개 */}
             <div className="py-5">
               <h2 className="text-base font-bold text-gray-900 mb-4">그룹장 소개</h2>
               <div
@@ -264,37 +256,27 @@ export default function StudyDetail() {
 
             <div className="border-t border-gray-300" />
 
-
             <div className="py-5">
               <h2 className="text-base font-bold text-gray-900 mb-4">
                 그룹장에게 질문하기
               </h2>
               <div className="flex flex-col gap-4">
-                <CommentSection
-                  studyPk={studyDetail.id}
-                  leaderId={studyDetail.leader.id}
-                />
+                <CommentSection studyPk={studyDetail.id} />
               </div>
             </div>
-
           </div>
-
           <div className="w-[290px] shrink-0 sticky top-6 self-start">
             <div className="rounded-xl border border-gray-300 overflow-hidden bg-background">
-
               <div className="bg-primary px-4 py-3 flex items-center gap-2">
                 <SpeakerIcon className="h-5 w-5 text-background shrink-0" />
                 <span className="text-background text-sm font-semibold">
                   {studyDetail.study_status.name}
                 </span>
               </div>
-
               <div className="px-4 py-4 flex flex-col gap-3">
-
                 <p className="text-center text-base font-bold text-gray-900">
                   스터디 일정
                 </p>
-
                 <div className="flex justify-between">
                   {DAYS_ORDER.map((d) => {
                     const active = studyDetail.study_day.some(
@@ -314,18 +296,14 @@ export default function StudyDetail() {
                     );
                   })}
                 </div>
-
                 <div className="border-t border-gray-100" />
-
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-primary font-medium">시작일</span>
                   <span className="text-primary font-medium">
                     {studyDetail.start_date}
                   </span>
                 </div>
-
                 <div className="border-t border-gray-100" />
-
                 <div className="flex justify-between items-start text-sm">
                   <span className="text-gray-700">시간</span>
                   <div className="text-right">
@@ -338,9 +316,7 @@ export default function StudyDetail() {
                     </div>
                   </div>
                 </div>
-
                 <div className="border-t border-gray-100" />
-
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-700">모집 인원</span>
                   <span>
@@ -352,14 +328,12 @@ export default function StudyDetail() {
                     </span>
                   </span>
                 </div>
-
                 <button
                   onClick={() => withAssociateGuard(handleJoinOrChat)}
                   className="w-full h-11 rounded-lg bg-primary text-background font-semibold text-sm"
                 >
                   {primaryButtonText}
                 </button>
-
                 <div className="flex gap-2">
                   <button className="flex-1 h-10 flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
                     <ShareIcon className="w-4 h-4" />
@@ -376,20 +350,14 @@ export default function StudyDetail() {
                     }
                   </button>
                 </div>
-
               </div>
             </div>
           </div>
 
         </div>
       </div>
-
-      {/* ══════════════════════════════
-          모바일 (md 미만)
-          ══════════════════════════════ */}
       <div className="md:hidden pb-[80px]">
 
-        {/* 상단 카드 */}
         <div className="mx-6 mt-4 rounded-xl border border-gray-300 overflow-hidden bg-background">
           <div className="px-4 pt-3 pb-2 flex items-center justify-between">
             <div className="flex gap-2 flex-wrap">
@@ -562,10 +530,7 @@ export default function StudyDetail() {
               그룹장에게 질문하기
             </h2>
             <div className="flex flex-col gap-4">
-              <CommentSection
-                studyPk={studyDetail.id}
-                leaderId={studyDetail.leader.id}
-              />
+              <CommentSection studyPk={studyDetail.id} />
             </div>
           </section>
 

@@ -1,17 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react"
 import { GitHubCalendar } from "react-github-calendar";
-import useUpload from "@/hooks/useUpload";
-import { getFullUrl } from "@/api/upload";
-import {
-  getProfile,
-  updateProfile,
-  checkNickname,
-  getMemberType,
-} from "@/api/profile";
-import { getRegions, Region } from "@/api/auth";
-import { storage } from "@/utils/storage";
-import { useAuthStore } from "@/store/authStore";
+import { useProfileForm } from "@/features/profile/hooks/useProfileForm";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
 import ImageIcon from "@/assets/base/icon-Image.svg?react";
 import CheckIcon from "@/assets/base/icon-Check.svg?react";
@@ -30,73 +19,43 @@ const allTags = [
 ];
 const MAX_BIO_LENGTH = 80;
 
-type Tag = { id?: number; name: string };
-
 const ProfileEditForm = () => {
-  const navigate = useNavigate();
-  const { uploading, handleImageUpload } = useUpload();
-  const { setIsAssociateMember } = useAuthStore();
-
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [nickname, setNickname] = useState("");
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [nicknameMessage, setNicknameMessage] = useState<string | null>(null);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [bio, setBio] = useState("");
-  const [github, setGithub] = useState("");
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [tagInput, setTagInput] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
 
+  const {
+    profileImg,
+    nickname, setNickname,
+    isNicknameChecked, setIsNicknameChecked,
+    nicknameMessage, setNicknameMessage,
+    isNicknameAvailable, setIsNicknameAvailable,
+    email, name, setName,
+    phone, setPhone,
+    bio, setBio,
+    github, setGithub,
+    selectedTags, setSelectedTags,
+    tagInput, setTagInput,
+    isLoading, isSaving,
+    apiError,
+    regions, selectedRegionId, setSelectedRegionId,
+    isNicknameValid, isGithubValid,
+    uploading,
+    handleCheckNickname, removeTag, addCustomTag,
+    handleImageChange, handleSave,
+  } = useProfileForm();
+
+  // ProfileEditForm 전용: 기존 닉네임 로드 시 검증 통과 처리
+  // useProfileForm의 fetchProfile이 끝난 뒤 nickname이 세팅되면 자동으로 debounce 체크가 동작하지만,
+  // 편집 화면에서는 기존 닉네임을 그대로 유지할 경우 "이미 사용 중" 오류가 나올 수 있으므로
+  // 초기 로드 시 검증 통과 상태로 강제 설정
+  // → useProfileForm의 fetchProfile 끝에서 setIsNicknameChecked(true) / setIsNicknameAvailable(true) 호출이 필요
+  // 아래처럼 useEffect로 처리
   useEffect(() => {
-    getRegions()
-      .then((data) => setRegions(data))
-      .catch(() => {});
-  }, []);
+    if (!isLoading && nickname) {
+      setIsNicknameChecked(true);
+      setIsNicknameAvailable(true);
+    }
+  }, [isLoading]);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const userId = storage.getUserId();
-      if (!userId) return;
-      try {
-        const data = await getProfile(userId);
-        setNickname(data.nickname ?? "");
-        setName(data.name ?? "");
-        setPhone(data.phone ?? "");
-        setBio(data.introduction ?? "");
-        setGithub(data.github_username ?? "");
-        setSelectedTags(data.tag ?? []);
-        if (data.preferred_region) {
-          setSelectedRegionId(data.preferred_region.id);
-        }
-        if (data.profile_img) {
-          setProfileImg(getFullUrl(data.profile_img));
-          setProfileImgPath(data.profile_img);
-        }
-        const emailFromStorage = storage.getEmail();
-        if (emailFromStorage) setEmail(emailFromStorage);
-        setIsNicknameChecked(true);
-        setIsNicknameAvailable(true);
-      } catch {
-        setApiError("프로필을 불러오는 데 실패했어요.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  const isNicknameValid = nickname.length >= 2;
-  const isGithubValid = github === "" || /^[a-zA-Z0-9-]+$/.test(github);
   const isSaveEnabled =
     isNicknameValid &&
     isNicknameChecked &&
@@ -105,75 +64,13 @@ const ProfileEditForm = () => {
     name !== "" &&
     phone !== "";
 
-  const handleCheckNickname = async () => {
-    const result = await checkNickname(nickname);
-    setIsNicknameChecked(true);
-    setIsNicknameAvailable(result.available);
-    setNicknameMessage(result.message);
-  };
-
+  // ProfileEditForm에만 있는 toggleTag
   const toggleTag = (tag: string) => {
     const exists = selectedTags.find((t) => t.name === tag);
     if (exists) {
       setSelectedTags(selectedTags.filter((t) => t.name !== tag));
     } else {
       setSelectedTags([...selectedTags, { name: tag }]);
-    }
-  };
-
-  const removeTag = (tagName: string) => {
-    setSelectedTags(selectedTags.filter((t) => t.name !== tagName));
-  };
-
-  const addCustomTag = () => {
-    if (
-      tagInput.trim() &&
-      !selectedTags.find((t) => t.name === tagInput.trim())
-    ) {
-      setSelectedTags([...selectedTags, { name: tagInput.trim() }]);
-      setTagInput("");
-    }
-  };
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = await handleImageUpload(file);
-    if (url) {
-      setProfileImgPath(url);
-      setProfileImg(getFullUrl(url));
-    }
-  };
-
-  const handleSave = async () => {
-    const userId = storage.getUserId();
-    if (!userId) return;
-    setIsSaving(true);
-    setApiError(null);
-    try {
-      await updateProfile(userId, {
-        nickname,
-        name,
-        phone,
-        introduction: bio,
-        github_username: github,
-        profile_img: profileImgPath ?? undefined,
-        tag: selectedTags,
-        preferred_region: selectedRegionId
-          ? { id: selectedRegionId }
-          : undefined,
-      });
-      try {
-        const res = await getMemberType();
-        setIsAssociateMember(res.is_associate_member);
-      } catch {
-        // 회원 타입 조회 실패는 저장 성공에 영향 없음
-      }
-      navigate("/profile");
-    } catch {
-      setApiError("저장에 실패했어요. 다시 시도해주세요.");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -334,8 +231,8 @@ const ProfileEditForm = () => {
                     {region.location}
                   </option>
                 ))}
-           </select>
-            <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0">
+            </select>
+            <button className="w-20 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 shrink-0 ml-2">
               재인증
             </button>
           </div>
@@ -438,7 +335,7 @@ const ProfileEditForm = () => {
       {/* 모바일: 둘다 중앙, 탈퇴 아래 / 웹: 저장 중앙, 탈퇴 오른쪽 끝 */}
       <div className="flex flex-col items-center gap-6 px-2 md:flex-row md:justify-center md:gap-3 md:relative">
         <button
-          onClick={handleSave}
+          onClick={() => handleSave()}
           disabled={!isSaveEnabled || isSaving}
           className={`w-36 py-2.5 rounded-lg text-base ${
             isSaveEnabled && !isSaving

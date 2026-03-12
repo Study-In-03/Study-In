@@ -141,7 +141,6 @@ function StudyEditInner({
       navigate("/my-study");
     } catch (error) {
       setIsDeleting(false);
-      setShowDeleteModal(false);
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         const serverMsg: string | undefined = error.response?.data?.detail;

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getStudy, joinStudy } from '@/api/study';
 import { storage } from '@/utils/storage';
@@ -13,7 +12,6 @@ import HeartIcon from "@/assets/base/icon-heart.svg?react";
 import HeartFillIcon from "@/assets/base/icon-heart-fill.svg?react";
 import ShareIcon from "@/assets/base/icon-Share.svg?react";
 import CommentSection from "@/features/comments/components/CommentSection";
-import { useModalStore } from "@/store/modalStore";
 
 function TagChip({ label }: { label: string }) {
   return (
@@ -39,7 +37,6 @@ export default function StudyDetail() {
   const thumbnailCardRef = useRef<HTMLDivElement>(null);
 
   const myPk = Number(storage.getUserId());
-  const myPk = useMemo(() => Number(storage.getUserId()), []);
   const isLeader = studyDetail?.leader?.id === myPk;
 
   useEffect(() => {
@@ -118,7 +115,6 @@ export default function StudyDetail() {
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
     return `${d.getFullYear()}. ${String(d.getMonth() + 1).padStart(2, "0")}. ${String(d.getDate()).padStart(2, "0")}(${dayNames[d.getDay()]})`;
   };
-  const leaderImgUrl = leaderProfile.profile_img ? getFullUrl(leaderProfile.profile_img) : null;
 
   // 웹 오른쪽 사이드카드
   const SideCard = () => (
@@ -129,7 +125,7 @@ export default function StudyDetail() {
       </div>
       <div className="p-4 flex flex-col gap-4">
         <div className="flex justify-between">
-          {DAYS.map((d) => {
+          {DAYS_ORDER.map((d) => {
             const active = studyDetail.study_day.some((day) => day.name === d);
             return (
               <div key={d} className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${active ? "bg-primary text-background" : "bg-gray-100 text-gray-500"}`}>
@@ -328,7 +324,7 @@ export default function StudyDetail() {
                 그룹장에게 질문하기
               </h2>
               <div className="flex flex-col gap-4">
-                <CommentSection studyPk={studyDetail.id} />
+                <CommentSection studyPk={studyDetail.id} leaderId={studyDetail.leader.id} currentUserId={myPk} />
               </div>
             </div>
           </div>
@@ -396,7 +392,7 @@ export default function StudyDetail() {
                   </span>
                 </div>
                 <button
-                  onClick={() => withAssociateGuard(handleJoinOrChat)}
+                  onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
                   className="w-full h-11 rounded-lg bg-primary text-background font-semibold text-sm"
                 >
                   {primaryButtonText}

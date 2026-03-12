@@ -122,7 +122,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
             {/* 콘텐츠 영역 */}
             <div className="mt-[30px] w-full flex flex-col gap-10">
               {/* 자기소개 */}
-              <div className="w-full border border-[#D9DBE0] rounded-xl px-4 py-4">
+              <div className="w-full border border-gray-300 rounded-xl px-4 py-4">
                 <p className="text-base text-gray-700 leading-6 whitespace-pre-line w-full">
                   {profile.introduction || '소개글이 없어요.'}
                 </p>

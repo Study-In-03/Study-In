@@ -370,12 +370,12 @@ const ProfileEditForm = () => {
                 </p>
               )}
               {github && isGithubValid && (
-                <div className="w-full overflow-x-auto">
+                <div className="w-full max-w-[810px] h-[160px] bg-gray-100 rounded-[10px] border border-gray-300 flex items-center justify-center overflow-hidden">
                   <GitHubCalendar
                     username={github}
-                    blockSize={8}
+                    blockSize={12}
                     blockMargin={2}
-                    fontSize={8}
+                    fontSize={10}
                     colorScheme="light"
                   />
                 </div>

@@ -182,21 +182,32 @@ const ProfileCard = () => {
             )}
 
             {profile.github_username && (
-              <>
-                <div className="flex items-center gap-3 md:gap-[30px]">
-                  <span className="text-sm md:text-base font-bold text-gray-700 w-20 shrink-0">GitHub</span>
+              <div className="flex items-start gap-3 md:gap-[30px]">
+                <span className="text-sm md:text-base font-bold text-gray-700 w-20 shrink-0 mt-1">GitHub</span>
+                <div className="flex flex-col gap-2 flex-1 min-w-0">
                   <span className="text-lg text-gray-700">{profile.github_username}</span>
+                  {/* 모바일 */}
+                  <div className="md:hidden w-full overflow-x-auto rounded-[10px] border border-gray-300 bg-gray-100 p-4">
+                    <GitHubCalendar
+                      username={profile.github_username}
+                      blockSize={8}
+                      blockMargin={2}
+                      fontSize={10}
+                      colorScheme="light"
+                    />
+                  </div>
+                  {/* 웹 */}
+                  <div className="hidden md:flex w-full max-w-[810px] h-[160px] items-center justify-center overflow-hidden rounded-[10px] border border-gray-300 bg-gray-100">
+                    <GitHubCalendar
+                      username={profile.github_username}
+                      blockSize={12}
+                      blockMargin={2}
+                      fontSize={10}
+                      colorScheme="light"
+                    />
+                  </div>
                 </div>
-                <div className="w-full overflow-x-auto rounded-[10px] border border-gray-300 bg-gray-100 p-4">
-                  <GitHubCalendar
-                    username={profile.github_username}
-                    blockSize={10}
-                    blockMargin={3}
-                    fontSize={10}
-                    colorScheme="light"
-                  />
-                </div>
-              </>
+              </div>
             )}
 
           </div>

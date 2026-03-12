@@ -27,12 +27,10 @@ const CommentSection = ({ studyPk, currentUserId, leaderId }: CommentSectionProp
 
   return (
     <div>
-        
       {/* 웹: 댓글 입력창 */}
-      <div className="hidden md:block">
+      <div className="hidden md:block mb-4">
         <CommentInput onSubmit={handleCreate} />
       </div>
-
       {/* 모바일: 작성하기 버튼 */}
       <button
         onClick={() => withAssociateGuard(() => navigate(`/study/${studyPk}/comment/write`))}
@@ -40,7 +38,6 @@ const CommentSection = ({ studyPk, currentUserId, leaderId }: CommentSectionProp
       >
         작성하기
       </button>
-
       {error && <p className="text-sm text-error mt-2">{error}</p>}
 
       <div className="md:mt-6">

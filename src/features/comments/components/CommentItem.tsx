@@ -3,12 +3,13 @@ import type { Comment } from "@/api/comment";
 import { getFullUrl } from "@/api/upload";
 import { useModalStore } from "@/store/modalStore";
 import IconLock from "@/assets/base/icon-Lock.svg?react";
-import IconSend from "@/assets/base/icon-Send.svg?react";
 import DotsIcon from "@/assets/base/icon-dots.svg?react";
 import CrownIcon from "@/assets/base/icon-crown-fill.svg?react";
 import RecommentList from "./RecommentList";
+import CommentInputField from "./CommentInputField";
 import { isNormalUser, isWithdrawnUser } from "@/api/comment";
 import withdrawnProfileImg from "@/assets/base/User-Profile-L.svg";
+import { formatDate } from "@/utils/date";
 
 interface CommentItemProps {
   comment: Comment;
@@ -30,18 +31,9 @@ interface CommentItemProps {
   onDeleteRecomment: (commentPk: number, recommentPk: number) => void;
 }
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
 const CommentItem = ({
-  comment, 
-  leaderId, 
+  comment,
+  leaderId,
   currentUserId,
   onUpdate,
   onDelete,
@@ -85,7 +77,7 @@ const CommentItem = ({
 
   return (
     <div className="py-[10px]">
-      <div className="flex gap-[10px]">
+      <div className="flex gap-[10px] items-start">
         {comment.is_secret && !isAuthor ? (
           <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-100 border border-gray-300" />
         ) : (comment.user && !isWithdrawnUser(comment.user) && isNormalUser(comment.user) && !isAuthor) ? (
@@ -229,27 +221,17 @@ const CommentItem = ({
 
           {/* 내용 or 수정 입력창 */}
           {isEditing ? (
-            <div className="mt-2 h-[50px] rounded-[8px] border border-[#D9DBE0] flex items-center overflow-hidden">
-              <input
-                type="text"
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleUpdate()}
-                placeholder="댓글 수정하기"
-                className="flex-1 px-4 text-base text-gray-500 focus:outline-none min-w-0"
-                autoFocus
-              />
-              <button
-                onClick={handleUpdate}
-                className="flex-shrink-0 flex items-center justify-center w-[50px] h-[50px] bg-[#D9DBE0]"
-              >
-                <IconSend className="w-[26px] h-[26px] text-background" />
-              </button>
-            </div>
+            <CommentInputField
+              value={editContent}
+              onChange={setEditContent}
+              onSubmit={handleUpdate}
+              placeholder="댓글 수정하기"
+              className="mt-2"
+            />
           ) : (
             <div className="flex items-center gap-2 mt-[10px]">
               {comment.is_secret && canSeeContent && (
-                <IconLock className="w-4 h-4 text-[#5C8EF2] flex-shrink-0" />
+                <IconLock className="w-4 h-4 text-primary-light flex-shrink-0" />
               )}
               <p className={`text-base break-all ${isDeleted ? "text-gray-400" : "text-surface"}`}>
                 {isDeleted ? "삭제된 댓글입니다." : canSeeContent ? comment.content : "비밀 댓글입니다."}

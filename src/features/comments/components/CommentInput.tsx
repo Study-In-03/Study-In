@@ -43,7 +43,7 @@ const CommentInput = ({
       </div>
 
       {/* 웹: 2컬럼 (왼쪽 textarea / 오른쪽 컨트롤 150px) */}
-      <div className="hidden md:flex border border-[#D9DBE0] rounded-[10px] overflow-hidden h-[150px]">
+      <div className="hidden md:flex border border-gray-300 rounded-[10px] overflow-hidden h-[150px]">
         <textarea
           value={content}
           onChange={(e) => {
@@ -53,10 +53,10 @@ const CommentInput = ({
           className="flex-1 px-6 py-5 text-base text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none"
         />
         {/* 오른쪽 컨트롤 컬럼 */}
-        <div className="w-[150px] flex flex-col border-l border-[#D9DBE0] shrink-0">
+        <div className="w-[150px] flex flex-col border-l border-gray-300 shrink-0">
           {/* 상단: 글자수 + 비밀댓글 */}
           <div className="flex-1 flex flex-col items-center justify-between py-5">
-            <span className="text-base font-medium text-[#47494D]">
+            <span className="text-base font-medium text-gray-700">
               {content.length}/{MAX_LENGTH}
             </span>
             {!isRecomment && (
@@ -79,10 +79,10 @@ const CommentInput = ({
           <button
             onClick={handleSubmit}
             disabled={!content.trim()}
-            className={`h-[50px] border-t border-[#D9DBE0] text-base font-medium transition ${
+            className={`h-[50px] border-t border-gray-300 text-base font-medium transition ${
               content.trim()
                 ? "bg-primary text-background"
-                : "bg-[#F3F5FA] text-[#47494D] cursor-not-allowed"
+                : "bg-gray-100 text-gray-700 cursor-not-allowed"
             }`}
           >
             등록

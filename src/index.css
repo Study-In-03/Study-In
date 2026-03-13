@@ -1,40 +1,12 @@
 @import url("https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css");
-@import "tailwindcss";
 
-@theme {
-    /* 폰트 세팅 */
-    --font-sans: "SpokaHanSansNeo", "Noto Sans KR", sans-serif;
+/* Tailwind v3 필수 지시어 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-    /* 폰트 사이즈 */
-    --text-xs: 10px;   
-    --text-sm: 12px;    
-    --text-base: 14px;  
-    --text-lg: 16px;    
-    --text-xl: 18px;    
-    --text-2xl: 24px;   
-    --text-3xl: 30px;   
-
-    /* 폰트 굵기 */
-    --font-weight-regular: 400; 
-    --font-weight-medium: 500;  
-    --font-weight-bold: 700;    
-
-    /* 색상 설정 */
-    --color-primary: #2E6FF2;         
-    --color-primary-light: #5C8EF2;   
-    --color-activation: #DEE8FF;      
-
-    --color-error: #FF3440;          
-    --color-warning: #FFC533;         
-    --color-warning-light: #FFE187;   
-
-    --color-gray-900: #121314;        
-    --color-gray-700: #47494D;        
-    --color-gray-500: #8D9299;        
-    --color-gray-300: #D9DBE0;        
-    --color-gray-100: #F3F5FA;        
-    
-    --color-background: #FFFFFF;      
-    --color-surface: #121314;         
-
+@layer base {
+    body {
+        font-family: 'Spoqa Han Sans Neo', 'Noto Sans KR', sans-serif;
+    }
 }

@@ -1,22 +1,83 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import Home from "../pages/Home";
-import StudyDetail from "../pages/StudyDetail";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from '@/store/authStore';
+import Home from "@/pages/Home";
+import StudyDetail from "@/pages/StudyDetail";
+import Profile from "@/pages/Profile";
+import ProfileEdit from "@/pages/ProfileEdit";
+import ProfileCreate from "@/pages/ProfileCreate";
+import MyStudy from "@/pages/Mystudy";
+import StudyCreate from "@/pages/StudyCreate";
+import StudyEdit from "@/pages/StudyEdit";
+import Layout from '@/components/layout/Layout';
+import AuthLayout from '@/components/layout/AuthLayout';
+import ChatLayout from '@/components/layout/ChatLayout';
+import Login from '@/pages/Login';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
+import Notification from '@/pages/Notification';
+import Register from '@/pages/Register';
+import CommentWritePage from '@/pages/CommentWritePage';
+import Chat from '@/pages/Chat';
+import Search from '@/pages/Search';
+import LocalStudy from "@/pages/LocalStudy";
+import OnlineStudy from "@/pages/OnlineStudy";
+import Modal from '@/components/common/Modal';
+import NotFound from "@/pages/NotFound";
+
+function PrivateRoute() {
+    const { isLoggedIn } = useAuthStore();
+    return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+}
 
 export default function Router() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/study/:studyId" element={<StudyDetail />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Modal />
+      <Routes>
+        {/* 공통 레이아웃 (헤더 + 푸터) */}
+        <Route element={<Layout />}>
+          {/* 비로그인 접근 가능 */}
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/study/:studyId" element={<StudyDetail />} />
+          <Route path="/local" element={<LocalStudy />} />
+          <Route path="/local/search" element={<Search />} />
+          <Route path="/online" element={<OnlineStudy />} />
+          <Route path="/online/search" element={<Search />} />
+          {/* 로그인 필수 */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
+            <Route path="/profile/create" element={<ProfileCreate />} />
+            <Route path="/my-study" element={<MyStudy />} />
+            <Route path="/notification" element={<Notification />} />
+          </Route>
+        </Route>
+
+        {/* 채팅 (로그인 필수) */}
+        <Route element={<ChatLayout />}>
+          <Route element={<PrivateRoute />}>
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:study_pk" element={<Chat />} />
+          </Route>
+        </Route>
+
+        {/* 스터디 생성/수정/댓글 (로그인 필수) */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/study/create" element={<StudyCreate />} />
+          <Route path="/study/:studyId/comment/write" element={<CommentWritePage />} />
+          <Route path="/study/:studyId/edit" element={<StudyEdit />} />
+        </Route>
+
+        {/* 인증 관련 레이아웃 */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </BrowserRouter>
   );
 }

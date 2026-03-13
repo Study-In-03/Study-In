@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/auth';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_ID_KEY, USER_EMAIL_KEY } from '../constants/auth';
 
 export const storage = {
     // Access Token 관리
@@ -11,9 +11,39 @@ export const storage = {
     setRefreshToken: (token: string) => localStorage.setItem(REFRESH_TOKEN_KEY, token),
     removeRefreshToken: () => localStorage.removeItem(REFRESH_TOKEN_KEY),
 
-    // 로그아웃 시 한 번에 싹 비우기
+    // 사용자 ID 관리
+    getUserId: () => {
+        const id = localStorage.getItem(USER_ID_KEY);
+        return id ? Number(id) : null;
+    },
+    setUserId: (id: number) => localStorage.setItem(USER_ID_KEY, String(id)),
+    removeUserId: () => localStorage.removeItem(USER_ID_KEY),
+
+    // 이메일 관리
+    getEmail: () => localStorage.getItem(USER_EMAIL_KEY),   
+    setEmail: (email: string) => localStorage.setItem(USER_EMAIL_KEY, email),
+    removeEmail: () => localStorage.removeItem(USER_EMAIL_KEY),
+
+    // 닉네임 관리
+    getNickname: () => localStorage.getItem('nickname'),
+    setNickname: (nickname: string) => localStorage.setItem('nickname', nickname),
+    removeNickname: () => localStorage.removeItem('nickname'),
+
+    // 프로필 이미지 관리
+    getProfileImg: () => localStorage.getItem('profile_img'),
+    setProfileImg: (url: string) => localStorage.setItem('profile_img', url),
+    removeProfileImg: () => localStorage.removeItem('profile_img'),
+
+    getIsAssociate: () => localStorage.getItem('is_associate') === 'true',
+    setIsAssociate: (val: boolean) => localStorage.setItem('is_associate', String(val)),
+
     clearAuth: () => {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
+        localStorage.removeItem(USER_ID_KEY);
+        localStorage.removeItem(USER_EMAIL_KEY);
+        localStorage.removeItem('nickname');
+        localStorage.removeItem('profile_img');
+        localStorage.removeItem('is_associate');
     },
 };

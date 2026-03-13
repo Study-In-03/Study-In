@@ -1,16 +1,100 @@
-import { useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import StudyForm from "@/features/study/components/StudyForm";
+import StudyCreateTopBar from "@/features/study/components/StudyCreateTopBar";
 import { useStudyForm } from "@/features/study/hooks/useStudyForm";
+import { useAiStream } from "@/features/study/hooks/useAiStream";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import type { StudyFormState } from "@/types/study";
-import iconLogo from "@/assets/base/icon-Logo.svg";
-import iconChatting from "@/assets/base/icon-chatting.svg";
+import { createStudy } from "@/api/study";
+import useUpload from "@/hooks/useUpload";
+import { getFullUrl } from "@/api/upload";
+import { getProfile, getMemberType } from "@/api/profile";
+import { storage } from "@/utils/storage";
+import { useModalStore } from "@/store/modalStore";
 
 export default function StudyCreate() {
-  const handleSubmit = useCallback((formState: StudyFormState) => {
-    // API 붙일 때 여기만 교체
-    console.log("[StudyCreate] submit →", formState);
-    alert("스터디가 생성되었습니다! (API 연동 전 임시 메시지)");
-  }, []);
+  const navigate = useNavigate();
+  const { openConfirm } = useModalStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { uploading, handleImageUpload } = useUpload();
+  const [userLocationId, setUserLocationId] = useState<number | undefined>(undefined);
+  const [userLocation, setUserLocation] = useState<string | undefined>(undefined);
+  const [isMemberChecking, setIsMemberChecking] = useState(true);
+
+  useEffect(() => {
+    const userId = storage.getUserId();
+    if (!userId) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    getMemberType()
+      .then(({ is_associate_member }) => {
+        if (!is_associate_member) {
+          // 준회원 → 프로필 설정 페이지로 이동
+          navigate("/profile/edit", { replace: true });
+          return;
+        }
+        // 정회원 → 지역 정보 불러오기
+        return getProfile(userId).then((profile) => {
+          if (profile.preferred_region) {
+            setUserLocationId(profile.preferred_region.id);
+            setUserLocation(profile.preferred_region.location);
+          }
+          setIsMemberChecking(false);
+        });
+      })
+      .catch(() => {
+        // 조회 실패 시 그대로 진행
+        setIsMemberChecking(false);
+      });
+  }, [navigate]);
+
+  const handleSubmit = useCallback(async (formState: StudyFormState) => {
+    if (isSubmitting || uploading) return;
+    setIsSubmitting(true);
+    setApiError(null);
+
+    if (formState.studyType === "offline" && !userLocationId) {
+      setApiError("오프라인 스터디 생성을 위해 프로필에서 지역을 먼저 설정해주세요.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const url = await handleImageUpload(formState.thumbnail!);
+      if (!url) {
+        setApiError("썸네일 업로드에 실패했습니다. 다시 시도해주세요.");
+        return;
+      }
+      const thumbnailUrl = getFullUrl(url);
+      const { id } = await createStudy(formState, thumbnailUrl, userLocationId);
+      navigate(`/study/${id}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const serverMsg: string | undefined =
+          error.response?.data?.detail ?? error.response?.data?.validationError;
+        if (status === 401) {
+          setApiError("로그인이 필요합니다.");
+        } else if (status === 403) {
+          setApiError(serverMsg ?? "정회원만 스터디를 생성할 수 있습니다.");
+        } else if (status === 400 || status === 404) {
+          setApiError(serverMsg ?? "입력 정보를 다시 확인해주세요.");
+        } else {
+          setApiError("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+      } else {
+        setApiError("네트워크 오류가 발생했습니다.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, uploading, navigate, handleImageUpload, userLocationId]);
 
   const {
     form,
@@ -26,51 +110,48 @@ export default function StudyCreate() {
     handleAddTagDirect,
     handleRemoveTag,
     handleTagInputKeyDown,
+    handleBlurField,
     handleSubmit: onSubmit,
     handleReset,
   } = useStudyForm(handleSubmit);
 
-  // TODO: 프로필 API 연결 시 로그인 사용자의 인증된 지역으로 교체
-  const userLocation: string | undefined = undefined;
+  const { isLoading: aiIsLoading, trigger } = useAiStream((field, text) => {
+    updateField(field, text);
+  });
+
+  if (isMemberChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-gray-500">불러오는 중...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ── 앱 헤더 ── */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-lg mx-auto px-4 h-12 flex items-center justify-between">
-          {/* 햄버거 */}
-          <button type="button" className="p-1 -ml-1" aria-label="메뉴">
-            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          {/* 로고 */}
-          <img src={iconLogo} alt="Studyin" className="h-6" />
-
-          {/* 채팅 */}
-          <button type="button" className="p-1 -mr-1" aria-label="채팅">
-            <img src={iconChatting} alt="채팅" className="w-6 h-6" />
-          </button>
-        </div>
-      </header>
-
-      {/* ── 스터디 만들기 CTA 버튼 ── */}
-      <div className="max-w-lg mx-auto px-4 pt-3 pb-1 flex justify-end">
-        <button
-          type="submit"
-          form="study-create-form"
-          disabled={!isValid}
-          className={`min-w-[160px] min-h-[40px] py-[10px] px-6 rounded-xl text-sm font-bold text-white transition-colors ${
-            isValid ? "bg-[#4F7BF7]" : "bg-[#c5d3fc]"
-          }`}
-        >
-          스터디 만들기
-        </button>
+    <div className="min-h-screen bg-background">
+      {/* ── 앱 헤더 (모바일/데스크탑 공통) ── */}
+      <div className="sticky top-0 z-10">
+        <Header />
       </div>
 
+      {/* ── 스터디 만들기 TopBar ── */}
+      <StudyCreateTopBar
+        isValid={isValid}
+        isSubmitting={isSubmitting || uploading}
+        onSubmitRequest={() =>
+          openConfirm('study-create', () =>
+            (document.getElementById('study-create-form') as HTMLFormElement)?.requestSubmit()
+          )
+        }
+      />
+
       {/* ── 폼 ── */}
-      <main className="max-w-lg mx-auto pb-10">
+      <main className="max-w-[1190px] mx-auto pb-10">
+        {apiError && (
+          <div className="mx-4 mt-4 p-3 bg-error-light border border-error-border rounded-lg text-sm text-error">
+            {apiError}
+          </div>
+        )}
         <StudyForm
           form={form}
           errors={errors}
@@ -85,11 +166,22 @@ export default function StudyCreate() {
           handleAddTagDirect={handleAddTagDirect}
           handleRemoveTag={handleRemoveTag}
           handleTagInputKeyDown={handleTagInputKeyDown}
+          handleBlurField={handleBlurField}
           handleSubmit={onSubmit}
           handleReset={handleReset}
           userLocation={userLocation}
+          onAiGenerate={() => trigger({
+            title: form.title,
+            subject: form.subject,
+            difficulty: form.difficulty,
+            durationWeeks: form.durationWeeks,
+            days: form.days,
+          }, form.schedule)}
+          aiIsLoading={aiIsLoading}
         />
       </main>
+
+      <Footer />
     </div>
   );
 }

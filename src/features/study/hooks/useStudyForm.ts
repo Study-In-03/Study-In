@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { ChangeEvent, KeyboardEvent, FormEvent } from "react";
 import type { StudyFormState, StudyFormErrors, StudyDay } from "@/types/study";
 
@@ -22,16 +22,20 @@ const INITIAL_STATE: StudyFormState = {
   tags: [],
 };
 
-function validateForm(state: StudyFormState): StudyFormErrors {
+function validateForm(state: StudyFormState, minMembers?: number): StudyFormErrors {
   const errors: StudyFormErrors = {};
 
-  if (!state.thumbnail) errors.thumbnail = "썸네일 이미지를 업로드해주세요.";
+  if (!state.thumbnail && !state.thumbnailPreview) errors.thumbnail = "썸네일 이미지를 업로드해주세요.";
   if (!state.title.trim()) errors.title = "스터디 제목을 입력해주세요.";
   if (!state.studyType) errors.studyType = "스터디 유형을 선택해주세요.";
   if (state.maxMembers === "") {
     errors.maxMembers = "모집 인원을 입력해주세요.";
-  } else if (Number(state.maxMembers) < 3 || Number(state.maxMembers) > 99) {
+  } else if (Number(state.maxMembers) < 3) {
     errors.maxMembers = "스터디원은 3명 이상 모집해야 합니다.";
+  } else if (Number(state.maxMembers) >= 100) {
+    errors.maxMembers = "100명 이상 모집할 수 없습니다.";
+  } else if (minMembers != null && Number(state.maxMembers) < minMembers) {
+    errors.maxMembers = `현재 참가 인원(${minMembers}명) 이상으로 설정해야 합니다.`;
   }
   if (!state.startDate) errors.startDate = "시작일을 선택해주세요.";
   if (state.durationWeeks === "") errors.durationWeeks = "기간을 입력해주세요.";
@@ -47,14 +51,15 @@ function validateForm(state: StudyFormState): StudyFormErrors {
   return errors;
 }
 
-function isFormValid(state: StudyFormState): boolean {
-  if (!state.thumbnail) return false;
+function isFormValid(state: StudyFormState, minMembers?: number): boolean {
+  if (!state.thumbnail && !state.thumbnailPreview) return false;
   if (!state.title.trim()) return false;
   if (!state.studyType) return false;
   if (
     state.maxMembers === "" ||
     Number(state.maxMembers) < 3 ||
-    Number(state.maxMembers) > 99
+    Number(state.maxMembers) > 99 ||
+    (minMembers != null && Number(state.maxMembers) < minMembers)
   )
     return false;
   if (!state.startDate) return false;
@@ -68,28 +73,75 @@ function isFormValid(state: StudyFormState): boolean {
   return true;
 }
 
-export function useStudyForm(onSubmit?: (state: StudyFormState) => void) {
-  const [form, setForm] = useState<StudyFormState>(INITIAL_STATE);
+export function useStudyForm(
+  onSubmit?: (state: StudyFormState) => void,
+  initialValues?: StudyFormState,
+  minMembers?: number,
+) {
+  const [form, setForm] = useState<StudyFormState>(initialValues ?? INITIAL_STATE);
   const [errors, setErrors] = useState<StudyFormErrors>({});
   const [tagInput, setTagInput] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // 항상 최신 form 값을 참조하기 위한 ref (useCallback 클로저 문제 방지)
+  const formRef = useRef(form);
+  useEffect(() => { formRef.current = form; }, [form]);
 
   const updateField = useCallback(
     <K extends keyof StudyFormState>(key: K, value: StudyFormState[K]) => {
       setForm((prev: StudyFormState) => ({ ...prev, [key]: value }));
       setIsDirty(true);
       setErrors((prev: StudyFormErrors) => {
-        if (prev[key as keyof StudyFormErrors]) {
-          const next = { ...prev };
+        const next = { ...prev };
+        if (key === "maxMembers") {
+          const num = Number(value);
+          if ((value as string) === "") {
+            next.maxMembers = "모집 인원을 입력해주세요.";
+          } else if (num < 3) {
+            next.maxMembers = "스터디원은 3명 이상 모집해야 합니다.";
+          } else if (num >= 100) {
+            next.maxMembers = "100명 이상 모집할 수 없습니다.";
+          } else {
+            delete next.maxMembers;
+          }
+        } else if (key === "startTime" || key === "endTime") {
+          delete next.startTime;
+          delete next.endTime;
+          delete next.timeRange;
+          const newStart = key === "startTime" ? (value as string) : formRef.current.startTime;
+          const newEnd   = key === "endTime"   ? (value as string) : formRef.current.endTime;
+          if (newStart && newEnd && newStart >= newEnd) {
+            next.timeRange = "종료 시간은 시작 시간보다 늦어야 합니다.";
+          }
+        } else if (prev[key as keyof StudyFormErrors]) {
           delete next[key as keyof StudyFormErrors];
-          return next;
         }
-        return prev;
+        return next;
       });
     },
     [],
   );
+
+  // blur 시 필수 필드 검증
+  const handleBlurField = useCallback((key: keyof StudyFormState) => {
+    const current = formRef.current;
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (key === "title" && !current.title.trim()) {
+        next.title = "스터디 제목을 입력해주세요.";
+      } else if (key === "maxMembers") {
+        const num = Number(current.maxMembers);
+        if (current.maxMembers === "") {
+          next.maxMembers = "모집 인원을 입력해주세요.";
+        } else if (num < 3) {
+          next.maxMembers = "스터디원은 3명 이상 모집해야 합니다.";
+        } else if (num >= 100) {
+          next.maxMembers = "100명 이상 모집할 수 없습니다.";
+        }
+      }
+      return next;
+    });
+  }, []);
 
   const handleThumbnailChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +185,7 @@ export function useStudyForm(onSubmit?: (state: StudyFormState) => void) {
         return next;
       });
       setIsDirty(true);
+      e.target.value = "";
     },
     [],
   );
@@ -195,23 +248,41 @@ export function useStudyForm(onSubmit?: (state: StudyFormState) => void) {
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        handleAddTag();
+        
+        const trimmed = tagInput.trim();
+        if (!trimmed || form.tags.includes(trimmed) || form.tags.length >= 5) {
+          setTagInput("");
+          return;
+        }
+
+        setForm((prev: StudyFormState) => ({
+          ...prev,
+          tags: [...prev.tags, trimmed],
+        }));
+        
+        setTagInput("");
+        setErrors((prev: StudyFormErrors) => {
+          const next = { ...prev };
+          delete next.tags;
+          return next;
+        });
+        setIsDirty(true);
       }
     },
-    [handleAddTag],
-  );
+    [tagInput, form.tags]
+  ); 
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
-      const validationErrors = validateForm(form);
+      const validationErrors = validateForm(form, minMembers);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
       onSubmit?.(form);
     },
-    [form, onSubmit],
+    [form, onSubmit]
   );
 
   const handleReset = useCallback(() => {
@@ -222,7 +293,7 @@ export function useStudyForm(onSubmit?: (state: StudyFormState) => void) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
 
-  const isValid = isFormValid(form);
+  const isValid = isFormValid(form, minMembers);
 
   return {
     form,
@@ -239,6 +310,7 @@ export function useStudyForm(onSubmit?: (state: StudyFormState) => void) {
     handleAddTagDirect,
     handleRemoveTag,
     handleTagInputKeyDown,
+    handleBlurField,
     handleSubmit,
     handleReset,
   };

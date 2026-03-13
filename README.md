@@ -71,7 +71,7 @@
 
 | 회원가입 (Step 1~2) | 회원 등급 온보딩 | 마이페이지 |
 | :---: | :---: | :---: |
-| ![회원가입](https://github.com/user-attachments/assets/d014a71b-c37b-4a5b-820c-d2d743ad2690) | ![등급 시스템 시연](https://github.com/user-attachments/assets/a9ec5293-ee35-48c5-9353-74e5c0fee29b) | ![마이페이지](https://github.com/user-attachments/assets/7cb99733-21d7-48b6-b79f-7a0d978ba56f) |
+| <img src="https://github.com/user-attachments/assets/d014a71b-c37b-4a5b-820c-d2d743ad2690" width="400" /> | ![등급 시스템 시연](https://github.com/user-attachments/assets/a9ec5293-ee35-48c5-9353-74e5c0fee29b) | ![마이페이지](https://github.com/user-attachments/assets/7cb99733-21d7-48b6-b79f-7a0d978ba56f) |
 | [cite_start]**인증 기반 가입**<br>이메일 인증 및 비밀번호 설정을 통한<br>보안 가입 절차를 시연합니다. [cite: 20, 21] | [cite_start]**준회원 → 정회원 승급**<br>프로필 필수 정보 입력에 따른<br>권한 승급 과정을 보여줍니다. [cite: 27, 32] | [cite_start]**활동 및 정보 관리**<br>내 프로필 정보와 스터디 참여<br>내역을 한눈에 확인합니다. [cite: 64, 182] |
 
 | AI 커리큘럼 생성 | 스터디 검색 및 필터 | 실시간 채팅방 |

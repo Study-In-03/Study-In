@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom";
 import { GitHubCalendar } from "react-github-calendar";
 import { useProfileForm } from "@/features/profile/hooks/useProfileForm";
+import { withdrawAccount } from "@/api/auth";
+import { storage } from "@/utils/storage";
 import PersonIcon from "@/assets/base/icon-person.svg?react";
 import ImageIcon from "@/assets/base/icon-Image.svg?react";
 import CheckIcon from "@/assets/base/icon-Check.svg?react";
@@ -20,6 +23,7 @@ const allTags = [
 const MAX_BIO_LENGTH = 80;
 
 const ProfileEditForm = () => {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -42,6 +46,17 @@ const ProfileEditForm = () => {
     handleCheckNickname, removeTag, addCustomTag,
     handleImageChange, handleSave,
   } = useProfileForm();
+
+  const handleWithdraw = async () => {
+    if (!window.confirm('정말로 탈퇴하시겠습니까? 탈퇴 후 모든 데이터가 삭제됩니다.')) return;
+    try {
+      await withdrawAccount();
+      storage.clearAuth();
+      navigate('/login');
+    } catch {
+      alert('탈퇴 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
 
   // ProfileEditForm 전용: 기존 닉네임 로드 시 검증 통과 처리
   // useProfileForm의 fetchProfile이 끝난 뒤 nickname이 세팅되면 자동으로 debounce 체크가 동작하지만,
@@ -345,14 +360,12 @@ const ProfileEditForm = () => {
         >
           {isSaving ? "저장 중..." : "저장하기"}
         </button>
-        <a
-          href="https://weniv.world"
-          target="_blank"
-          rel="noreferrer"
+        <button
+          onClick={handleWithdraw}
           className="text-sm text-gray-500 underline md:absolute md:right-2"
         >
           위니브월드 탈퇴하기
-        </a>
+        </button>
       </div>
     </div>
   );

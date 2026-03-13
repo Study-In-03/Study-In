@@ -29,6 +29,11 @@ export const storage = {
     setNickname: (nickname: string) => localStorage.setItem('nickname', nickname),
     removeNickname: () => localStorage.removeItem('nickname'),
 
+    // 프로필 이미지 관리
+    getProfileImg: () => localStorage.getItem('profile_img'),
+    setProfileImg: (url: string) => localStorage.setItem('profile_img', url),
+    removeProfileImg: () => localStorage.removeItem('profile_img'),
+
     getIsAssociate: () => localStorage.getItem('is_associate') === 'true',
     setIsAssociate: (val: boolean) => localStorage.setItem('is_associate', String(val)),
 
@@ -38,6 +43,7 @@ export const storage = {
         localStorage.removeItem(USER_ID_KEY);
         localStorage.removeItem(USER_EMAIL_KEY);
         localStorage.removeItem('nickname');
+        localStorage.removeItem('profile_img');
         localStorage.removeItem('is_associate');
     },
 };

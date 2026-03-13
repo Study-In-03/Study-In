@@ -51,7 +51,7 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
         <div className="flex items-center gap-1">
           <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
           <span className={`text-sm font-bold md:text-lg md:font-normal ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
-            {study.status === "모집 중" ? "모집 중!" : study.status === "종료" ? "종료" : study.status}
+            {study.status === "모집 중" ? "모집 중!" : study.status === "완료" ? "종료" : study.status}
           </span>
         </div>
         <span className="text-xs md:text-sm bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700">
@@ -67,10 +67,10 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
           className={study.thumbnail ? "w-full h-full object-cover" : "absolute inset-0 m-auto w-2/3 h-2/3 object-contain opacity-40"}
           alt="스터디 썸네일"
         />
-        {/* 종료 오버레이 */}
-        {study.status === "종료" && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <span className="text-background text-sm font-medium">종료된 스터디입니다 :)</span>
+        {/* 완료 오버레이 */}
+        {study.status === "완료" && (
+          <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+            <span className="text-background text-sm font-medium">완료된 스터디입니다 :)</span>
           </div>
         )}
         {/* 하트 버튼 */}

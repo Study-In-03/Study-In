@@ -36,42 +36,48 @@ export default function Router() {
       <Routes>
         {/* 공통 레이아웃 (헤더 + 푸터) */}
         <Route element={<Layout />}>
+          {/* 비로그인 접근 가능 */}
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/study/:studyId" element={<StudyDetail />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<ProfileEdit />} />
-          <Route path="/profile/create" element={<ProfileCreate />} />
           <Route path="/local" element={<LocalStudy />} />
           <Route path="/local/search" element={<Search />} />
           <Route path="/online" element={<OnlineStudy />} />
           <Route path="/online/search" element={<Search />} />
-          <Route path="/my-study" element={<MyStudy />} />
-          <Route path="/notification" element={<Notification />} />
+          {/* 로그인 필수 */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
+            <Route path="/profile/create" element={<ProfileCreate />} />
+            <Route path="/my-study" element={<MyStudy />} />
+            <Route path="/notification" element={<Notification />} />
+          </Route>
         </Route>
 
+        {/* 채팅 (로그인 필수) */}
         <Route element={<ChatLayout />}>
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chat/:study_pk" element={<Chat />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:study_pk" element={<Chat />} />
+          </Route>
         </Route>
 
-        {/* 스터디 */}
-        <Route path="/study/create" element={<StudyCreate />} />
-        <Route
-          path="/study/:studyId/comment/write"
-          element={<CommentWritePage />}
-        />
-        <Route path="/study/:studyId/edit" element={<StudyEdit />} />
+        {/* 스터디 생성/수정/댓글 (로그인 필수) */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/study/create" element={<StudyCreate />} />
+          <Route path="/study/:studyId/comment/write" element={<CommentWritePage />} />
+          <Route path="/study/:studyId/edit" element={<StudyEdit />} />
+        </Route>
+
         {/* 인증 관련 레이아웃 */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
-      
     </BrowserRouter>
   );
 }

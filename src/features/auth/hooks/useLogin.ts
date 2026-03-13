@@ -29,8 +29,9 @@ export const useLogin = () => {
       // 로그인 응답에는 닉네임이 없으므로 getProfile을 통해 동기화
       const profile = await getProfile(data.user.pk);
       
-      // 닉네임 로컬 스토리지 업데이트
+      // 닉네임, 프로필 이미지 로컬 스토리지 업데이트
       storage.setNickname(profile.nickname);
+      if (profile.profile_img) storage.setProfileImg(profile.profile_img);
 
       // 전역 상태(Zustand) 업데이트 
       // 이전 가이드에서 수정한 authStore의 login(userData, isAssociate) 규격지킴

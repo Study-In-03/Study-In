@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getChatHistory } from '@/api/chat';
+import { getProfile } from '@/api/profile';
 import { ChatMessage } from '@/types/chat';
-import { useWebSocket } from './useWebSocket';
+import { useWebSocket, normalizeChatMessage } from './useWebSocket';
+import { storage } from '@/utils/storage';
+import { useAuthStore } from '@/store/authStore';
 
 export const useChatHistory = (studyPk: number) => {
+  const { user } = useAuthStore();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,6 +18,18 @@ export const useChatHistory = (studyPk: number) => {
 
   // 채팅창 스크롤 제어를 위한 Ref
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 내 프로필 이미지 (optimistic update용)
+  const myProfileImgRef = useRef<string | null>(storage.getProfileImg());
+
+  useEffect(() => {
+    const myId = storage.getUserId();
+    if (!myId) return;
+    getProfile(myId).then((profile) => {
+      myProfileImgRef.current = profile.profile_img || null;
+      if (profile.profile_img) storage.setProfileImg(profile.profile_img);
+    }).catch(() => {});
+  }, []);
 
   /**
    * 스크롤을 맨 아래로 이동시키는 함수
@@ -30,16 +46,41 @@ export const useChatHistory = (studyPk: number) => {
 
   // 웹소켓 수신 메시지 처리
   const handleNewMessage = useCallback((newMsg: ChatMessage) => {
+      // 서버가 내 메시지를 에코로 돌려보내는 경우 → optimistic update로 이미 추가됐으므로 무시
+      const myId = Number(storage.getUserId());
+      if (myId && Number(newMsg.user?.pk) === myId) return;
       setMessages((prev) => [...prev, newMsg]);
       // 새 메시지 수신 시 맨 아래로 스크롤
       setTimeout(() => scrollToBottom('smooth'), 50);
   }, [scrollToBottom]);
 
   // 웹소켓 연결
-  const { sendMessage } = useWebSocket({
+  const { sendMessage: wsSend } = useWebSocket({
       studyPk,
       onMessage: handleNewMessage,
   });
+
+  // 메시지 전송 + optimistic update (서버가 sender에게 에코를 보내지 않으므로 직접 추가)
+  const sendMessage = useCallback((content: string, type: 'text' | 'image' | 'file' = 'text') => {
+      const optimisticMsg: ChatMessage = {
+          pk: Date.now() * -1, // 임시 음수 pk (서버 pk와 충돌 없음)
+          user: {
+              pk: storage.getUserId(),
+              profile: {
+                  nickname: user?.nickname || storage.getNickname() || '',
+                  profile_img: myProfileImgRef.current,
+              },
+          },
+          chat_type: type,
+          message: type === 'text' ? content : null,
+          image_url: type === 'image' ? content : null,
+          file_url: type === 'file' ? content : null,
+          created: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setTimeout(() => scrollToBottom('smooth'), 50);
+      wsSend(content, type);
+  }, [wsSend, scrollToBottom]);
 
   /**
    * 초기 채팅 내역을 불러오는 함수
@@ -51,7 +92,7 @@ export const useChatHistory = (studyPk: number) => {
       const data = await getChatHistory(studyPk, 1);
       
       // API 명세의 results 배열을 상태에 저장
-      setMessages(data.results);
+      setMessages(data.results.map(normalizeChatMessage));
       setHasNextPage(!!data.next);
       if (data.next) setNextPageNum(2);
       
@@ -76,7 +117,7 @@ export const useChatHistory = (studyPk: number) => {
       const data = await getChatHistory(studyPk, nextPageNum);
       
       // 이전 메시지는 배열의 앞에 추가
-      setMessages((prev) => [...data.results, ...prev]);
+      setMessages((prev) => [...data.results.map(normalizeChatMessage), ...prev]);
       setHasNextPage(!!data.next);
       setNextPageNum((prev) => prev + 1);
     } catch (err) {

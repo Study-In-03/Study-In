@@ -2,6 +2,25 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { storage } from '@/utils/storage';
 import { ChatMessage } from '@/types/chat';
 
+// WS/REST API 응답 모두 처리 (서버마다 flat/nested 구조 다름)
+export function normalizeChatMessage(data: any): ChatMessage {
+    return {
+        pk: data.pk ?? Date.now() * -1,
+        chat_type: data.chat_type ?? data.type,
+        message: data.message ?? null,
+        image_url: data.image_url ?? null,
+        file_url: data.file_url ?? null,
+        created: data.created ?? new Date().toISOString(),
+        user: {
+            pk: data.user?.pk ?? data.user?.id ?? null,
+            profile: data.user?.profile ?? {
+                nickname: data.user?.nickname ?? '',
+                profile_img: data.user?.profile_img ?? null,
+            },
+        },
+    };
+}
+
 const WS_BASE = import.meta.env.VITE_WS_BASE_URL || 'wss://api.wenivops.co.kr/services/studyin-chat/chat/study';
 const PING_INTERVAL = 30000; // 30초 핑 유지
 const MAX_RECONNECT_ATTEMPTS = 5; // 최대 재연동 시도 횟수
@@ -55,8 +74,13 @@ export const useWebSocket = ({ studyPk, onMessage }: UseWebSocketProps) => {
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                if (data.type !== 'pong') {
-                    onMessageRef.current(data);
+                if (data.error) {
+                    console.error('[WS] 서버 에러:', data.error);
+                    return;
+                }
+                const SYSTEM_TYPES = ['pong', 'connection_success', 'connection_warning'];
+                if (!SYSTEM_TYPES.includes(data.type)) {
+                    onMessageRef.current(normalizeChatMessage(data));
                 }
             } catch (e) {
                 console.error('[WS] 메시지 파싱 에러:', e);
@@ -74,8 +98,9 @@ export const useWebSocket = ({ studyPk, onMessage }: UseWebSocketProps) => {
                 pingTimerRef.current = null;
             }
 
-            // 비정상 종료 시 재연동 시도 (지수 백오프)
-            if (!event.wasClean && reconnectCountRef.current < MAX_RECONNECT_ATTEMPTS) {
+            // 비정상 종료 시 재연동 시도 (지수 백오프, 인증/권한 에러는 재연결 불필요)
+            const NO_RETRY_CODES = [4001, 4002, 4003, 4004, 4005];
+            if (!event.wasClean && !NO_RETRY_CODES.includes(event.code) && reconnectCountRef.current < MAX_RECONNECT_ATTEMPTS) {
                 const delay = INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectCountRef.current);
                 console.log(`[WS] ${delay}ms 후 재연동 시도... (${reconnectCountRef.current + 1}/${MAX_RECONNECT_ATTEMPTS})`);
                 
@@ -103,7 +128,11 @@ export const useWebSocket = ({ studyPk, onMessage }: UseWebSocketProps) => {
             console.warn('[WS] 연결되지 않은 상태입니다.');
             return;
         }
-        ws.send(JSON.stringify({ type, message: content }));
+        const payload =
+            type === 'image' ? { type, image_url: content } :
+            type === 'file'  ? { type, file_url: content } :
+                               { type, message: content };
+        ws.send(JSON.stringify(payload));
     }, []);
 
     return { sendMessage, status };

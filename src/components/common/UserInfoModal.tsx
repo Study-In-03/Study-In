@@ -75,7 +75,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:overflow-y-auto sm:items-start sm:justify-center sm:py-10"
+      className="fixed inset-0 z-50 flex items-end sm:overflow-y-auto sm:items-start sm:justify-center sm:py-10 md:items-center md:py-0"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/40 sm:hidden" />
@@ -124,7 +124,7 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
             <img
               src={profileImgSrc}
               alt={profile.nickname}
-              className="w-[130px] h-[130px] rounded-full object-cover border border-gray-300"
+              className="w-[90px] h-[90px] md:w-[130px] md:h-[130px] rounded-full object-cover border border-gray-300"
             />
 
             {/* 닉네임 */}
@@ -141,7 +141,6 @@ const UserInfoModal = ({ userId, onClose }: UserInfoModalProps) => {
 
             {/* 콘텐츠 영역 */}
             <div className="mt-5 sm:mt-[30px] w-full flex flex-col gap-5 sm:gap-10">
-
               {/* 자기소개 */}
               <div className="w-full border border-gray-300 sm:border-gray-300 rounded-[10px] sm:rounded-xl px-4 py-4">
                 <p className="text-sm sm:text-base text-surface sm:text-gray-700 leading-5 sm:leading-6 whitespace-pre-line">

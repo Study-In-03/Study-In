@@ -13,14 +13,19 @@ interface ChatBubbleProps {
     isOwner?: boolean;    // 스터디장 여부
 }
 
-export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps) {
+export default function ChatBubble({ message, isOwner }: ChatBubbleProps) {
 
     // 메시지 객체가 없을 경우를 대비한 안전 장치
     if (!message) return null;
-    
-    const [copied, setCopied] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
+
     const { openModal } = useModalStore();
+    const [copied, setCopied] = useState(false);
+
+    const handleProfileClick = () => {
+        const userId = message.user?.pk;
+        if (userId) openModal('user-info', userId);
+    };
+    const [isExpanded, setIsExpanded] = useState(false);
 
     // API 데이터 매핑
     // 옵셔널 체이닝(?.)을 사용하여 데이터가 없을 때 터지는 것 방지
@@ -53,45 +58,42 @@ export default function ChatBubble({ message, isMine, isOwner }: ChatBubbleProps
     };
 
     return (
-        <div className={`flex w-full mb-5 gap-3 ${isMine ? 'justify-end' : 'justify-start'}`}>
-            
-            {/* 상대방 프로필 이미지 */}
-            {!isMine && (
-                <div
-                    className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center shrink-0 border border-gray-300 shadow-sm cursor-pointer"
-                    onClick={() => message.user?.pk && openModal('user-info', message.user.pk)}
-                >
-                    {profileImg ? (
-                        <img 
-                            src={getFullUrl(profileImg)} 
-                            alt={`${sender} 프로필`} 
-                            className="w-full h-full object-cover" 
-                        />
-                    ) : (
-                        <EmptyProfileIcon className="w-full h-full" />
-                    )}
-                </div>
-            )}
+        <div className="flex w-full mb-5 gap-3 justify-start">
 
-            <div className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
-                
-                {/* 이름 및 시간 */}
-                {!isMine && (
-                    <div className="flex items-center mb-1 gap-2">
-                        <span className="text-sm text-gray-700 font-regular gap-1">{sender}</span>
-                        {isOwner && (
-                            <CrownIcon className="w-4 h-4 text-warning shrink-0" />
-                        )}
-                        <span className="text-xs text-gray-500">{time}</span>
-                    </div>
+            {/* 프로필 이미지 */}
+            <button
+                onClick={handleProfileClick}
+                className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center shrink-0 border border-gray-300 shadow-sm hover:opacity-80 transition-opacity"
+            >
+                {profileImg ? (
+                    <img
+                        src={getFullUrl(profileImg)}
+                        alt={`${sender} 프로필`}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <EmptyProfileIcon className="w-full h-full" />
                 )}
+            </button>
 
-                <div className={`flex items-end gap-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
-                    {isMine && (
-                        <span className="text-xs text-gray-500 mb-1 shrink-0">
-                            {time}
-                        </span>
+            <div className="flex flex-col items-start">
+
+                {/* 이름 및 시간 */}
+                <div className="flex items-center mb-1 gap-2">
+                    <button
+                        onClick={handleProfileClick}
+                        className="text-sm text-gray-700 font-regular gap-1 hover:underline"
+                    >
+                        {sender}
+                    </button>
+                    {isOwner && (
+                        <CrownIcon className="w-4 h-4 text-warning shrink-0" />
                     )}
+                    <span className="text-xs text-gray-500">{time}</span>
+                </div>
+
+                <div className="flex items-end gap-1 flex-row">
+
                     {/* 말풍선 본문 */}
                     <div>
                         {/* 이미지 타입인 경우 */}

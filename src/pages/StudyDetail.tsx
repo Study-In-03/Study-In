@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getStudy, joinStudy } from '@/api/study';
+import { getStudy, joinStudy, leaveStudy } from '@/api/study';
+import { STATUS_BG_COLOR } from '@/constants/study';
 import { storage } from '@/utils/storage';
 import { StudyApiData, likeStudy, unlikeStudy } from '@/api/study';
 import { useAssociateGuard } from '@/hooks/useAssociateGuard';
@@ -15,7 +16,7 @@ import CommentSection from "@/features/comments/components/CommentSection";
 
 function TagChip({ label }: { label: string }) {
   return (
-    <div className="rounded-full border border-gray-300 bg-background px-3 py-1 text-sm text-gray-700">
+    <div className="rounded-full border border-gray-300 bg-background px-[14px] py-[6px] text-sm text-gray-700">
       {label}
     </div>
   );
@@ -36,7 +37,7 @@ export default function StudyDetail() {
 
   const thumbnailCardRef = useRef<HTMLDivElement>(null);
 
-  const myPk = Number(storage.getUserId());
+  const myPk = useMemo(() => Number(storage.getUserId()), []);
   const isLeader = studyDetail?.leader?.id === myPk;
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function StudyDetail() {
     }
     try {
       await joinStudy(Number(studyId));
+      setIsJoined(true);
       setJoinSuccess(true);
       setTimeout(() => setJoinSuccess(false), 3000);
     } catch (error: any) {
@@ -91,6 +93,18 @@ export default function StudyDetail() {
         error.response?.data?.error || "참여 신청 중 오류가 발생했습니다.";
       alert(errorMsg);
       if (error.response?.status === 409) setIsJoined(true);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!studyId) return;
+    if (!window.confirm("스터디에서 탈퇴하시겠습니까?")) return;
+    try {
+      await leaveStudy(Number(studyId));
+      setIsJoined(false);
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.error || "탈퇴 중 오류가 발생했습니다.";
+      alert(errorMsg);
     }
   };
 
@@ -103,7 +117,13 @@ export default function StudyDetail() {
       </div>
     );
 
-  const primaryButtonText = isLeader || isJoined ? "채팅방 가기" : "참여하기";
+  const isCompleted = studyDetail.study_status.name === "완료";
+  const STATUS_DISPLAY: Record<string, string> = {
+    "모집 중": "모집 중!",
+    "진행 중": "진행 중",
+    "모집 완료": "모집 완료",
+    "완료": "종료",
+  };
   const DAYS_ORDER = ["월", "화", "수", "목", "금", "토", "일"];
   const leaderProfile = studyDetail.leader.profile;
   const leaderImgUrl = leaderProfile.profile_img
@@ -116,228 +136,191 @@ export default function StudyDetail() {
     return `${d.getFullYear()}. ${String(d.getMonth() + 1).padStart(2, "0")}. ${String(d.getDate()).padStart(2, "0")}(${dayNames[d.getDay()]})`;
   };
 
-  // 웹 오른쪽 사이드카드
-  const SideCard = () => (
-    <div className="border border-gray-300 rounded-xl overflow-hidden">
-      <div className="bg-primary px-4 py-3 flex items-center justify-between">
-        <SpeakerIcon className="h-7 w-7 text-background" />
-        <span className="text-background text-sm font-medium">{studyDetail.study_status.name}</span>
-      </div>
-      <div className="p-4 flex flex-col gap-4">
-        <div className="flex justify-between">
-          {DAYS_ORDER.map((d) => {
-            const active = studyDetail.study_day.some((day) => day.name === d);
-            return (
-              <div key={d} className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${active ? "bg-primary text-background" : "bg-gray-100 text-gray-500"}`}>
-                {d}
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex flex-col divide-y divide-gray-100">
-          <div className="flex justify-between py-2.5 text-sm">
-            <span className="text-gray-700">시작일</span>
-            <span className="font-medium text-primary">{studyDetail.start_date}</span>
-          </div>
-          <div className="flex justify-between py-2.5 text-sm">
-            <span className="text-gray-700">시간</span>
-            <div className="text-right">
-              <div className="font-medium text-gray-900">{studyDetail.start_time.slice(0, 5)} ~ {studyDetail.end_time.slice(0, 5)}</div>
-              <div className="text-xs text-gray-500">{studyDetail.term}주 진행</div>
-            </div>
-          </div>
-          <div className="flex justify-between py-2.5 text-sm">
-            <span className="text-gray-700">모집 인원</span>
-            <span className="font-bold text-primary">{studyDetail.participants.length} / {studyDetail.recruitment}</span>
-          </div>
-        </div>
-        <button
-          onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
-          className="w-full h-11 rounded-lg bg-primary text-background font-medium"
-        >
-          {primaryButtonText}
-        </button>
-        <div className="flex gap-2">
-          <button 
-              onClick={() => {
-                  if (navigator.share) {
-                      navigator.share({ title: studyDetail.title, url: window.location.href });
-                  } else {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert("링크가 복사되었습니다.");
-                  }
-              }}
-              className="flex-1 h-10 flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
-            <ShareIcon className="w-4 h-4" />
-            공유하기
-          </button>
-          <button onClick={handleLike} disabled={isLikeLoading} className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300">
-            {liked ? <HeartFillIcon className="w-5 h-5 text-error" /> : <HeartIcon className="w-5 h-5 text-gray-500" />}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="w-full min-h-screen bg-background">
+      {/* 참여 성공 토스트 */}
+      {joinSuccess && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-surface text-background text-sm font-medium px-5 py-3 rounded-full shadow-lg">
+          스터디 참여 신청이 완료되었습니다 🎉
+        </div>
+      )}
 
       <div className="hidden md:block">
 
-        <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-6">
+        <div className="mx-auto max-w-[1190px] pt-6">
           <div
             ref={thumbnailCardRef}
             className="rounded-xl border border-gray-300 bg-background overflow-hidden"
           >
             <div className="flex h-[390px]">
-              <div className="w-[300px] shrink-0">
+              <div className="w-[390px] shrink-0 relative">
                 <img
                   src={getFullUrl(studyDetail.thumbnail)}
                   alt={studyDetail.title}
                   className="w-full h-full object-cover"
                 />
+                {studyDetail.study_status?.name === "완료" && (
+                  <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                    <span className="text-background text-lg font-bold">완료된 스터디입니다 :)</span>
+                  </div>
+                )}
               </div>
-              <div className="flex-1 px-5 py-5 flex flex-col">
-                <div className="flex flex-col gap-3">
+              <div className="flex-1 px-[30px] py-[30px] flex flex-col">
+                <div className="flex flex-col gap-[30px]">
                   <div className="flex items-center justify-between">
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-[6px]">
                       <TagChip label={studyDetail.subject.name} />
                       <TagChip label={studyDetail.difficulty.name} />
                     </div>
                     {studyDetail.study_location && (
-                      <span className="text-xs bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700 shrink-0">
+                      <span className="h-8 flex items-center px-[14px] text-sm bg-gray-100 rounded-full text-surface shrink-0">
                         {studyDetail.study_location.location}
                       </span>
                     )}
                   </div>
-                  <h1 className="text-xl font-bold text-gray-900 leading-snug">
+                  <h1 className="text-[30px] font-bold text-surface leading-[40px]">
                     {studyDetail.title}
                   </h1>
                 </div>
 
-                {studyDetail.search_tag.length > 0 && (
-                  <p className="flex-1 flex items-end text-sm text-primary">
-                    {studyDetail.search_tag.map((tag) => (
-                      <span key={tag.id}>#{tag.name} </span>
-                    ))}
-                  </p>
-                )}
-                {studyDetail.search_tag.length === 0 && (
-                  <div className="flex-1" />
-                )}
+                <div className="flex-1" />
 
-                <div className="flex justify-end gap-2">
-                  <button className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 h-9 text-sm text-gray-700">
-                    <ShareIcon className="w-4 h-4" />
-                    공유하기
-                  </button>
-                  <button
-                    onClick={handleLike}
-                    disabled={isLikeLoading}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300"
-                  >
-                    {liked
-                      ? <HeartFillIcon className="w-4 h-4 text-error" />
-                      : <HeartIcon className="w-4 h-4 text-gray-500" />
-                    }
-                  </button>
+                <div className="flex items-center gap-[30px]">
+                  {studyDetail.search_tag.length > 0 && (
+                    <p className="flex-1 text-base font-bold text-primary">
+                      {studyDetail.search_tag.map((tag) => (
+                        <span key={tag.id}>#{tag.name} </span>
+                      ))}
+                    </p>
+                  )}
+                  {studyDetail.search_tag.length === 0 && <div className="flex-1" />}
+                  <div className="flex items-center gap-[10px] shrink-0">
+                    <button className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 w-[190px] h-[50px] text-base font-medium text-gray-700">
+                      <ShareIcon className="w-5 h-5" />
+                      공유하기
+                    </button>
+                    <button
+                      onClick={handleLike}
+                      disabled={isLikeLoading}
+                      className="w-[50px] h-[50px] flex items-center justify-center rounded-lg border border-gray-300"
+                    >
+                      {liked
+                        ? <HeartFillIcon className="w-5 h-5 text-error" />
+                        : <HeartIcon className="w-5 h-5 text-gray-500" />
+                      }
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1190px] px-6 pr-[60px] pt-10 pb-6 flex gap-6 items-start">
+        <div className="mx-auto max-w-[1190px] pt-[60px] pb-6 flex gap-[60px] items-start">
 
-          <div className="flex-1 min-w-0">
-            <div className="py-5">
-              <h2 className="text-base font-bold text-gray-900 mb-3">스터디 소개</h2>
-              <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">
-                {studyDetail.study_info}
-              </p>
-            </div>
+          <div className="flex-1 min-w-0 flex flex-col gap-[60px]">
 
-            <div className="border-t border-gray-300" />
+            {/* 소개 + 일정 + 그룹장 */}
+            <div className="flex flex-col gap-[30px]">
 
-            <div className="py-5">
-              <h2 className="text-base font-bold text-gray-900 mb-3">스터디 일정</h2>
-              {studyDetail.schedule_info
-                ? (
-                  <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">
-                    {studyDetail.schedule_info}
-                  </p>
-                )
-                : <p className="text-sm text-gray-300">일정 정보가 없습니다.</p>
-              }
-            </div>
+              {/* 스터디 소개 */}
+              <div className="flex flex-col gap-[20px]">
+                <h2 className="text-[30px] font-bold text-surface leading-[40px]">스터디 소개</h2>
+                <p className="whitespace-pre-line text-base text-surface leading-[24px]">
+                  {studyDetail.study_info}
+                </p>
+              </div>
 
-            <div className="border-t border-gray-300" />
+              <div className="h-[2px] bg-gray-300" />
 
-            <div className="py-5">
-              <h2 className="text-base font-bold text-gray-900 mb-4">그룹장 소개</h2>
-              <div
-                className="cursor-pointer flex gap-4"
-                onClick={() => openModal("user-info", studyDetail.leader.id)}
-              >
-                <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-gray-100 shrink-0">
-                  {leaderImgUrl
-                    ? (
-                      <img
-                        src={leaderImgUrl}
-                        alt={leaderProfile.nickname}
-                        className="w-full h-full object-cover"
-                      />
-                    )
-                    : <div className="w-full h-full bg-gray-100" />
-                  }
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <span className="font-bold text-gray-900 text-sm">
-                      {leaderProfile.nickname}
-                    </span>
-                    <CrownIcon className="w-4 h-4 text-primary" />
-                    {studyDetail.study_location && (
-                      <span className="text-xs bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700 ml-1">
-                        {studyDetail.study_location.location}
-                      </span>
+              {/* 스터디 일정 */}
+              <div className="flex flex-col gap-[20px]">
+                <h2 className="text-[30px] font-bold text-surface leading-[40px]">스터디 일정</h2>
+                {studyDetail.schedule_info
+                  ? (
+                    <p className="whitespace-pre-line text-base text-surface leading-[24px]">
+                      {studyDetail.schedule_info}
+                    </p>
+                  )
+                  : <p className="text-base text-gray-300">일정 정보가 없습니다.</p>
+                }
+              </div>
+
+              <div className="h-[2px] bg-gray-300" />
+
+              {/* 그룹장 소개 */}
+              <div className="flex flex-col gap-[30px]">
+                <h2 className="text-[30px] font-bold text-surface leading-[40px]">그룹장 소개</h2>
+                <div
+                  className="cursor-pointer flex items-center gap-[30px]"
+                  onClick={() => openModal("user-info", studyDetail.leader.id)}
+                >
+                  <div className="w-[130px] h-[130px] rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-300">
+                    {leaderImgUrl
+                      ? (
+                        <img
+                          src={leaderImgUrl}
+                          alt={leaderProfile.nickname}
+                          className="w-full h-full object-cover"
+                        />
+                      )
+                      : <div className="w-full h-full bg-gray-100" />
+                    }
+                  </div>
+                  <div className="flex flex-col gap-[10px]">
+                    <div className="flex items-center gap-[10px]">
+                      <div className="flex items-center gap-[6px]">
+                        <span className="text-[18px] font-bold text-surface">
+                          {leaderProfile.nickname}
+                        </span>
+                        <CrownIcon className="w-[26px] h-[26px] text-[#FFC533]" />
+                      </div>
+                      {leaderProfile.preferred_region && (
+                        <span className="h-[26px] flex items-center px-[13px] text-xs text-surface bg-gray-100 rounded-full">
+                          {leaderProfile.preferred_region.location}
+                        </span>
+                      )}
+                    </div>
+                    {leaderProfile.introduction && (
+                      <div
+                        className="bg-[#FFE187] px-[30px] py-[20px]"
+                        style={{ borderRadius: "2px 30px 30px 30px" }}
+                      >
+                        <p className="text-sm text-surface leading-[20px]">
+                          {leaderProfile.introduction}
+                        </p>
+                      </div>
                     )}
                   </div>
-                  {leaderProfile.introduction && (
-                    <div
-                      className="bg-[#FFE187] px-4 py-3"
-                      style={{ borderRadius: "0px 16px 16px 16px" }}
-                    >
-                      <p className="text-sm text-gray-700 leading-relaxed">
-                        {leaderProfile.introduction}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-gray-300" />
-
-            <div className="py-5">
-              <h2 className="text-base font-bold text-gray-900 mb-4">
+            {/* 그룹장에게 질문하기 */}
+            <div className="flex flex-col gap-[30px]">
+              <h2 className="text-[30px] font-bold text-surface leading-[40px]">
                 그룹장에게 질문하기
               </h2>
-              <div className="flex flex-col gap-4">
-                <CommentSection studyPk={studyDetail.id} leaderId={studyDetail.leader.id} currentUserId={myPk} />
-              </div>
+              <CommentSection
+                studyPk={studyDetail.id}
+                leaderId={studyDetail.leader.id}
+                currentUserId={myPk}
+              />
             </div>
+
           </div>
           <div className="w-[290px] shrink-0 sticky top-6 self-start">
-            <div className="rounded-xl border border-gray-300 overflow-hidden bg-background">
-              <div className="bg-primary px-4 py-3 flex items-center gap-2">
-                <SpeakerIcon className="h-5 w-5 text-background shrink-0" />
-                <span className="text-background text-sm font-semibold">
-                  {studyDetail.study_status.name}
-                </span>
-              </div>
-              <div className="px-4 py-4 flex flex-col gap-3">
-                <p className="text-center text-base font-bold text-gray-900">
+            {/* 상태 바 */}
+            <div className={`h-[60px] ${STATUS_BG_COLOR[studyDetail.study_status.name] ?? 'bg-primary'} rounded-t-xl px-[12px] pb-3 flex items-center gap-2`}>
+              <SpeakerIcon className="h-5 w-5 text-background shrink-0" />
+              <span className="text-background text-lg font-bold">
+                {STATUS_DISPLAY[studyDetail.study_status.name] ?? studyDetail.study_status.name}
+              </span>
+            </div>
+            {/* 흰색 콘텐츠 카드 - 상태 바 아래 16px 겹쳐서 자체 라운드 처리 */}
+            <div className="rounded-xl border border-gray-300 bg-background -mt-4 relative z-10 drop-shadow-[0px_5px_15px_rgba(71,73,77,0.10)]">
+              <div className="px-[20px] py-[20px] flex flex-col gap-[16px]">
+                <p className="text-[24px] font-bold text-surface leading-[34px] text-center">
                   스터디 일정
                 </p>
                 <div className="flex justify-between">
@@ -348,7 +331,7 @@ export default function StudyDetail() {
                     return (
                       <div
                         key={d}
-                        className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-medium
+                        className={`w-[30px] h-[30px] flex items-center justify-center rounded-full text-sm font-medium
                           ${active
                             ? "bg-primary text-background"
                             : "bg-gray-100 text-gray-400"
@@ -359,59 +342,82 @@ export default function StudyDetail() {
                     );
                   })}
                 </div>
-                <div className="border-t border-gray-100" />
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-primary font-medium">시작일</span>
-                  <span className="text-primary font-medium">
+                <div className="h-[2px] bg-gray-300" />
+                <div className="flex justify-between items-center">
+                  <span className="text-base font-bold text-primary">시작일</span>
+                  <span className="text-base text-primary">
                     {studyDetail.start_date}
                   </span>
                 </div>
-                <div className="border-t border-gray-100" />
-                <div className="flex justify-between items-start text-sm">
-                  <span className="text-gray-700">시간</span>
-                  <div className="text-right">
-                    <div className="font-medium text-gray-900">
+                <div className="h-[2px] bg-gray-300" />
+                <div className="flex flex-col gap-[4px]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-bold text-surface">시간</span>
+                    <span className="text-base text-surface">
                       {studyDetail.start_time.slice(0, 5)} ~{" "}
                       {studyDetail.end_time.slice(0, 5)}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {studyDetail.term}주 진행
-                    </div>
+                    </span>
                   </div>
+                  <p className="text-sm text-gray-500 text-right">
+                    {studyDetail.term}주 진행
+                  </p>
                 </div>
-                <div className="border-t border-gray-100" />
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-700">모집 인원</span>
-                  <span>
-                    <span className="font-bold text-primary">
-                      {studyDetail.participants.length}
-                    </span>
-                    <span className="text-gray-900">
-                      /{studyDetail.recruitment}
-                    </span>
+                <div className="h-[2px] bg-gray-300" />
+                <div className="flex justify-between items-center">
+                  <span className="text-base font-bold text-surface">모집 인원</span>
+                  <span className="text-base font-bold text-primary">
+                    {studyDetail.participants.length}/{studyDetail.recruitment}
                   </span>
                 </div>
-                <button
-                  onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
-                  className="w-full h-11 rounded-lg bg-primary text-background font-semibold text-sm"
-                >
-                  {primaryButtonText}
-                </button>
-                <div className="flex gap-2">
-                  <button className="flex-1 h-10 flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
-                    <ShareIcon className="w-4 h-4" />
-                    공유하기
-                  </button>
-                  <button
-                    onClick={handleLike}
-                    disabled={isLikeLoading}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300"
-                  >
-                    {liked
-                      ? <HeartFillIcon className="w-5 h-5 text-error" />
-                      : <HeartIcon className="w-5 h-5 text-gray-500" />
-                    }
-                  </button>
+                <div className="flex flex-col gap-[10px]">
+                  {isLeader || isJoined ? (
+                    <button
+                      onClick={() => navigate(`/chat/${studyId}`)}
+                      className="w-full h-[50px] rounded-lg font-medium text-base bg-primary text-background"
+                    >
+                      채팅방 가기
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
+                      disabled={isCompleted}
+                      className={`w-full h-[50px] rounded-lg font-medium text-base ${isCompleted ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-background"}`}
+                    >
+                      참여하기
+                    </button>
+                  )}
+                  <div className="flex items-center gap-[10px]">
+                    {isLeader && (
+                      <button
+                        onClick={() => navigate(`/study/${studyId}/edit`)}
+                        className="w-[130px] h-[50px] rounded-lg border border-gray-300 text-base font-medium text-surface"
+                      >
+                        수정하기
+                      </button>
+                    )}
+                    {isJoined && !isLeader && (
+                      <button
+                        onClick={handleLeave}
+                        className="w-[130px] h-[50px] rounded-lg border border-error text-base font-medium text-error"
+                      >
+                        탈퇴하기
+                      </button>
+                    )}
+                    <button className="flex-1 h-[50px] flex items-center justify-center gap-2 rounded-lg border border-gray-300 text-base font-medium text-gray-700">
+                      <ShareIcon className="w-5 h-5" />
+                      {!isLeader && !isJoined && "공유하기"}
+                    </button>
+                    <button
+                      onClick={handleLike}
+                      disabled={isLikeLoading}
+                      className="w-[50px] h-[50px] flex items-center justify-center rounded-lg border border-gray-300"
+                    >
+                      {liked
+                        ? <HeartFillIcon className="w-5 h-5 text-error" />
+                        : <HeartIcon className="w-5 h-5 text-gray-500" />
+                      }
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -422,31 +428,40 @@ export default function StudyDetail() {
 
       <div className="md:hidden pb-[80px]">
 
-        <div className="mx-6 mt-4 rounded-xl border border-gray-300 overflow-hidden bg-background">
-          <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+        {/* 상단 카드 (detail-bar-Top) */}
+        <div className="mx-4 mt-4 rounded-xl border border-gray-300 overflow-hidden bg-background">
+          {/* 태그 + 지역 */}
+          <div className="px-[16px] pt-[16px] pb-[14px] flex items-center justify-between">
             <div className="flex gap-2 flex-wrap">
               <TagChip label={studyDetail.subject.name} />
               <TagChip label={studyDetail.difficulty.name} />
             </div>
             {studyDetail.study_location && (
-              <span className="text-xs bg-gray-100 rounded-full px-[10px] py-[2px] text-gray-700 flex-shrink-0">
+              <span className="text-xs bg-gray-100 rounded-full px-[10px] py-[4px] text-gray-700 flex-shrink-0">
                 {studyDetail.study_location.location}
               </span>
             )}
           </div>
-          <div className="w-full h-[280px] overflow-hidden bg-gray-100">
+          {/* 썸네일 */}
+          <div className="relative w-full aspect-square bg-gray-100">
             <img
               src={getFullUrl(studyDetail.thumbnail)}
               alt={studyDetail.title}
               className="w-full h-full object-cover"
             />
+            {studyDetail.study_status?.name === "완료" && (
+              <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                <span className="text-background text-lg font-bold">완료된 스터디입니다 :)</span>
+              </div>
+            )}
           </div>
-          <div className="px-4 pt-3 pb-4">
-            <h1 className="text-lg font-bold text-gray-900 whitespace-pre-line">
+          {/* 제목 + 해시태그 */}
+          <div className="px-[16px] pt-[20px] pb-[20px]">
+            <h1 className="text-xl font-bold text-surface leading-[26px]">
               {studyDetail.title}
             </h1>
             {studyDetail.search_tag.length > 0 && (
-              <p className="mt-1 text-sm text-primary">
+              <p className="mt-[16px] text-base font-medium text-primary-light">
                 {studyDetail.search_tag.map((tag) => (
                   <span key={tag.id}>#{tag.name} </span>
                 ))}
@@ -455,116 +470,116 @@ export default function StudyDetail() {
           </div>
         </div>
 
-        <div className="mx-6 mt-3 bg-primary rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3">
-            <SpeakerIcon className="h-5 w-5 text-background" />
-            <span className="text-background font-semibold text-sm">
-              {studyDetail.study_status.name}
+        {/* 스터디 상태 카드 */}
+        <div className="mx-4 mt-3">
+          {/* 상태 바 */}
+          <div className={`h-[60px] ${STATUS_BG_COLOR[studyDetail.study_status.name] ?? 'bg-primary'} rounded-t-xl px-[12px] pb-3 flex items-center gap-2`}>
+            <SpeakerIcon className="h-5 w-5 text-background shrink-0" />
+            <span className="text-background text-lg font-bold">
+              {STATUS_DISPLAY[studyDetail.study_status.name] ?? studyDetail.study_status.name}
             </span>
           </div>
-          <div className="bg-background rounded-t-2xl border border-gray-300 px-4 py-4 flex flex-col gap-3">
-            <h3 className="text-center text-sm font-medium text-gray-900">
-              스터디 일정
-            </h3>
-            <div className="flex justify-between">
-              {DAYS_ORDER.map((d) => {
-                const active = studyDetail.study_day.some(
-                  (day: { name: string }) => day.name === d
-                );
-                return (
-                  <div
-                    key={d}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-medium
-                      ${active
-                        ? "bg-primary text-background"
-                        : "bg-gray-100 text-gray-400"
-                      }`}
-                  >
-                    {d}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="border-t border-gray-300" />
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-primary font-bold">시작일</span>
-              <span className="text-primary font-medium">
-                {formatDate(studyDetail.start_date)}
-              </span>
-            </div>
-            <div className="border-t border-gray-300" />
-            <div className="flex justify-between items-start text-sm">
-              <span className="text-gray-700 font-bold">시간</span>
-              <div className="text-right">
-                <div className="text-gray-900">
-                  오후 {studyDetail.start_time.slice(0, 2)}시 ~{" "}
-                  {studyDetail.end_time.slice(0, 2)}시
-                </div>
-                <div className="text-xs text-gray-500">{studyDetail.term}주 진행</div>
+          {/* 흰색 콘텐츠 카드 */}
+          <div className="rounded-xl border border-gray-300 bg-background -mt-4 relative z-10">
+            <div className="px-[20px] py-[20px] flex flex-col gap-[16px]">
+              <p className="text-xl font-bold text-surface text-center">스터디 일정</p>
+              <div className="flex justify-between">
+                {DAYS_ORDER.map((d) => {
+                  const active = studyDetail.study_day.some(
+                    (day: { name: string }) => day.name === d
+                  );
+                  return (
+                    <div
+                      key={d}
+                      className={`w-[30px] h-[30px] flex items-center justify-center rounded-full text-base font-medium
+                        ${active ? "bg-primary text-background" : "bg-gray-100 text-gray-500"}`}
+                    >
+                      {d}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-            <div className="border-t border-gray-300" />
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-700 font-bold">모집 인원</span>
-              <span>
-                <span className="font-bold text-primary">
-                  {studyDetail.participants.length}
+              <div className="h-[2px] bg-gray-300" />
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold text-primary">시작일</span>
+                <span className="text-lg text-primary">{formatDate(studyDetail.start_date)}</span>
+              </div>
+              <div className="h-[2px] bg-gray-300" />
+              <div className="flex flex-col gap-[4px]">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-surface">시간</span>
+                  <span className="text-lg text-surface">
+                    {studyDetail.start_time.slice(0, 5)} ~ {studyDetail.end_time.slice(0, 5)}
+                  </span>
+                </div>
+                <p className="text-base text-gray-500 text-right">{studyDetail.term}주 진행</p>
+              </div>
+              <div className="h-[2px] bg-gray-300" />
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold text-surface">모집 인원</span>
+                <span className="text-lg font-bold text-primary">
+                  {studyDetail.participants.length}/{studyDetail.recruitment}
                 </span>
-                <span className="text-gray-900">/{studyDetail.recruitment}</span>
-              </span>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="h-2 bg-gray-100 mt-3" />
 
-        <div className="bg-background px-4 py-4 flex flex-col gap-0">
+        <div className="bg-background px-[16px] py-[16px] flex flex-col gap-0">
 
-          <section className="py-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-2">스터디 소개</h2>
-            <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">
+          <section className="py-[20px]">
+            <h2 className="text-2xl font-bold text-surface mb-[20px]">스터디 소개</h2>
+            <p className="whitespace-pre-line text-lg text-surface leading-[24px]">
               {studyDetail.study_info}
             </p>
           </section>
 
-          <div className="h-[2px] bg-gray-100 -mx-4" />
+          <div className="h-[2px] bg-gray-100 -mx-[16px]" />
 
-          <section className="py-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-2">스터디 일정</h2>
+          <section className="py-[20px]">
+            <h2 className="text-2xl font-bold text-surface mb-[20px]">스터디 일정</h2>
             {studyDetail.schedule_info
               ? (
-                <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">
+                <p className="whitespace-pre-line text-lg text-surface leading-[24px]">
                   {studyDetail.schedule_info}
                 </p>
               )
-              : <p className="text-sm text-gray-300">일정 정보가 없습니다.</p>
+              : <p className="text-base text-gray-300">일정 정보가 없습니다.</p>
             }
           </section>
 
-          <div className="h-[2px] bg-gray-100 -mx-4" />
+          <div className="h-[2px] bg-gray-100 -mx-[16px]" />
 
-          <section className="py-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">그룹장 소개</h2>
-            <div className="flex gap-3 cursor-pointer" onClick={() => openModal('user-info', studyDetail.leader.id)}>
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                {leaderImgUrl ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-100" />}
+          <section className="py-[20px]">
+            <h2 className="text-2xl font-bold text-surface mb-[30px]">그룹장 소개</h2>
+            <div className="flex gap-[14px] cursor-pointer" onClick={() => openModal('user-info', studyDetail.leader.id)}>
+              <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-300">
+                {leaderImgUrl
+                  ? <img src={leaderImgUrl} alt={leaderProfile.nickname} className="w-full h-full object-cover" />
+                  : <div className="w-full h-full bg-gray-100" />
+                }
               </div>
-              <div className="flex flex-col justify-center gap-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="flex items-center gap-1">
-                    <span className="font-bold text-gray-900 text-sm">{leaderProfile.nickname}</span>
-                    <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                  </span>
-                  {studyDetail.study_location && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{studyDetail.study_location.location}</span>
+              <div className="flex flex-col gap-[10px]">
+                <div className="flex items-center gap-[6px] flex-wrap">
+                  <span className="text-base font-bold text-surface">{leaderProfile.nickname}</span>
+                  <CrownIcon className="w-5 h-5 text-[#FFC533] flex-shrink-0" />
+                  {leaderProfile.preferred_region && (
+                    <span
+                      className="bg-gray-100 text-surface rounded-full text-xs"
+                      style={{ padding: "4px 10px 2px" }}
+                    >
+                      {leaderProfile.preferred_region.location}
+                    </span>
                   )}
                 </div>
                 {leaderProfile.introduction && (
                   <div
-                    className="bg-[#FFE187] px-4 py-3"
-                    style={{ borderRadius: "0px 16px 16px 16px" }}
+                    className="bg-[#FFE187] px-[20px] py-[20px]"
+                    style={{ borderRadius: "2px 20px 20px 20px" }}
                   >
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-lg text-surface leading-[24px]">
                       {leaderProfile.introduction}
                     </p>
                   </div>
@@ -573,9 +588,11 @@ export default function StudyDetail() {
             </div>
           </section>
 
+          <div className="h-[2px] bg-gray-100 -mx-[16px]" />
+
           {/* 그룹장에게 질문하기 */}
-          <section className="bg-background rounded-xl p-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">그룹장에게 질문하기</h2>
+          <section className="py-[20px]">
+            <h2 className="text-2xl font-bold text-surface mb-[20px]">그룹장에게 질문하기</h2>
             <CommentSection
               studyPk={studyDetail.id}
               leaderId={studyDetail.leader.id}
@@ -587,7 +604,23 @@ export default function StudyDetail() {
 
         <div className="fixed bottom-0 left-0 right-0 border-t border-gray-300 bg-background z-10">
           <div className="mx-auto flex h-[70px] max-w-[390px] items-center gap-2 px-4">
-            <button 
+            {isLeader && (
+              <button
+                onClick={() => navigate(`/study/${studyId}/edit`)}
+                className="flex h-[50px] w-[110px] items-center justify-center rounded-lg border border-gray-300 text-sm text-gray-700"
+              >
+                수정하기
+              </button>
+            )}
+            {isJoined && !isLeader && (
+              <button
+                onClick={handleLeave}
+                className="flex h-[50px] w-[110px] items-center justify-center rounded-lg border border-error text-sm text-error"
+              >
+                탈퇴하기
+              </button>
+            )}
+            <button
               onClick={() => {
                 if (navigator.share) {
                   navigator.share({ title: studyDetail.title, url: window.location.href });
@@ -596,9 +629,9 @@ export default function StudyDetail() {
                   alert("링크가 복사되었습니다.");
                 }
               }}
-              className="flex h-[50px] w-[110px] items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700">
+              className={`flex h-[50px] items-center justify-center gap-2 rounded-lg border border-gray-300 text-sm text-gray-700 ${isLeader || isJoined ? "w-[50px]" : "w-[110px]"}`}>
               <ShareIcon className="w-4 h-4" />
-              공유
+              {!isLeader && !isJoined && "공유"}
             </button>
             <button
               onClick={handleLike}
@@ -611,10 +644,11 @@ export default function StudyDetail() {
               }
             </button>
             <button
-              onClick={() => withAssociateGuard(handleJoinOrChat, 'associate-join')}
-              className="h-[50px] flex-1 rounded-lg bg-primary text-background font-medium"
+              onClick={() => isJoined || isLeader ? navigate(`/chat/${studyId}`) : withAssociateGuard(handleJoinOrChat, 'associate-join')}
+              disabled={!isJoined && !isLeader && isCompleted}
+              className={`h-[50px] flex-1 rounded-lg font-medium text-sm ${!isJoined && !isLeader && isCompleted ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-background"}`}
             >
-              {primaryButtonText}
+              {isLeader || isJoined ? "채팅방 가기" : "참여하기"}
             </button>
           </div>
         </div>

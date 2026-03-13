@@ -39,7 +39,7 @@ export default function ChatHeader({
 }: ChatHeaderProps) {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const handleGoHome = () => navigate('/');
+    const handleGoHome = () => navigate('/chat');
 
     if (slot === 'left') {
         return (
@@ -109,7 +109,7 @@ export default function ChatHeader({
                                     <DotsIcon className=" w-6 h-6 text-surface hidden md:block" />
                                 </button>
                                 {isMenuOpen && (
-                                    <div className="absolute right-0 mt-1 w-[200px] bg-background border border-gray-300 rounded-[10px] shadow-lg px-2 py-[9px] z-50 animate-in fade-in zoom-in duration-200">
+                                    <div className="absolute right-0 mt-1 w-[200px] bg-background border border-gray-300 rounded-[10px] shadow-lg px-2 py-[9px] z-[80] animate-in fade-in zoom-in duration-200">
                                         <button
                                             className="w-[184px] text-left px-[10px] py-[5px] text-base font-regular rounded-[8px] text-surface hover:bg-gray-100"
                                             onClick={() => setIsMenuOpen(false)}

@@ -48,7 +48,7 @@ export interface Study {
   location: string | null;
   difficulty: string;
   topic: string;
-  status: '모집 중' | '모집 완료' | '진행 중' | '종료';
+  status: '모집 중' | '모집 완료' | '진행 중' | '완료';
   current_participants: number;
   is_liked: boolean;
 }

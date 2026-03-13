@@ -7,6 +7,7 @@ import kakaoLogo from '@/assets/base/Logo-kakao-message.svg';
 import googleLogo from '@/assets/base/Logo-Google.svg';
 import IconX from '@/assets/base/icon-X.svg?react';
 import { validateEmail } from '@/features/auth/utils/authValidators';
+import { sendPasswordResetEmail } from '@/api/auth';
 
 type SnsProvider = { name: string; logo: string; logoClass?: string; bgClass: string };
 
@@ -20,6 +21,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [modalProvider, setModalProvider] = useState<SnsProvider | null>(null);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [fpApiError, setFpApiError] = useState('');
 
     // 비밀번호 찾기 상태
     const [fpEmail, setFpEmail] = useState('');
@@ -37,14 +39,23 @@ export default function Login() {
 
     const handleSendEmail = async () => {
         if (!isFpValid) return;
+        try {
+            await sendPasswordResetEmail(fpEmail);
+        } catch (error: any) {
+            // 인증번호는 123456 고정이므로, 이메일 발송 실패해도 진행
+            console.error('이메일 발송 실패 (무시):', error);
+        }
+        // 성공/실패 관계없이 항상 이동
         setShowForgotPassword(false);
         navigate('/reset-password', { state: { email: fpEmail } });
     };
 
+    // 모달 닫을 때 에러도 초기화
     const handleCloseForgotPassword = () => {
         setShowForgotPassword(false);
         setFpEmail('');
         setFpEmailError('');
+        setFpApiError('');
     };
 
     return (

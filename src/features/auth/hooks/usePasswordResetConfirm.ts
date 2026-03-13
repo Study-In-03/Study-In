@@ -15,6 +15,7 @@ export const usePasswordResetConfirm = () => {
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.error ||
+                error.response?.data?.non_field_errors?.[0] ||
                 error.response?.data?.new_password?.[0] ||
                 '비밀번호 재설정에 실패했습니다.';
             setApiError(errorMessage);

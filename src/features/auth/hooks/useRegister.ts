@@ -14,7 +14,9 @@ export const useRegister = () => {
         const data = error.response?.data;
         if (!data) return defaultMessage;
         if (data.error) return data.error;
+        if (data.non_field_errors?.[0]) return data.non_field_errors[0];
         if (Array.isArray(data.email)) return data.email[0];
+        if (Array.isArray(data.password)) return data.password[0];
         return defaultMessage;
     };
 

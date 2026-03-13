@@ -55,7 +55,7 @@ export const registerApi = async (data: { email: string; password: string }) => 
 export const verifyPasswordResetCode = async (email: string, code: string) => {
     const response = await axiosInstance.post('/accounts/password-reset/verify/', {
         email,
-        code,
+        verification_uuid: code,  // ← API 명세 필드명으로 수정
     });
     return response.data;
 };

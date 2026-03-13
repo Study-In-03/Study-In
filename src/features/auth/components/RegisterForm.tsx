@@ -47,7 +47,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
 
         // 비밀번호 유효성 검사 (영문, 숫자 포함 8자)
         if (value.length === 0) setPasswordError('');
-        else if (!validatePassword(value)) setPasswordError('영문, 숫자 포함 8자 이상 입력해주세요.');
+        else if (!validatePassword(value)) setPasswordError('비밀번호는 8자 이상 입력해주세요.');
         else setPasswordError('');
 
         // '비밀번호 확인' 칸과 일치하는지 실시간 체크

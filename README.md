@@ -572,7 +572,7 @@ gantt
 
 ## 3. 폴더 구조
 
-```mermaid
+```text
 📦 studyin-frontend
 ├── 📁 public/
 ├── 📁 src/

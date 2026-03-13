@@ -26,7 +26,7 @@ function buildMessages(context: AiContext, field: 'introduction' | 'schedule') {
       { role: 'system', content: '당신은 스터디 커리큘럼 설계 전문가입니다. 한국어로 답변해주세요.' },
       {
         role: 'user',
-        content: `${info}\n\n위 정보를 바탕으로 주차별(Week 1, Week 2...) 커리큘럼을 작성해주세요. 각 주차에 학습 주제와 목표를 포함해주세요. 반드시 500자 이내로 작성해주세요.`,
+        content: `${info}\n\n위 정보를 바탕으로 주차별 커리큘럼을 작성해주세요. 각 주차는 "Week N: 주제명" 형식으로 한 줄씩만 작성하고, 세부 내용 없이 큰 주제명만 적어주세요. 전체 500자 이내로 작성해주세요.`,
       },
     ];
   }

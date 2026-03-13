@@ -481,7 +481,7 @@ const ProfileCreateForm = () => {
       {/* 저장 버튼 */}
       <div className="flex flex-col items-center gap-[30px]">
         <button
-          onClick={() => handleSave()}
+          onClick={() => handleSave("/")}
           disabled={!isSaveEnabled || isSaving}
           className={`w-[250px] h-[50px] rounded-[8px] text-base font-medium ${
             isSaveEnabled && !isSaving

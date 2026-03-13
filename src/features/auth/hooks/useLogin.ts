@@ -50,7 +50,7 @@ export const useLogin = () => {
       if (profile.is_associate_member) {
         navigate("/");
       } else {
-        navigate("/profile/edit");
+        navigate("/profile/create");
       }
 
     } catch (error: any) {

@@ -109,7 +109,7 @@ const CommentItem = ({
                     {nickname}
                   </span>
                   {isCommentAuthorLeader && (
-                    <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                    <CrownIcon className="w-4 h-4 text-warning flex-shrink-0" />
                   )}
                 </span>
                 {!isDeleted && (
@@ -154,7 +154,7 @@ const CommentItem = ({
                   {nickname}
                 </span>
                 {isCommentAuthorLeader && (
-                  <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                  <CrownIcon className="w-4 h-4 text-warning flex-shrink-0" />
                 )}
               </span>
               {isAuthor && (
@@ -215,7 +215,7 @@ const CommentItem = ({
           </div>
 
           {/* 웹 날짜 */}
-          <p className="hidden md:block text-xs text-gray-400 mt-1">
+          <p className="hidden md:block text-xs text-gray-500 mt-1">
             {comment.created ? formatDate(comment.created) : ""}
           </p>
 
@@ -233,7 +233,7 @@ const CommentItem = ({
               {comment.is_secret && canSeeContent && (
                 <IconLock className="w-4 h-4 text-primary-light flex-shrink-0" />
               )}
-              <p className={`text-base break-all ${isDeleted ? "text-gray-400" : "text-surface"}`}>
+              <p className={`text-base break-all ${isDeleted ? "text-gray-500" : "text-surface"}`}>
                 {isDeleted ? "삭제된 댓글입니다." : canSeeContent ? comment.content : "비밀 댓글입니다."}
               </p>
             </div>

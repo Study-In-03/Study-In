@@ -334,7 +334,7 @@ export default function StudyDetail() {
                         className={`w-[30px] h-[30px] flex items-center justify-center rounded-full text-sm font-medium
                           ${active
                             ? "bg-primary text-background"
-                            : "bg-gray-100 text-gray-400"
+                            : "bg-gray-100 text-gray-500"
                           }`}
                       >
                         {d}

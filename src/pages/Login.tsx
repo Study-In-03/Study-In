@@ -154,7 +154,7 @@ export default function Login() {
                                     placeholder="이메일 입력"
                                     value={fpEmail}
                                     onChange={handleFpEmailChange}
-                                    className={`w-full border-b-2 py-3 text-base font-regular placeholder:text-gray-400 focus:outline-none transition-colors ${
+                                    className={`w-full border-b-2 py-3 text-base font-regular placeholder:text-gray-500 focus:outline-none transition-colors ${
                                         isFpValid
                                             ? 'border-primary text-surface'
                                             : 'border-gray-300 text-surface focus:border-primary'

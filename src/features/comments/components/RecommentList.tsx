@@ -129,7 +129,7 @@ const RecommentList = ({
                             {nickname}
                           </span>
                           {isNormalUser(recomment.user) && recomment.user.id === leaderId && (
-                            <CrownIcon className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                            <CrownIcon className="w-4 h-4 text-warning flex-shrink-0" />
                           )}
                         </span>
                         {isAuthor && (
@@ -153,7 +153,7 @@ const RecommentList = ({
                           </button>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 mt-[2px]">
+                      <p className="text-xs text-gray-500 mt-[2px]">
                         {formatDate(recomment.created)}
                       </p>
                     </div>

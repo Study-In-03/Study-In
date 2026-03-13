@@ -1,4 +1,3 @@
-import './App.css'
 import { useEffect } from 'react';
 import Router from "./routes/Router";
 import { useAuthStore } from '@/store/authStore';

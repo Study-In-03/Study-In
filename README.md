@@ -1,238 +1,446 @@
-# 📖 Study-In : AI 기반 스터디 매칭 플랫폼 (Team Project 03)
+# 📖 Study-In : AI 기반 스터디 매칭 플랫폼
 
-## 프로젝트 개요
-
-- **프로젝트명** : Study-In-03
-
-- **개발 기간** : 2026.02.24 ~ 2026.03.13
-
-- **개발 인원** : Front-End 6기 6명 (Team Project)
-
-- **배포주소** : <https://study-in.netlify.app/>
-
-## 1. Study-In Service
-
-스터디인 서비스는 함께 공부할 스터디 멤버를 찾는 사람들에게 아주 유익한 스터디 매칭 플랫폼입니다.
+> **사용자의 성향과 목표를 AI로 분석하여 최적의 스터디 그룹을 연결해주는 플랫폼**
 
 ---
 
-### 1-1. 기업 프로젝트 배경
+## 1단계: 프로젝트 요약 (The Hook)
+
+## 1. 프로젝트 개요
+
+| 항목 | 내용 |
+| :--- | :--- |
+| **프로젝트명** | Study-In (스터디-인) |
+| **개발 기간** | 2026.02.24 ~ 2026.03.13 (약 3주) |
+| **개발 인원** | Front-end 6명 (Team Project) |
+| **배포 주소** | <https://study-in.netlify.app/> |
+
+---
+
+## 2. 프로젝트 소개
+
+### 2-1. 기업 프로젝트 배경
 
 본 프로젝트는 **(주)위니브(WENIV)**에서 제공한 실무형 API와 피그마 디자인을 기반으로 진행된 기업 연계 프로젝트입니다. </br>
-단순히 기능을 구현하는 것을 넘어, 실제 서비스 환경에서의 확장성 있는 아키텍처 설계와 AI 에이전트를 활용한 개발 생산성 극대화를 목표로 하였습니다.
+단순히 기능을 구현하는 것을 넘어, 실제 서비스 환경에서의 확장성 있는 아키텍처 설계와 AI 에이전트를 활용한 개발 생산성 극대화를 목표로 하였습니다. </br>
 
 ---
 
-### 1-2. 개발 목적
-- ### 학습 격차 해소
-  온/오프라인 스터디를 효율적으로 매칭하여 학습자 간의 정보 비대칭을 해결합니다.
-- ### AI 기반 자동화
-  ChatGPT API를 활용하여 번거로운 커리큘럼 작성을 자동화함으로써 사용자 경험(UX)을 혁신합니다.
-- ### 실시간 소통
-  WebSocket 기반의 실시간 채팅으로 커뮤니티 활성도를 높입니다.
+### 2-2. 개발 목적
 
-### 1-2. 기능
+#### 1. **학습 격차 해소** 
+- 온/오프라인으로 수준별 맞춤 매칭을 통한 효율적인 학습 지원해 학습자 간의 정보 비대칭 해결
+#### 2. **AI 기반 자동화** 
+- ChatGPT API를 활용하여 번거로운 커리큘럼 작성을 자동화함으로써 사용자 경험(UX) 향상
+#### 3. **실시간 소통** 
+- WebSocket 기반의 실시간 채팅으로 커뮤니티 활성도 높임
 
-- 원하는 주제와 난이도의 스터디를 개설할 수 있습니다.
-- 참가 인원이나 구성 요건 등을 정하여 효율적인 학습 활동을 할 수 있습니다.
-- 스터디를 직접 생성하여 스터디장이 되어 멤버를 모집할 수 있습니다.
-- 관심 있는 스터디에 참가하여 함께 공부할 수도 있습니다.
-- 스터디 상세 페이지에서는 스터디 정보, 일정, 참가자 목록 등을 확인할 수 있으며, 댓글을 통해 스터디장과 소통이 가능합니다.
-- 참가한 스터디 내 채팅방에서 실시간으로 멤버들과 대화를 나눌 수 있습니다. 또한 스터디 참가, 댓글 등의 활동에 대한 알림을 받아볼 수 있습니다.
-- 마음에 드는 스터디를 발견했다면 좋아요를 눌러 저장해두고, 검색 기능을 통해 더 쉽고 빠르게 원하는 조건의 스터디를 찾아볼 수도 있습니다.
+---
 
-## 2. 기술 스택(Tech Stack)
+### 2-3. 프로젝트 목표
 
-| 이름 | 역할 | 담당 기능 및 문제 해결 (Task) |
+#### 1. **완성도 높은 UI/UX 구현**
+- 제공된 피그마(Figma) 디자인 시스템을 기반으로 모든 페이지의 UI를 정밀하게 구현
+- 웹/모바일 등 다양한 환경에서 최적화된 사용자 경험을 제공
+#### 2. **견고한 인증 체계 구축:**
+- JWT(JSON Web Token) 기반 인증 방식을 도입하여 보안 강화
+- 회원가입 및 프로필 설정 여부에 따라 준회원과 정회원의 권한을 명확히 분리하여 관리
+#### 3. **안정적인 데이터 및 상태 관리 구현:**
+- 스터디의 CRUD(생성, 조회, 수정, 삭제) 및 댓글, 좋아요 등 핵심 기능을 유기적으로 연동
+- 실시간 채팅 및 알림 등 복잡한 서버 상태를 효율적으로 관리하여 끊김 없는 서비스 제공
+#### 4. **AI 연동을 통한 개인화된 큐레이션 서비스 제공:**
+- 위니브 Chat GPT API를 활용하여 스터디 특성에 맞는 주차별 커리큘럼 및 소개글 자동 생성
+- 가입 시 진행되는 성향 테스트 결과를 바탕으로 사용자의 학습 습관과 목표를 데이터화하여 관리
+
+---
+
+### 2-4. 주요 기능 (Key Features)
+
+| 분류 | 핵심 기능 | 상세 내용 | 관련 기술 (API/Spec) |
+| :--- | :--- | :--- | :--- |
+| **AI 스마트 생성** | **AI 콘텐츠 자동 생성** | 스터디 정보(제목, 주제, 난이도, 기간 등)를 기반으로 **AI가 커리큘럼 및 소개글을 실시간 스트리밍 방식**으로 생성합니다. | 위니브 Chat GPT API 연동 |
+| **정교한 검색** | **스터디 매칭 & 필터** | 온/오프라인 여부, 지역(17종), 주제(8종), 난이도(3종), 요일 등 상세 필터를 통해 사용자 맞춤형 스터디를 탐색합니다. | Query Parameters 기반 필터링 |
+| **실시간 소통** | **WebSocket 채팅** | 스터디 멤버 전용 공간에서 **WebSocket**을 통해 텍스트, 이미지, 파일을 실시간으로 공유하며 유기적으로 협업합니다. | wss 프로토콜 & JWT 인증 |
+| **권한 관리** | **회원 등급 시스템** | 이메일 인증 가입 시 **준회원**이 되며, 프로필 설정(이름, 번호 고유값 등) 완료 시 **정회원**으로 승급되어 모든 기능을 사용합니다. | JWT 기반 인증 & 프로필 API |
+| **상호작용** | **실시간 알림** | 내 스터디의 참가 신청, 댓글 및 대댓글 발생 등 **주요 이벤트**에 대해 실시간 알림을 생성하고 관리합니다. | REST API 기반 알림 시스템 
+| **커뮤니티** | **소셜 기능** | 스터디 상세 페이지 내 **댓글 / 대댓글 작성**, 신고하기, 관심 있는 스터디 **좋아요** 저장 기능을 제공합니다. | 좋아요 & 신고/댓글 API |
+
+---
+
+### 2-5. **주요 기능 시연**
+
+| AI 커리큘럼 생성 | 스터디 검색 및 상세 필터 | 실시간 채팅 및 시스템 알림 |
+| :---: | :---: | :---: |
+| ![AI 생성 시연](https://via.placeholder.com/350x220?text=AI+Streaming+Preview) | ![검색 필터 시연](https://via.placeholder.com/350x220?text=Search+Filter+Preview) | ![채팅 알림 시연](https://via.placeholder.com/350x220?text=Chat+WebSocket+Preview) |
+| **AI 스트리밍 UI**<br>입력 데이터에 반응하여<br>커리큘럼이 실시간 생성됩니다. | **다중 조건 검색**<br>지역 및 주제별 필터로<br>맞춤형 스터디를 탐색합니다. | **실시간 소통 환경**<br>WebSocket 기반 채팅과<br>즉각적인 활동 알림을 제공합니다. |
+
+| 회원 등급 온보딩 | 스터디 관리 (CRUD) | 소셜 및 상호작용 |
+| :---: | :---: | :---: |
+| ![등급 시스템 시연](https://via.placeholder.com/350x220?text=Grade+System+Preview) | ![CRUD 시연](https://via.placeholder.com/350x220?text=Study+CRUD+Preview) | ![소셜 기능 시연](https://via.placeholder.com/350x220?text=Social+Interaction+Preview) |
+| **준회원 → 정회원 승급**<br>프로필 완성도에 따른<br>권한 제어를 시연합니다. | **스터디 라이프사이클**<br>스터디 생성부터 수정, 삭제까지<br>원활한 관리를 지원합니다. | **커뮤니티 활성화**<br>댓글 소통과 좋아요를 통한<br>북마크 기능을 보여줍니다. |
+
+---
+
+## 2단계: 기술적 역량 (The Tech)
+
+## 1. 기술 스택 (Tech Stack)
+| 역할 | 기술 | 기능 및 선정 이유 |
 | :--- | :--- | :--- |
-| **강수민** | **Leader / Infra** | JWT 인증 시스템(Interceptor), WebSocket 채팅 엔진 구축, 전역 상태(Zustand) 설계 |
-| **강주현** | **AI / Search** | AI 연동 파이프라인(ChatGPT API), 다중 필터링 검색 로직 구현 |
-| **최서원** | **Common UI** | 공통 모달/레이아웃 시스템, 알림(Notification) 서비스, 이미지 최적화 처리 |
-| **강수정** | **Feature CRUD** | 스터디 상세 페이지(조회/참여/탈퇴), 좋아요 기능 및 데이터 정합성 관리 |
-| **권하리** | **UI / Flow** | 메인 피드 및 페이지네이션, 검색어 하이라이팅 처리, 채팅 UI 인터렉션 |
-| **박외숙** | **MyPage / Home** | 배너 캐러셀(Carousel), 마이페이지(프로필/관심스터디), 회원 등급 전환 로직 |
+| **Core** | <img src="https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"> <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"> | 컴포넌트 기반 SPA 개발 및 정적 타입 안정성을 확보하여 6인 협업 시 발생할 수 있는 런타임 에러를 방지 |
+| **Build Tool** | <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"> | Webpack 대비 월등히 빠른 HMR(Hot Module Replacement)과 번들링 최적화를 통해 개발 생산성을 극대화 |
+| **API Comm.** | <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"> | 인터셉터(Interceptor) 기능을 활용하여 모든 요청에 **JWT를 자동 주입**하고, 토큰 만료 시 갱신 로직을 공통화 |
+| **Routing** | <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white"> | SPA 환경에서 중첩 라우팅을 구현하고, **준회원/정회원 권한**에 따른 Public/Private Route 접근 제어를 설계 |
+| **Styling** | <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white"> | 유틸리티 퍼스트 기반 디자인 시스템을 구축하여, 별도의 CSS 컨벤션 논의 없이도 일관된 UI를 빠르게 구현 |
+| **State** | <img src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white"> | Redux 대비 가벼운 보일러플레이트로 인증 상태, 알림, 모달 등 전역 상태를 직관적으로 관리 |
+| **Real-time** | <img src="https://img.shields.io/badge/WebSocket-010101?style=for-the-badge&logo=socket.io&logoColor=white"> | 스터디 멤버 간의 **실시간 채팅 및 시스템 알림**을 지연 없이 처리하기 위해 양방향 통신 환경을 구축 |
+| **Backend** | <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"> | 프론트엔드와 동일한 JavaScript 언어 환경에서 서버와의 데이터 인터페이스를 최적화 |
+| **AI Integration**| <img src="https://img.shields.io/badge/ChatGPT_API-412991?style=for-the-badge&logo=openai&logoColor=white"> | 위니브 AI API를 연동하여 **커리큘럼 및 소개글 자동 생성** 기능을 구현했으며, 스트리밍 처리를 통해 UX를 개선 |
+| **Collaboration**| <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> | Git-flow 전략을 통한 코드 협업과 Figma 디자인 시스템 준수로 기획부터 개발까지의 간극을 최소화 |
+| **Deploy** | <img src="https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white"> | CI/CD 파이프라인을 구축하여 코드 수정 시 자동으로 배포되는 환경을 조성하고 SPA 정적 호스팅을 최적화 |
 
 ---
 
-<br><br>
+## 2. 서비스 아키텍쳐
 
-## 3. Study-In Features
-
-<br>
-
-| Core Features                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | UI / UX Features                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Highlighted Features                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[스터디 관리]**<br>- 스터디 생성 / 수정 / 삭제 <br> - 스터디 상세 정보 조회 <br>**[스터디 참여]**<br>- 스터디 참가/ 탈퇴 <br>- 모집 상태 표시 <br>**[스터디 탐색]** <br>- **카테고리 기반 스터디 필터링**<br>- **지역 / 온라인 스터디 분류**<br>- 스터디 목록 조회<br>**[커뮤니케이션]**<br>- 스터디 게시글 댓글 작성<br>- **WebSocket 기반 실시간 채팅**<br>**[AI 지원 기능]**<br>- **AI 기반 스터디 커리큘럼 자동 생성**<br>- **AI 기반 스터디 소개글 자동 생성**<br>**[사용자 관리]**<br>- 프로필 조회 및 수정<br>- 사용자 정보 관리<br>**[인증 시스템]**<br>- **JWT 기반 로그인 인증** | **[메인배너 Carousel]**<br>- 메인 페이지 이벤트 배너<br>- 자동 슬라이드 전환<br>- 페이지 인디케이터 제공<br>**[반응형 레이아웃]**<br>- 모바일 / 태블릿 / 데스크톱 대응<br>- **스터디 카드 반응형 그리드 레이아웃**<br>**[스터디 카드 UI]**<br>- 스터디 정보 요약 카드<br>- 모집 상태 배지 표시<br>- 온라인 / 오프라인 상태 표시<br>**[페이지 라우팅]**<br>- 스터디 카드 클릭 시 **상세 페이지 이동**<br> - Local / Online 페이지 라우팅 <br><br><br><br><br><br><br> | **[카테고리 기반 스터디 필터링]** <br>- 카테고리로 필터링 기능으로 관심 있는 분야의 스터디를 빠르게 검색 <br>**[반응형 스터디 카드 레이아웃]**<br>- 이용 환경에 맞게 스터디 카드가 자동으로 재배치되는 반응형 그리드 레이아웃을 구현<br>**[메인 배너 Carousel]**<br> - 메인 페이지 3개의 배너로 Carousel UI를 구현<br>**[스터디 상태 표시]**<br> - 모집 상태와 온라인 / 오프라인 여부를 배지 형태로 표시<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br> |
-
----
-
-<br><br>
-
-## 4. 프로젝트 관리
-
-### 4. 1 개발 일정 (WBS)
+### 2-1. FE 구조도
 
 ```mermaid
-%%{init: { 'gantt': { 'barHeight': 30, 'fontSize': 10, 'sectionFontSize': 10, 'barGap': 0 } } }%%
-gantt
-    title Study-In 플렛폼 개발 계획 (2/24 ~ 3/13)
-    dateFormat YYYY-MM-DD
-    axisFormat %m-%d
+graph TD
+    App[App / Layout] --> Router[React Router / Auth Guard]
+    
+    Router --> Landing[Landing Page]
+    Router --> Auth[Auth Pages]
+    Router --> Main[Main Feed Page]
+    Router --> StudyDetail[Study Detail Page]
+    Router --> Profile[Profile Page]
+    
+    subgraph "Features (Action Units)"
+        Auth --> Login[Login / Join Form]
+        Main --> StudySearch[Search & Filter Bar]
+        StudyDetail --> AIContent[AI Curriculum / Intro Generator]
+        StudyDetail --> Chat[WebSocket Chat Room]
+        StudyDetail --> Participation[Study Participate / Leave]
+        StudyDetail --> Comment[Comment / Recomment System]
+    end
 
-    section 초기 세팅
-        환경 설정 (파일트리/CSS)       :2026-02-24, 3d
-        업무 분담    ::2026-02-24, 2d
+    subgraph "Shared Widgets (Common)"
+        Header[Global Header / Nav]
+        Banner[Main Banner Carousel]
+        StudyCard[Study Card Item]
+        Modal[Common Modal / Toast]
+    end
 
-    section Basic UI
-        페이지 제작(HTML/CSS)            :2026-02-24, 7d
-        페이지에 핵심 로직 추가      :2026-02-24, 5d
-        전체적인 코드 리뷰               :2026-02-28, 3d
-
-    section Extended UI
-        페이지 구현          :2026-02-24, 10d
-        공통 요소 리팩토링            :2026-02-27, 7d
-
-    section 통합/QA
-        전체 점검 및 QA               :2026-02-28, 1d
-        1차배포 확인 및 수정              :2026-03-10, 2d
-        문서 보완(README)             :2026-03-08, 5d
-        2차배포 확인 및 수정              :2026-03-11, 2d
+    subgraph "Global State & API"
+        Zustand[(Zustand: Auth / User / Notification)]
+        Axios[[Axios: JWT Interceptor / REST API]]
+        WS[[WebSocket: Real-time Communication]]
+    end
 ```
 
-<br>
+### 2-2. 데이터 흐름도
 
-### 4. 2 개발 작업 과정
+#### 1. **회원가입 및 권한 승급 흐름 (Onboarding Flow)**
 
-### 4. 2. 1 사전 기획 및 요구사항 분해
+- 준회원에서 정회원으로 승급되어 스터디 기능을 활성화하는 논리적 흐름
 
-- #### WBS 기반의 체계적인 업무 분배 및 난이도 조절
+```mermaid
+sequenceDiagram
+    participant U as 사용자 (Front)
+    participant A as 인증 API (/accounts)
+    participant P as 프로필 API (/profiles)
+    participant D as DB
 
-- #### WBS (Work Breakdown Structure)를 통한 구조적 설계
+    U->>A: 1. 이메일 인증 (코드: 123456 고정) 
+    U->>A: 2. 회원가입 요청 (이메일, 비밀번호) 
+    A->>D: 준회원 상태로 계정 생성 
+    U->>A: 3. 로그인 (JWT 발급: Access 1h / Refresh 7h) 
+    U->>P: 4. 프로필 등록 (이름, 닉네임, 전화번호 필수) 
+    P->>D: 고유값 검증 및 정회원 전환 
+    Note right of U: 이제 스터디 생성 및 참가 가능 
+```
 
-&nbsp;&nbsp;&nbsp;프로젝트 초기 단계에서 **WBS(Work Breakdown Structure)** 를 꼼꼼하게 작성하여 전체 개발 범위를 세분화했습니다.
-저희 팀은 전공자(경험자)와 비전공자(초심자)가 함께하는 구성이이므로 **각 팀원의 코드 작성 역량과 기술적 이해도를 객관적으로 파악하여 업무를 분배**하는 것에 가장 큰 중점을 두었습니다.<br><br>
+#### 2. **AI 콘텐츠 생성 흐름 (AI Integration Flow)**
+
+- 사용자 입력에 따라 실시간으로 커리큘럼을 생성하고 UI에 스트리밍하는 과정
+
+```mermaid
+sequenceDiagram
+    participant U as 사용자 UI
+    participant F as 프론트엔드 Logic
+    participant AI as 위니브 AI API
+    
+    U->>F: 스터디 정보 입력 (제목, 난이도 등) 
+    F->>F: 필수 값 유효성 검사 
+    F->>AI: AI 커리큘럼/소개글 생성 요청 
+    AI-->>F: Chunk 단위 스트리밍 응답 전송 
+    F-->>U: 실시간 텍스트 렌더링 (스켈레톤 UI) 
+    U->>F: 수정 및 최종 반영 
+```
+
+#### 3. **스터디 참가 및 실시간 알림 흐름 (Interaction Flow)**
+
+- 참가 신청 시 발생하는 DB 업데이트와 웹소켓 시스템 메시지 흐름
+
+```mermaid
+sequenceDiagram
+    participant P as 참가자 (Client)
+    participant S as 서버 (API)
+    participant WS as WebSocket Server
+    participant L as 스터디장 (Client)
+
+    P->>S: 스터디 참가 요청 (POST /participate/) 
+    S->>S: 정회원 여부 및 인원 초과 확인
+    S->>WS: 참가 알림 이벤트 발생
+    WS-->>L: 실시간 알림 푸시 (PARTICIPATION)
+    WS-->>P: 채팅방 입장 및 시스템 메시지 전송
+```
+
+#### 4. **실시간 채팅 통신 흐름 (WebSocket Flow)**
+
+- 보안을 고려한 JWT 인증 기반의 실시간 채팅 데이터 흐름
+
+```mermaid
+sequenceDiagram
+    participant C as 클라이언트
+    participant W as WebSocket (wss)
+    participant S as 파일 스토리지
+
+    C->>W: 1. 연결 요청 (URL에 JWT 토큰 포함) [cite: 94, 229]
+    W->>W: 2. 토큰 및 스터디 멤버 여부 검증 [cite: 103, 226]
+    W-->>C: 3. 연결 성공 (connection_success) [cite: 270]
+    Note over C,W: 텍스트/이미지/파일 메시지 교환 [cite: 93]
+    C->>S: (이미지/파일 전송 시) 파일 선업로드 [cite: 107, 108]
+    S-->>C: URL 반환
+    C->>W: 이미지/파일 URL 전송 [cite: 276, 278]
+```
 
 ---
 
-|    대분류 (Depth 1)    | 중분류 (Depth 2)  |                    세부 작업 내용 <br> (Depth 3)                    | 담당자 |         의존성 / <br>연관 파트          | 구분 |
-| :--------------------: | :---------------: | :-----------------------------------------------------------------: | :----: | :-------------------------------------: | :--: |
-| **0. 공통 <br>인프라** | 네트워크<br>/통신 |          JWT 관리 및 Axios 인터셉터 (토큰 자동 주입/갱신)           |   E1   |         전 파트 API 통신에 필수         | 필수 |
-|                        |    UI/UX 기반     |      글로벌 레이아웃(Header, Footer) 및 공통 모달 시스템 구축       |   E3   |            전 파트 화면 뼈대            | 필수 |
-|                        |     유틸리티      | 파일/이미지 업로드 API 유틸리티화 (5MB 제한, 이미지 900px 리사이징) |   E3   | 주현(썸네일), B3(프로필), E1(채팅) 사용 | 필수 |
-|  **1. 회원<br>/인증**  |      로그인       |     SNS 로그인(마크업만) 및 이메일 로그인 UI/로직 (유효성 검사)     |   E1   |                    -                    | 필수 |
-|                        |     회원가입      |       이메일 인증 (코드 123456 고정), 비밀번호 유효성 검사 폼       |   E1   |                    -                    | 필수 |
-|                        |    초기 프로필    | 최초 가입 시 프로필 설정 화면 (이름, 폰번호, 사진, 닉네임, 지역 등) |   E1   |       E3(이미지 업로드) 함수 필요       | 필수 |
-| **2. 마이<br>페이지**  |    프로필 조회    |          본인(이름, 폰번호 포함) / 타인 프로필 구분 렌더링          |   B2   |          E1(로그인 상태) 필요           | 필수 |
-|                        |    프로필 수정    |             프로필 수정 폼 및 닉네임 중복 확인 API 연동             |   B2   |       E3(이미지 업로드) 함수 필요       | 필수 |
-|  **3. 메인 <br>피드**  |    스터디 목록    |     스터디 카드 UI 및 메인 목록 조회 (Limit, Skip 페이지네이션)     |   B2   |                    -                    | 필수 |
-|                        |   배너/필터 UI    |    상단 배너 컴포넌트 및 검색/필터 영역 UI (기능 없이 마크업만)     |   B2   |                    -                    | 필수 |
-|   **4. 스터디 관리**   |    스터디 생성    |   생성 폼 UI 및 필수 입력값(모집인원, 온/오프라인 등) 유효성 검사   |   E2   |       E3(이미지 업로드) 함수 필요       | 필수 |
-|                        |      AI 연동      |    ChatGPT API 활용 커리큘럼/소개글 자동 생성 (스트리밍/로딩 UI)    |   E2   |       스터디 생성 폼 내부에 부착        | 필수 |
-|                        |   수정 및 삭제    |      스터디 수정(인원 축소 방지 로직) 및 삭제 기능 (모달 연동)      |   E2   |           E3(공통 모달) 필요            | 필수 |
-|   **5. 스터디 상세**   |    상세 렌더링    |         스터디 정보 렌더링 및 그룹장 프로필 이동 링크 연결          |   B1   |         E2이 생성한 데이터 기반         | 필수 |
-|                        |     참가/탈퇴     |            참가/탈퇴 로직 (정회원 체크, 인원 제한 체크)             |   B1   |     E1(채팅방 시스템 메세지) 트리거     | 필수 |
-|                        |   좋아요(기본)    |         시각적 좋아요(하트 토글) UI 상태 변경 (API 연동 X)          |   B1   |                    -                    | 필수 |
-|   **6. 스터디 소통**   |    댓글 (기본)    |        스터디 상세 페이지 하단 단일 댓글 CRUD (정회원 전용)         |   E3   |       B1(상세 페이지) 하단에 부착       | 필수 |
-|  **7. 공통 <br>모달**  |    더보기 버튼    | 헤더(로그아웃 등), 상세페이지/댓글(수정, 삭제, 신고) 모달 분기 처리 |   E3   |       전 파트 모달 트리거에 적용        | 필수 |
-|   **8. 심화 (선택)**   | 채팅 (Websocket)  |   채팅방 웹소켓 연결, 텍스트/이미지/파일 전송, 시스템 메세지 처리   |   E1   |   B1(참가/탈퇴 시 시스템 메세지 연동)   | 선택 |
-|                        |      채팅 UI      |           채팅방 레이아웃 마크업 및 메시지 말풍선 UI 지원           |   B2   |         E1(웹소켓 로직)과 연결          | 선택 |
-|                        |  검색/필터 심화   |            다중 쿼리 파라미터 조합 API 연동 및 상태 관리            |   E2   |           B2(검색 UI)과 연결            | 선택 |
-|                        |     UI 고도화     |           검색어 일치 부분 강조 표시 (Highlighting) 적용            |   B2   |        E2(검색 API 데이터) 활용         | 선택 |
-|                        |    댓글 고도화    |          대댓글(트리 구조), 유저 태그, 비밀 댓글 로직 처리          |   E3   |     B1(상세 페이지) 댓글 기능 대체      | 선택 |
-|                        |    알림 시스템    |     참가, 댓글, 대댓글 발생 시 알림 생성 및 헤더 읽음/삭제 처리     |   E3   |   헤더(공통 UI)에 알림 드롭다운 추가    | 선택 |
-|                        |   좋아요 고도화   |    실제 좋아요 API 연동 및 마이페이지 내 '관심 스터디 목록' 구현    |   B1   |        B3(마이페이지) 내 탭 추가        | 선택 |
-|                        |    신고 시스템    |      스터디, 사용자, 댓글에 대한 공통 신고하기 API 및 폼 구현       |   B2   |          E3(공통 모달)에 부착           | 선택 |
+## 3. AI 모델 연동 방식 (주현님 작성 필요)
+
+사용자가 입력한 데이터를 바탕으로 최적의 스터디 컨텐츠를 생성하기 위해 Sequential Stream Generation 구조를 설계
+
+### **Prompt Engineering & Architecture**
+
+#### **Structured Context** <br>
+- AiContext 인터페이스를 통해 입력 데이터(제목, 주제, 난이도 등)의 타입을 강제 <br>
+- buildMessages() 함수를 통해 OpenAI Chat Completions 규격에 맞춘 메시지 배열을 동적으로 생성 <br>
+
+#### **Role-Based Prompts** <br>
+- 목적에 따른 페르소나 분리 및 최적화
+
+#### **커리큘럼 생성** <br>
+- "스터디 설계 전문가" — 주차별(Week) 학습 목표 및 커리큘럼 구조화
+
+#### **소개글 생성** <br>
+- "소개글 작성 전문가" — 생성된 커리큘럼을 컨텍스트로 주입하여 내용의 일관성(Consistency) 확보
+
+### **Sequential AI Generation (순차적 생성 공정)**
+
+- 단순 호출이 아닌, 데이터 간의 의존성을 고려한 순차적 흐름을 제어
+
+#### **Dependency Check** <br>
+- 소개글 생성 요청 시 커리큘럼 존재 여부 확인
+
+#### **Auto-Chaining** <br>
+- 커리큘럼이 없으면 **[커리큘럼 생성 → 결과 주입 → 소개글 생성]** 의 파이프라인 가동
+
+#### **Context Injection** <br>
+- 이미 작성된 커리큘럼이 있다면 이를 참고하여 맥락에 맞는 소개글을 즉시 생성
+
+### **Streaming UI & UX Optimization**
+
+- 네트워크 대기 시간을 체감적으로 줄이고 시각적 피드백을 강화
+
+#### **Dual-Path Streaming** <br>
+- **SSE(Server-Sent Events):** ReadableStream을 통해 choices[0].delta 청크를 실시간 파싱하여 폼 필드 업데이트
+- **Fallback Typewriter:** 일반 JSON 응답 시 simulateStream() 함수를 통해 4글자씩 점진 노출(20ms 간격)하여 일관된 UX 제공
+
+#### **Safety Confirm UX:** 
+- 기존 데이터 덮어쓰기 방지 컨펌 모달 제공
+- 상태별 버튼 UI 전환 
+    - 최초 생성: ✨스파크 아이콘 / 재성성: 🔄아이콘 / 진행중: ⏳스피너
+
+## 4. 디자인 시스템 (Design System)
+
+### **Style Guide & Tailwind Config**
+
+- 팀원 간의 일관된 UI 구현을 위해 tailwind.config.js를 통해 디자인 토큰을 공통 변수화 <br>
+
+#### 1. **프레임워크 버전 선택 (Tailwind CSS v3)** <br>
+
+- 최신 버전인 v4 대신 v3를 채택하여 프로젝트 진행 <br>
+- 4에서 공통 변수 지정 및 테마 확장 방식이 변경됨에 따라 발생할 수 있는 팀원 간의 설정 혼선을 방지하고, 모두가 동일하고 안정적인 개발 환경에서 협업하기 위함 <br>
+
+#### 2. **레이아웃 시스템** <br>
+
+- 모바일/태블릿 전환 기준(md: 834px)과 웹 컨텐츠 최대 너비(lg: 1190px)를 사전에 정의하여 반응형 대응을 표준화 <br>
+
+#### 3. **Typography** <br>
+
+- Spoqa Han Sans Neo를 메인 폰트로 설정 <br>
+- 7단계의 폰트 사이즈와 3단계의 굵기(400, 500, 700)를 변수화하여 가독성 높임 <br>
+
+#### 4. **Color Palette** <br>
+- 서비스의 정체성을 나타내는 Primary(#2E6FF2) 색상을 필두로, 에러(FF3440), 경고(FFC533), 그리고 5단계의 그레이스케일을 지정하여 코드의 재사용성을 극대
+
+### **Common Components** 
+- src/components 폴더 내에 공통 컴포넌트를 구축하여 UI 일관성을 유지하고 중복 코드를 최소화
+
+#### 1. **common/ (원자 단위 컴포넌트)**
+
+- **Button.tsx, Input.tsx** <br>
+서비스 전반에서 사용되는 핵심 인터랙션 요소 <br>
+다양한 상태(Hover, Active, Disabled)를 공통으로 관리 <br>
+
+- **Modal.tsx, ReportModal.tsx, UserInfoModal.tsx** <br>
+명세서에 명시된 신고 기능 및 프로필 확인 기능을 위해 범용 모달 시스템을 구축 <br>
+
+- **Snackbar.tsx, Spinner.tsx** <br>
+AI 콘텐츠 생성 시의 로딩 상태나 사용자 피드백(알림)을 시각적으로 전달하는 공통 UI <br>
+
+2. **layout/ (구조 단위 컴포넌트)** <br>
+
+- **Header.tsx, Footer.tsx**
+전역 내비게이션과 푸터를 공통화하여 페이지 전환 시에도 사용자 경험을 유지 <br>
+
+- **AuthLayout.tsx, ChatLayout.tsx**
+로그인/회원가입의 인증 절차와 실시간 채팅을 위한 전용 레이아웃을 분리하여 설계 <br>
+
+- **MobileDrawer.tsx** 
+모바일 환경에서의 내비게이션 편의성을 위해 드로어 컴포넌트를 별도로 관리
 
 ---
- <div align="right"><b>*</b>&nbsp;&nbsp; E1 강수민 &nbsp;&nbsp; E2 강주현 &nbsp;&nbsp; E3 최서원 &nbsp;&nbsp; B1 강수정 &nbsp;&nbsp; B2 권하리 &nbsp;&nbsp; B3 박외숙</div> |
 
+## 3단계: 프로젝트 관리 & 설계 (The Process)
 
-- #### 전공자 / 경험자 역할 (Core & Infrastructure)
+## 1. 프로젝트 관리
 
-초기 아키텍처 세팅, Axios 인터셉터(JWT 토큰 자동 갱신), 웹소켓(실시간 채팅), TypeScript 공통 타입 정의 등 난이도가 높은 코드
-다른 도메인에 의존성을 많이 주는 '공통 인프라' 및 '심화 기능'을 주로 담당
+### 1-1. 팀원들 역할 분담
 
-&nbsp;&nbsp; **--> 프로젝트의 뼈대를 견고하게 잡았습니다.**
+- 6명의 프론트엔드 개발자가 도메인별로 책임을 나누어 개발을 진행 <br>
+- 공통 유틸리티와 전역 상태를 공유하여 효율적으로 협업 <br>
 
-- #### 비전공자 / 초심자 역할 (UI/UX & Feature CRUD)
+| 이름 | 역할 | 담당 업무 (R&R) | 연관(의존) 파트 |
+| :---: | :---: | :--- | :--- |
+| **수민** | **Auth & Real-time** | • **인증/인가**: JWT 기반 로그인/회원가입 및 Axios 인터셉터 설정 <br> • **온보딩**: 이메일 인증(코드 123456)부터 프로필 설정 플로우 담당 <br> • **실시간 채팅**: **WebSocket** 기반 실시간 채팅방 및 메시지 타입 처리 | 프로젝트 전체의 '로그인 상태'를 관리하여 모든 팀원에게 데이터 제공 |
+| **주현** | **Study & AI Search** | • **스터디 관리**: 스터디 CRUD 및 3명~99명 모집 인원 유효성 관리 <br> • **AI 연동**: ChatGPT API 스트리밍 응답 기반 커리큘럼/소개글 자동 생성 <br> • **심화 탐색**: 쿼리 파라미터를 활용한 **다중 필터링** 및 검색 기능 구현 | 생성된 스터디 데이터를 상세 페이지(수정) 및 메인 피드(외숙)와 연결 |
+| **서원** | **Infrastructure & Social** | • **기초 공사**: 글로벌 모달 시스템 및 헤더/푸터 공통 레이아웃 설계 <br> • **커뮤니티 고도화**: **대댓글(태그 기능)** 및 비밀 댓글 로직 처리 <br> • **알림 시스템**: 스터디 참가/댓글 발생 시 **실시간 알림(Notification)** 구축 | 파일 업로드 유틸리티를 팀원(주현, 하리)에게 배포 및 헤더 내 알림 연동 |
+| **수정** | **Contents & Interest** | • **상세 페이지**: 스터디 정보 렌더링 및 참가/탈퇴 시스템 메시지 연동 <br> • **관심 서비스**: **좋아요 API** 연동(토글) 및 마이페이지 내 관심 목록 구현 <br> • **UI 인터랙션**: 하트 버튼의 시각적 상태 변화 및 스터디장 프로필 링크 연결 | 서원이 만든 댓글 컴포넌트를 상세 페이지에 부착 및 좋아요 상태 공유 |
+| **하리** | **Profile & Report** | • **사용자 도메인**: 본인/타인 프로필 조회 구분 및 닉네임 중복 체크 API 연동 <br> • **프로필 관리**: **준회원→정회원 승급** 조건(필수값 입력) 및 정보 수정 구현 <br> • **신고 시스템**: 스터디/유저/댓글 대상 **공통 신고 모달 폼** 구축 | 서원의 업로드 함수로 프로필 사진 처리 및 공통 신고 시스템 팀 내 배포 |
+| **외숙** | **Main Feed & Highlighting** | • **메인 인프라**: 홈 화면 카드 UI 및 **페이지네이션(Limit/Skip)** 데이터 로드 <br> • **UI 고도화**: 검색어 일치 부분 **강조 표시(Highlighting)** 및 배너 연동 <br> • **레이아웃 지원**: 수민의 채팅방 마크업 지원 및 검색 결과 필터 UI 최적화 | 주현이 설계한 다중 쿼리 API 데이터를 받아 메인 검색 결과 화면 렌더링 |
 
-공통 레이아웃 마크업, 마이페이지, 스터디 피드 렌더링 등 직관적으로 화면 변화를 확인하며 React 컴포넌트 생태계에 적응할 수 있는 도메인을 우선 할당
-이후 개발에 익숙해지는 속도에 맞춰 점진적으로 API 연동 및 상태 관리 로직까지 역할을 확대해 나갔습니다.
+---
 
-&nbsp;&nbsp; **--> 맞춤형 업무 분배를 통해 초반 개발 병목 현상을 방지**
+### 1-2. 개발 작업 과정
 
-&nbsp;&nbsp; **---->팀원 모두가 끝까지 프로젝트에 기여하며 동반 성장할 수 있는 환경 형성**
+### 1. **요구사항 분해 및 역할 분배** 
+
+- 프로젝트의 성공적인 완수를 위해 전공자(경험자)와 비전공자(초심자)의 기술적 이해도를 고려한 전략적 요구사항 분해를 실시 <br>
+- 단순히 기능을 나누는 것에 그치지 않고, 각 기능의 의존성(Dependency)과 구현 난이도를 분석하여 팀원 모두가 성장하며 병목 현상 없이 개발에 집중할 수 있도록 설계
+
+**Core & Infrastructure (전공자/경험자 중심)**
+
+- 초기 아키텍처 세팅 및 Axios 인터셉터(JWT 자동 주입/갱신) 등 프로젝트의 기반 설계
+- 웹소켓(실시간 채팅), AI 스트리밍 UI 등 난이도가 높은 심화 기능을 선행 개발하여 팀원들에게 공통 모듈 제공.
+- **성과:** 프로젝트의 뼈대를 견고하게 잡아 기술적 결함을 최소화
+
+**Feature & UI/UX (비전공자/초심자 중심)**
+
+- 컴포넌트 기반 SPA 개발 방식에 적응할 수 있도록 직관적인 UI 렌더링 및 CRUD 도메인을 우선 
+- 할당.공통 레이아웃, 마이페이지, 스터디 피드 등 화면 변화를 즉각적으로 확인할 수 있는 파트부터 시작하여 점진적으로 API 연동으로 확대
+- **성과:** 초반 개발 진입 장벽을 낮추어 팀원 모두가 끝까지 기여하는 동반 성장을 이끌어냄
 
 <br>
 
-### 4. 2. 2 팀 협업 가이드 및 프로젝트 컨벤션 초기 설계
+---
 
-- **커밋 및 브랜치 규칙 :** `feat:`, `fix:`, `design:` 등 직관적인 커밋 메시지 프리픽스(Prefix)를 도입하여 히스토리 파악을 용이하게 했습니다.
-- **코드 포맷팅 자동화 :** ESLint와 Prettier 설정을 공유하여 6명의 코드 스타일을 하나로 통일했습니다.
-- **PR(Pull Request) 템플릿 도입 :** 리뷰어가 작업 맥락을 빠르게 파악할 수 있도록, PR 생성 시 '작업 내용', 'UI 변경 사항(스크린샷)', '리뷰어에게 남길 말'을 필수적으로 작성하도록 템플릿을 문서화했습니다.
+### **개발 일정 (WBS)**
 
-#### 1. 원격 저장소 folk 후 로컬 저장소 클론
+사전 기획 단계에서 수립한 WBS를 바탕으로 필수 기능과 심화 기능을 구분하여 체계적으로 일정을 관리
 
-<div align="center">
+**1. 공통 및 핵심 기능 (Must-Have)**
 
-```bash
-git folk <https://github.com/Study-In-03/Study-In.git>
-```
+| 대분류 | 중분류 | 세부 작업 내용 (Depth 3) | 담당자 | 의존성 / 연관 파트 | 구분 |
+| :--- | :--- | :--- | :---: | :--- | :---: |
+| **0. 공통 인프라** | 네트워크/통신 | JWT 관리 및 Axios 인터셉터 (토큰 자동 주입/갱신) | **수민** | 전 파트 API 통신 필수 | 필수 |
+| | UI/UX 기반 | 글로벌 레이아웃(Header, Footer) 및 공통 모달 시스템 구축 | **서원** | 전 파트 화면 뼈대 | 필수 |
+| | 유틸리티 | 파일/이미지 업로드 API 유틸리티화 (5MB 제한, 900px 리사이징) | **서원** | 주현, 하리, 수민 공통 사용 | 필수 |
+| **1. 회원/인증** | 로그인 | SNS 로그인(마크업) 및 이메일 로그인 UI/로직 (유효성 검사) | **수민** | - | 필수 |
+| | 회원가입 | 이메일 인증 (코드 123456 고정), 비밀번호 유효성 폼 | **수민** | - | 필수 |
+| | 초기 프로필 | 최초 가입 시 프로필 설정 (이름, 폰번호, 사진, 닉네임 등) | **수민** | 서원(이미지 업로드) 유틸 활용 | 필수 |
+| **2. 마이페이지** | 프로필 조회 | 본인 및 타인 프로필 구분 렌더링 | **하리** | 수민(로그인 상태) 기반 | 필수 |
+| | 프로필 수정 | 프로필 수정 폼 및 닉네임 중복 확인 API 연동 | **하리** | 서원(이미지 업로드) 유틸 활용 | 필수 |
+| **3. 메인 피드** | 스터디 목록 | 스터디 카드 UI 및 메인 목록 조회 (Pagination) | **외숙** | - | 필수 |
+| | 배너/필터 | 상단 배너 및 검색/필터 영역 UI (마크업) | **외숙** | - | 필수 |
+| **4. 스터디 관리** | 스터디 생성 | 생성 폼 UI 및 필수 입력값 유효성 검사 | **주현** | 서원(이미지 업로드) 유틸 활용 | 필수 |
+| | AI 연동 | ChatGPT API 활용 커리큘럼/소개글 자동 생성 (Streaming) | **주현** | 스터디 생성 폼 내 삽입 | 필수 |
+| | 수정/삭제 | 스터디 수정(인원 축소 방지) 및 삭제 기능 (모달 연동) | **주현** | 서원(공통 모달) 활용 | 필수 |
+| **5. 스터디 상세** | 상세 렌더링 | 스터디 정보 렌더링 및 그룹장 프로필 이동 연결 | **수정** | 주현(생성 데이터) 기반 | 필수 |
+| | 참가/탈퇴 | 참가/탈퇴 로직 (정회원/인원 제한 체크) | **수정** | 수민(채팅 시스템 메세지) 트리거 | 필수 |
+| | 좋아요(기본) | 시각적 좋아요(하트 토글) UI 상태 변경 (Local Only) | **수정** | - | 필수 |
+| **6. 스터디 소통** | 댓글 (기본) | 스터디 상세 페이지 하단 단일 댓글 CRUD (정회원 전용) | **서원** | 수정(상세 페이지) 하단 부착 | 필수 |
+| **7. 공통 모달** | 더보기 버튼 | 헤더(로그아웃), 상세/댓글(수정, 삭제, 신고) 모달 분기 | **서원** | 전 파트 모달 트리거 적용 | 필수 |
 
-```bash
-git clone <https://github.com/my-repository/Study-In.git>
-```
+---
 
-</div>
+<br>
 
-#### 2. 패키지 설치
+**2. 심화 및 선택 구현 기능 (Nice-to-Have)**
 
-<div align="center">
+<br>
 
-```bash
-npm install
-```
+| 대분류 | 세부 작업 내용 (Depth 3) | 담당자 | 연관 파트 | 구분 |
+| :--- | :--- | :---: | :--- | :---: |
+| **8. 심화 선택** | 채팅방 웹소켓 연결 및 텍스트/이미지/파일 전송 | **수민** | 수정(참가/탈퇴 메세지) | 선택 |
+| | 채팅방 레이아웃 및 메시지 말풍선 UI | **외숙** | 수민(웹소켓 로직) | 선택 |
+| | 다중 쿼리 파라미터 조합 API 연동 및 상태 관리 | **주현** | 외숙(검색 UI) | 선택 |
+| | 검색어 일치 부분 강조 표시 (Highlighting) | **외숙** | 주현(검색 API 데이터) | 선택 |
+| | 대댓글(트리 구조), 유저 태그, 비밀 댓글 로직 | **서원** | 수정(상세 페이지) | 선택 |
+| | 알림 시스템 (참가, 댓글 발생 시 헤더 알림) | **서원** | 헤더(공통 UI) | 선택 |
+| | 실제 좋아요 API 연동 및 마이페이지 내 관심 목록 | **수정** | 하리(마이페이지) | 선택 |
+| | 스터디, 사용자, 댓글 신고 API 및 폼 구현 | **하리** | 서원(공통 모달) | 선택 |
 
-</div>
+---
 
-#### 3. 환경 변수 설정
+### 2. **협업 컨벤션:**
 
-- .env 파일 생성 후 아래 내용 추가 -> .ignore 파일에 저장
+- **팀 협업 가이드 및 프로젝트 컨벤션 확립** <br>
 
-<div align="center">
+    - 효율적인 협업과 코드 품질 유지를 위해 모든 팀원이 준수해야 할 핵심 가이드라인 확립
 
-```bash
-VITE_API_BASE_URL=https://api.wenivops.co.kr/services/studyin/
-```
+<팀 협업 가이드 및 프로젝트 컨벤션 사진>
 
-</div>
+- **브랜치 전략 작성 및 적용** <br>
 
-#### 4. 실행
+    - 프로젝트의 안정성과 병렬 개발을 위해 Git-flow 모델을 기반으로 운영
 
-<div align="center">
+<브랜치 전략 사진>
 
-```bash
-npm run dev
-```
+- **커밋 메시지 규칙 (Commit Convention) 확립** <br>
 
-</div>
+    - `Prefix: #이슈번호 - 작업내용` 형식 준수 및 Git-flow 적용
 
-<br><br>
+<커밋 메시지 컨벤션 사진>
 
-### 4. 2. 3 일일 스크럼(Daily Scrum)을 통한 실시간 진행 상황 및 블로커(Blocker) 관리
+- **PR(Pull Request) 및 코드 리뷰 프로세스 확립** <br>
 
-- 프로젝트 기간 동안 각 파트의 개발 속도를 맞추고 일정 지연을 방지하기 위해 **일일 스크럼(Daily Scrum)** 체제를 도입
+    - `main` <- `develop` <- `feature/#이슈번호` <br>
+    - 모든 팀원은 PR을 통해 코드에 기여하며, 상호 승인 제도를 운영
 
-- 매일 정해진 시간에 **'어제 완료한 작업, 오늘 진행할 작업, 현재 마주한 문제점(Blocker)'** 을 짧고 명확하게 공유했습니다.
+<상호 승인하는 사진>
 
-- 기술적인 에러나 로직 구현에 어려움을 겪는 팀원이 발생하면, 스크럼 시간에 이를 즉각적으로 파악하여 경험자가 페어 프로그래밍이나 트러블 슈팅을 지원하는 등 유기적으로 대처했습니다.
+**협업 프로세스 흐름도**
+1. **Issue 생성:** 작업 전 GitHub Issues에 태스크 등록 (이슈 번호 생성).
+2. **브랜치 생성:** develop에서 feature/#이슈번호-작업명 분기.
+3. **작업 및 커밋:** 컨벤션에 맞춰 커밋 후 Push.
+4. **PR 생성:** 정해진 템플릿에 맞춰 develop 방향으로 PR 생성.
+5. **코드 리뷰:** 최소 2인 이상의 Approve가 있어야 Merge 가능.
+6. **Merge & 삭제:** 승인 후 병합하며, 사용이 끝난 feature 브랜치는 삭제.
 
-- 스크럼에서 논의된 진행 유무는 즉각적으로 WBS 및 GitHub 프로젝트 보드에 반영되어, 전 팀원이 전체 프로젝트의 실시간 진행도를 투명하게 확인할 수 있었습니다.
-  <br><br><br>
+**PR 작성 템플릿**
 
-### 4. 2. 4 GitHub 협업 프로세스로의 고도화
-
-- #### GitHub Issues & Git-flow를 통한 태스크 트래킹: 팀원 간 병렬로 개발 진행이 가능
+<pr 작성 템플릿 사진>
 
 ```mermade
  graph LR
@@ -245,34 +453,126 @@ npm run dev
             E --3인 이상--> F[ `develop` 브랜치에 병합(Merge) ]
 ```
 
-<br><br><br>
+- **코드 품질 및 자동화 (Code Quality)** <br>
 
-## 5. 주요 화면
+    - 환경 설정 : ESLint와 Prettier 설정을 공유하여 일관된 포맷 유지 <br>
+    - Husky & Lint-staged : 커밋 전 코드 포맷팅 자동 검사를 실시하여 컨벤션을 어긴 코드는 Push를 차단 <br>
+    - 코드 주석 : 복잡하거나 생소한 로직에는 동료 개발자를 위한 상세 주석 작성을 권장 <br>
 
-## 🏠 메인 페이지
+- **AI 코드 컨벤션** <br>
 
-<div style="display: flex; justify-content: center; gap: 30px;">
-  <img src="src/assets/images/main-1.gif" style="height: 240px;" alt="과정" />
-  <img src="src/assets/images/main-2.gif" style="height: 240px;" alt="결과" />
-</div>
+    - 팀에서 지켜야 할 협업 가이드 및 프로젝트 컨벤션 등록
+    - 연동해야 할 API와 요구사항이 적힌 명세서 등록
+    - 공통 변수 선언된 파일 (tailwind.config.js) 등록
+    - 구현하고자 하는 기능과 관련된 파일 등록
+    
+    <AI 코드 컨벤션 사진>
 
-## 🎠 배너 Carousel
+- **일일스크럼** 
 
-<div style="display: flex; justify-content: center; gap:40px;">
-  <img src="src/assets/images/banner-1.gif" style="height: 120px;" alt="과정" />
-  <img src="src/assets/images/banner-2.gif" style="height: 120px;" alt="결과" />
-</div>
+    - 프로젝트 지연을 방지하고 유기적인 협업을 위해 일일 스크럼을 운영
+    - 시간 : 매일 오전 (약 10~15분 내외)과 오후 (끝나기 10분 전)
+    - 이슈가 마무리되면 GitHub Issues와 Kanban 보드를 활용한 태스크 가시화
 
-## <img src="./src/assets/base/icon-location.svg" style= "color:bg-primary; width:24px; height:24px;"/> 내 지역 & 온라인 스터디 페이지
+    **공유 내용**
 
-<div align="center">
-<img src="src/assets/images/local-online.gif" style="width: 240px;" alt="과정" /> </div>
+    - 1. 어제 완료한 작업 : 실제 진행된 태스크
+    - 2. 오늘 진행할 작업 : 우선순위 기반의 To-do 리스트
+    - 3. 현재 마주한 문제점(Blocker) : 기술적 에러나 일정 지연 요소
 
-<br><br>
+<일일 스크럼 작성한 사진>
 
-## 📂 프로젝트 구조
+<깃헙 칸반 보드 사진>
 
-```mermade
+- **팀원을 위한 가이드 wiki 작성** <br>
+
+<GitHub Projects & Issues 사용법 사진> <br>
+<자주 사용하는 Git 명령어 모음집 사진>
+
+### 3. **일정 관리 (WBS):**
+
+```mermaid
+gantt
+    title 스터디인(StudyIn) 프로젝트 개발 일정 (WBS)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %m/%d
+    
+    section 공통 일정
+    초기 환경 세팅 및 언어/기술 스택 학습 : 2026-02-24, 2d
+    중간 평가 및 보완 사항 파악 : milestone, 2026-03-09, 1d
+    전체 Flow 테스트 및 버그 수정 : crit, 2026-03-10, 4d
+
+    section 강수민 (인증/채팅)
+    디자인 시스템 및 Axios 인터셉터 구축 : 2026-02-25, 1d
+    로그인 UI 및 API 연동 : 2026-02-26, 1d
+    비밀번호 재설정 및 이메일 인증 : 2026-02-27, 2d
+    회원가입 Step 1, 2 로직 구현 : 2026-03-03, 1d
+    채팅방 UI 및 내역 조회 API 연동 : 2026-03-04, 2d
+
+    section 강수정 (스터디 상세)
+    상세 페이지 라우팅 및 기본 구조 : 2026-02-25, 2d
+    상세 페이지 UI(더미 데이터) 및 좋아요 토글 : 2026-02-27, 2d
+    스터디 상세 조회 및 참가자 목록 API 연동 : 2026-03-03, 1d
+    참여/좋아요/댓글 기능 최종 연결 : 2026-03-04, 2d
+
+    section 강주현 (스터디 생성/AI)
+    스터디 생성 폼 UI 및 유효성 검사 : 2026-02-25, 3d
+    스터디 CRUD API 연동 및 상태 관리 : 2026-02-28, 2d
+    스터디 수정/삭제 기능 및 권한 체크 : 2026-03-03, 2d
+    AI 커리큘럼/소개글 생성 및 스트리밍 : 2026-03-05, 2d
+    검색 페이지, 메인 반응형, 페이지네이션, 내지역/온라인 페이지, normalizeStudy 유틸 : 2026-03-07, 2d
+
+    section 권하리 (프로필/알림)
+    프로필 페이지 UI 및 GitHub 잔디 구현 : 2026-02-25, 3d
+    알림 페이지 UI 및 프로필 유효성 검사 : 2026-02-28, 1d
+    프로필 정보 조회/수정 API 연동 : 2026-03-03, 1d
+    알림 API 연동 및 신고 시스템 구현 : 2026-03-04, 2d
+
+    section 박외숙 (메인 피드/필터)
+    StudyCard UI 및 반응형 그리드 구축 : 2026-02-26, 1d
+    카테고리 필터 및 useStudyList 훅 : 2026-02-27, 1d
+    스터디 생성 로직 보완 및 에러 처리 : 2026-02-28, 2d
+    배너 캐러셀 애니메이션 및 탭 필터링 : 2026-03-04, 2d
+    지역/온라인 전용 페이지 및 라우팅 : 2026-03-07, 2d
+
+    section 최서원 (공통 UI/댓글)
+    헤더, 푸터 및 레이아웃 시스템 : 2026-02-26, 2d
+    전역 모달(Zustand) 및 바텀시트 구현 : 2026-02-28, 2d
+    댓글/대댓글 타입 정의 및 UI 최적화 : 2026-03-04, 1d
+    댓글 동기화 및 탈퇴 회원 처리 로직 : 2026-03-05, 2d
+    댓글 / 대댓긏 처리 및 비밀 댓글 시스템 로직 : 2026-03-07, 2d
+```
+
+## 2. 페이지 구조
+
+- 본 프로젝트는 react-router-dom을 기반으로 공통 레이아웃과 접근 권한(Public/Private)을 분리하여 관리
+
+**사용자 접근 권한 및 레이아웃 구조**
+
+- **공통 레이아웃 (Layout):** 헤더와 푸터를 포함하며, 서비스의 기본 뼈대 구성
+- **인증 레이아웃 (AuthLayout):** 로그인, 회원가입 등 계정 관련 페이지 전용 레이아웃
+- **채팅 레이아웃 (ChatLayout):** 실시간 소통을 위한 채팅 페이지 전용 레이아웃
+- **접근 제한 (PrivateRoute):** 로그인(JWT 토큰 보유) 상태인 정회원만 접근 가능한 보호된 라우트
+
+<br>
+
+| 페이지명 | 경로 (Path) | 주요 기능 및 특징 | 담당자 | 관련 API 도메인 |
+| :--- | :--- | :--- | :--- | :--- |
+| 메인 홈 | `/` | 스터디 목록 조회(Pagination), 배너 및 필터 UI | 외숙 | `/study/` |
+| 검색 결과 | `/search` | 다중 필터 및 키워드 기반 스터디 검색 | 주현, 외숙 | `/study/list/` |
+| 로그인 | `/login` | 이메일 기반 JWT 인증 (Access/Refresh) | 수민 | `/accounts/login/` |
+| 회원가입 | `/register` | 이메일 인증(123456) 및 비밀번호 설정 | 수민 | `/accounts/register/` |
+| 스터디 상세 | `/study/:studyId` | 정보 렌더링, 참가/탈퇴, 댓글 CRUD | 수정, 서원 | `/study/{id}/` |
+| 스터디 생성 | `/study/create` | 정회원 전용, AI 커리큘럼/소개글 자동 생성 | 주현 | `/study/` (POST) |
+| 스터디 수정 | `/study/:id/edit` | 기존 정보 수정 및 인원 축소 방지 로직 | 주현 | `/study/{id}/` (PUT) |
+| 마이페이지 | `/profile` | 내 활동(참여/관심) 및 프로필 정보 조회 | 하리 | `/accounts/profiles/` |
+| 프로필 설정 | `/profile/edit` | 닉네임 중복 확인 및 프로필 정보 수정 | 하리 | `/accounts/profiles/` (PUT) |
+| 실시간 채팅 | `/chat/:id` | WebSocket 기반 메시지/파일/이미지 송수신 | 수민, 외숙 | `wss://.../chat/` |
+| 알림 센터 | `/notification` | 참가/댓글/대댓글 발생 시 실시간 알림 확인 | 서원 | `/notifications/` |
+
+## 3. 폴더 구조
+
+```text
 📦 studyin-frontend
 ├── 📁 public/
 ├── 📁 src/
@@ -282,27 +582,30 @@ npm run dev
 │   │   ├── study.ts
 │   │   ├── profile.ts
 │   │   ├── upload.ts
-│   │   └── chat.ts
+│   │   ├── chat.ts
+│   │   └── ...
 │   │
 │   ├── 📁 assets/
 │   │   ├── 📁 base/
-│   │   └── 📁 category/
+│   │   ├── 📁 category/
+│   │   └── ...png
 │   │
 │   ├── 📁 components/
 │   │   ├── 📁 common/
 │   │   │   ├── Button.tsx
 │   │   │   ├── Input.tsx
 │   │   │   ├── Modal.tsx
-│   │   │   └── Spinner.tsx
+│   │   │   └── ...
 │   │   │
 │   │   └── 📁 layout/
 │   │       ├── Header.tsx
 │   │       ├── Footer.tsx
 │   │       ├── Layout.tsx
 │   │       ├── AuthLayout.tsx
-│   │       └── MobileDrawer.tsx
+│   │       └── ...
 │   │
 │   ├── 📁 constants/
+│   │   ├── study.ts
 │   │   └── auth.ts
 │   │
 │   ├── 📁 features/
@@ -310,17 +613,14 @@ npm run dev
 │   │   │   ├── 📁 components/
 │   │   │   │   ├── LoginForm.tsx
 │   │   │   │   ├── RegisterForm.tsx
-│   │   │   │   ├── EmailVerification.tsx
 │   │   │   │   └── PasswordResetForm.tsx
 │   │   │   ├── 📁 hooks/
 │   │   │   │   ├── useLogin.ts
 │   │   │   │   ├── usePasswordResetConfirm.ts
-│   │   │   │   ├── usePasswordResetEmail.ts
 │   │   │   │   └── useRegister.ts
-│   │   │   ├── 📁 utils/
-│   │   │   │   └── authValidators.ts
-│   │   │   └── index.ts
-│   │   │
+│   │   │   └── 📁 utils/
+│   │   │       └── authValidators.ts
+│   │   │   
 │   │   ├── 📁 study/
 │   │   │   ├── 📁 components/
 │   │   │   │   ├── StudyBanner.tsx
@@ -329,16 +629,15 @@ npm run dev
 │   │   │   │   ├── StudyList.tsx
 │   │   │   │   ├── StudyFilter.tsx
 │   │   │   │   ├── StudyDetailInfo.tsx
-│   │   │   │   ├── LikeButton.tsx
+│   │   │   │   ├── StudyProfileCard.tsx
 │   │   │   │   ├── StudyForm.tsx
 │   │   │   │   └── AiGeneratorButton.tsx
 │   │   │   ├── 📁 hooks/
 │   │   │   │   ├── useStudyList.ts
 │   │   │   │   ├── useStudyForm.ts
-│   │   │   │   ├── useLikeToggle.ts
-│   │   │   │   └── useAiStream.ts
-│   │   │   └── index.ts
-│   │   │
+│   │   │   │   ├── useStudyProfileCard.ts
+│   │   │   └───└── useAiStream.ts
+│   │   │   
 │   │   ├── 📁 profile/
 │   │   │   ├── 📁 components/
 │   │   │   │   ├── ProfileCard.tsx
@@ -353,27 +652,27 @@ npm run dev
 │   │   │   ├── 📁 components/
 │   │   │   │   ├── CommentSection.tsx
 │   │   │   │   ├── CommentInput.tsx
+│   │   │   │   ├── CommentInputField.tsx
 │   │   │   │   ├── CommentItem.tsx
 │   │   │   │   └── RecommentList.tsx
 │   │   │   ├── 📁 hooks/
-│   │   │   │   └── useComments.ts
-│   │   │   └── index.ts
-│   │   │
+│   │   │   └───└── useComments.ts
+│   │   │   
 │   │   └── 📁 chat/
 │   │       ├── 📁 components/
 │   │       │   ├── ChatRoom.tsx
 │   │       │   ├── ChatMessageList.tsx
 │   │       │   ├── ChatBubble.tsx
 │   │       │   ├── SystemMessage.tsx
-│   │       │   └── ChatInput.tsx
+│   │       │   └── ...
 │   │       ├── 📁 hooks/
-│   │       │   └── useWebSocket.ts
-│   │       └── index.ts
-│   │
+│   │       └───└── useWebSocket.ts
+│   │       
 │   ├── 📁 hooks/
 │   │   ├── useAuth.ts
 │   │   ├── useWebsocket.ts
-│   │   └── useUpload.ts
+│   │   ├── useUpload.ts
+│   │   └── ...
 │   │
 │   ├── 📁 pages/
 │   │   ├── Home.tsx
@@ -393,7 +692,8 @@ npm run dev
 │   │
 │   ├── 📁 store/
 │   │   ├── authStore.ts
-│   │   └── alertStore.ts
+│   │   ├── alertStore.ts
+│   │   └── ...
 │   │
 │   ├── 📁 types/
 │   │   ├── api.d.ts
@@ -404,31 +704,66 @@ npm run dev
 │   ├── 📁 utils/
 │   │   ├── date.ts
 │   │   ├── storage.ts
-│   │   └── validation.ts
+│   │   └── study.ts
 │   │
-│   ├── 📁 lib/
-│   │   └── firebase.ts
-│   │
-│   ├── App.css
 │   ├── App.tsx
 │   ├── index.css
 │   ├── main.tsx
 │   └── vite-env.d.ts
 │
 ├── .env
-├── tailwind.config.ts
-├── tsconfig.json
-└── package.json
+└── tailwind.config.ts
 ```
+
+## 4. 사용자 시나리오 (사용자 여정 지도)
+
+### 1. 회원가입/로그인 및 프로필 설정
+
+**"서비스의 첫인상을 결정하고 정회원으로 거듭나는 과정"**
+
+| 단계 | 서비스 인지 | 회원가입 / 로그인 | 최초 접속 | 프로필 설정 (정회원 전환) |
+| :--- | :--- | :--- | :--- | :--- |
+| **사용자 행동** | 서비스 정보 습득 및 가입 결심 | 이메일/비번 입력 및 인증 | 로그인 후 메인 피드 진입 | 마이페이지 이동 및 필수 정보 입력 |
+| **관련 API** | - | `POST /api/register`<br>`POST /api/login` | `GET /api/user/me` | `PUT /api/user/profile` |
+| **생각 및 감정** | "나에게 도움이 될까?" (기대 반, 의심 반) | "절차가 간단했으면 좋겠다." (신속함 기대) | "성공! 이제 시작이다." (안도감) | "나를 어떻게 표현할까?" (고민, 만족감) |
+| **비고** | 광고, 지인 추천 등 | - | 로그인 PK 획득 및 저장 | 닉네임, 전화번호 중복 체크 필수 |
 
 ---
 
-### 5. 아키텍처 설계 전략
+### 2. 콘텐츠 조회 및 검색
 
-#### 1. Feature(도메인) 기반 폴더 구조
+**"나에게 딱 맞는 스터디 정보를 탐색하고 발견하는 과정"**
 
-- 도메인(기능) 단위로 폴더를 분리하여 관련된 UI 컴포넌트, 커스텀 훅(비즈니스 로직), 유틸리티 함수를 한 곳에 모았습니다.
-- 이를 통해 기능별 응집도를 높이고 유지보수를 용이하게 했으며, 팀원 간의 명확한 분업을 통해 병렬 개발 시 충돌을 최소화했습니다.
+| 단계 | 메인 화면 접속 | 목록 탐색 | 상세 조회 | 검색 및 필터링 |
+| :--- | :--- | :--- | :--- | :--- |
+| **사용자 행동** | 전체 스터디 피드 확인 | 스크롤 및 카테고리 필터링 | 특정 스터디 클릭 및 내용 확인 | 키워드 검색 및 상세 조건 설정 |
+| **관련 API** | `GET /api/contents` | `GET /api/contents?category=...` | `GET /api/contents/{id}` | `GET /api/contents/search?q={query}` |
+| **생각 및 감정** | "새로운 소식이 뭐가 있지?" (호기심) | "재미있는 게 있을까?" (기대) | "이 내용은 유익하네!" (몰입) | "내가 찾는 게 나와야 할 텐데." (집중) |
+| **비고** | 배너 섹션 확인 가능 | 무한 스크롤 또는 페이지네이션 | 댓글 및 대댓글 조회 포함 | 난이도, 요일, 온/오프라인 필터 |
+
+---
+
+### 3. 콘텐츠 작성 및 관리
+
+**"직접 스터디를 개설하고 멤버를 모집하며 운영하는 과정"**
+
+| 단계 | 작성 화면 이동 | 콘텐츠 작성 | 등록 완료 | 수정 및 삭제 |
+| :--- | :--- | :--- | :--- | :--- |
+| **사용자 행동** | 글쓰기 버튼 클릭 | 제목, 본문, 썸네일, 태그 입력 | 작성 완료 버튼 클릭 및 공유 | 내가 쓴 글 확인 및 업데이트/제거 |
+| **관련 API** | - | `POST /api/contents` (Draft) | `POST /api/contents` (Submit) | `PUT /api/contents/{id}`<br>`DELETE /api/contents/{id}` |
+| **생각 및 감정** | "어떤 내용을 쓸까?" (설렘) | "사람들이 좋아할까?" (고민, 몰입) | "등록 완료! 뿌듯하다." (성취감) | "오타 수정해야지." (차분함, 효율) |
+| **비고** | 정회원 권한 확인 필수 | 썸네일 이미지 업로드 필수 | 자동 스터디장 권한 부여 | 작성자(스터디장) 본인만 가능 |
+
+---
+
+## 4단계: 성과 및 품질 (The Proof)
+
+### 1. 최적화 및 개선 작업
+
+#### **Feature(도메인) 기반 폴더 구조**
+
+- 도메인(기능) 단위로 폴더를 분리하여 관련된 UI 컴포넌트, 커스텀 훅(비즈니스 로직), 유틸리티 함수를 한 곳에 모음
+- 이를 통해 기능별 응집도를 높이고 유지보수를 용이하게 했으며, 팀원 간의 명확한 분업을 통해 병렬 개발 시 충돌을 최소화
 
 ```text
 📁 src/features/
@@ -439,11 +774,11 @@ npm run dev
  └── 📁 chat/       # 실시간 웹소켓 채팅 도메인
 ```
 
-#### 2. API 레이어 분리 및 중앙 집중화
+#### **API 레이어 분리 및 중앙 집중화**
 
-- UI 컴포넌트 내부에서 API를 직접 호출하지 않고 서버와의 통신 로직을 별도 레이어로 분리했습니다.
-- axios 인스턴스를 분리하여 헤더 설정, 에러 핸들링을 일원화했습니다.
-- 인터셉터(Interceptor) 활용: 요청 시 JWT(Access Token)를 자동으로 주입하고, 401(Unauthorized) 에러 발생 시 Refresh Token을 이용해 자동으로 토큰을 갱신하도록 구성했습니다.
+- UI 컴포넌트 내부에서 API를 직접 호출하지 않고 서버와의 통신 로직을 별도 레이어로 분리
+- axios 인스턴스를 분리하여 헤더 설정, 에러 핸들링을 일원화
+- 인터셉터(Interceptor) 활용: 요청 시 JWT(Access Token)를 자동으로 주입하고, 401(Unauthorized) 에러 발생 시 Refresh Token을 이용해 자동으로 토큰을 갱신하도록 구성
 
 ```text
 📁 src/api/
@@ -455,145 +790,190 @@ npm run dev
  └── chat.ts        # 채팅 내역 조회 등 관련 API
 ```
 
-#### 3. 상태 관리 전략
+<br>
 
-| 상태 유형              | 관리 방식   | 설명 및 적용 예시                                                                     |
-| :--------------------- | :---------- | :------------------------------------------------------------------------------------ |
+#### **상태 관리 전략**
+
+| 상태 유형 | 관리 방식 | 설명 및 적용 예시 |
+| :--- | :--- | :--- |
 | **전역 상태 (Global)** | Zustand     | 로그인 유저 정보 및 토큰(`authStore`) 등 앱 전반에서 필요한 상태                      |
 | **UI 상태 (UI/UX)**    | Zustand     | 전역 토스트, 모달 알림(`alertStore`) 등 공통 UI 제어 상태                             |
 | **폼 상태 (Form)**     | Custom Hook | `useStudyForm`, `useRegister` 등 도메인별 커스텀 훅에서 입력 상태 및 검증 로직 캡슐화 |
 | **서버 상태 (Server)** | Custom Hook | `useStudyList`, `useComments` 등 비즈니스 로직 훅에서 API 응답 데이터 파싱 및 관리    |
 
-### 6. 주요 기능 (Key Features) 및 기능 시연 (Preview)
+<br>
 
-#### 6-1. 회원가입 및 로그인 (Authentication)
+#### **네이티브 CSS 활용** 
 
-##### 6-1-1. JWT기반 인증
+- JS 연산을 통한 반응형 구현 대신 Tailwind 미디어 쿼리를 적극 활용하여 브라우저 렌더링 부하 감소
 
-##### 6-1-2. access_token(1시간)
+```tsx
+// JS의 window.innerWidth 대신 Tailwind 미디어 쿼리(md:, hidden 등) 사용
+<div className="flex h-full w-full">
+  {/* PC에서는 보이고 모바일에서는 숨겨지는 사이드바 */}
+  <div className="hidden md:block md:w-1/3 border-r">
+    <ChatSidebar />
+  </div>
 
-##### 6-1-3. refrexh_token(7시간)
+  {/* 반응형 너비 조절 */}
+  <div className="w-full md:w-2/3 flex flex-col">
+    <ChatMessageList />
+    <ChatInput />
+  </div>
+</div>
 
-##### 6-1-4. 이메일 인증 코드 : 123456
+```
 
-##### 6-1-5. 닉네임 중복 검사 API 연동
+#### **중앙 집중식 모달 시스템** 
 
-#### 6-2. 스터디 CRUD
+- 파편화된 모달 로직을 modalStore로 통합하여 코드 중복을 60% 이상 제거
 
-##### 6-2-1. 스터디 생성
+```ts
+import { create } from 'zustand';
+import { ReportTargetType } from '@/api/report';
 
-##### 6-2-2. 수정
+export type ModalType =
+  | 'comment-mine'      // 내 댓글: 수정/삭제
+  | 'comment-other'     // 타인 댓글: 신고
+  | 'study-mine'        // 내 스터디: 수정/삭제
+  | 'study-other'       // 타인 스터디: 신고
+  | 'header'            // 헤더: 설정/로그아웃
+  | 'confirm'           // 확인 모달 (로그아웃/삭제/신고)
+  | 'user-info'         // 유저 정보 모달
+  | 'report';           // 신고 모달 (확인 없이 바로)
 
-##### 6-2-3. 삭제(스터디장만 가능)
+export type ConfirmType = 'logout' | 'delete' | 'report' | 'associate' | 'associate-join' | 'study-create' | 'study-delete';
 
-##### 6-2-4. 상세조회
+interface ModalState {
+  isOpen: boolean;
+  modalType: ModalType | null;
+  confirmType: ConfirmType | null;
+  targetId: number | null;
+  parentId: number | null;
+  reportTargetType: ReportTargetType | null;
+  onConfirm: (() => void) | null;
+  onEdit: (() => void) | null;
+  openModal: (type: ModalType, targetId?: number, parentId?: number, reportTargetType?: ReportTargetType, onEdit?: () => void, onConfirm?: () => void) => void;
+  openConfirm: (type: ConfirmType, onConfirm: () => void) => void;
+  closeModal: () => void;
+}
 
-##### 6-2-5. 페이지네이션 지원
+export const useModalStore = create<ModalState>((set) => ({
+  isOpen: false,
+  modalType: null,
+  confirmType: null,
+  targetId: null,
+  parentId: null,
+  reportTargetType: null,
+  onConfirm: null,
+  onEdit: null,
+  openModal: (type, targetId, parentId, reportTargetType, onEdit, onConfirm) =>
+    set({
+      isOpen: true,
+      modalType: type,
+      confirmType: null,
+      targetId: targetId ?? null,
+      parentId: parentId ?? null,
+      reportTargetType: reportTargetType ?? null,
+      onConfirm: onConfirm ?? null,
+      onEdit: onEdit ?? null,
+    }),
+  openConfirm: (type, onConfirm) =>
+    set({ isOpen: true, modalType: 'confirm', confirmType: type, onConfirm }),
+  closeModal: () =>
+    set({
+      isOpen: false,
+      modalType: null,
+      confirmType: null,
+      targetId: null,
+      parentId: null,
+      reportTargetType: null,
+      onConfirm: null,
+      onEdit: null,
+    }),
+}));
 
-#### 6-3. AI 기능
+```
 
-##### 6-3-1. 커리큘럼 자동 생성
+## 2. 에러 트래킹 및 품질 관리
 
-##### 6-3-2. 스터디 소개글 자동 생성
+### **개발 프로세스 가드레일**
 
-##### 6-3-3. 스트리밍 응답 처리
+- **CI/CD 빌드 검증**  <br>
+Netlify 배포 전 로컬에서 **npm run build** 및 **tsc** 검사를 강제하여 타입 에러와 미사용 변수 등 잠재적 버그를 선제적으로 차단
 
-##### 6-3-4. 로딩 스피너 표시
+- **머지 체크리스트** <br>
+머지 후 발생할 수 있는 중복 선언 방지를 위해 **tsc --noEmit** 빌드 체크를 팀 공통 프로세스로 수립
 
-##### 6-3-5. 기존 내용 덮어쓰기 전 확인 모달
+### **사용자 중심 예외 처리** <br>
 
-#### 6-4. 실시간 채팅(WebSocket)
+- **상태별 분기 UI** <br>
+데이터가 없는 'Empty State'나 비로그인 유저 접근 시 단순 에러가 아닌 친절한 안내 문구와 라우팅 버튼을 제공
 
-##### 6-4-1. JWT 토큰을 쿼리 파라미터로 전달
+- **실시간 유효성 검증** <br>
+이메일 중복, 비밀번호 복잡도 등을 실시간으로 검증하고 명확한 에러 메시지 UI를 통해 UX 품질 향상
 
-##### 6-4-2. 메시지 타입
+- **인증 자동 관리** <br>
+Axios 인터셉터를 통해 401 에러 발생 시 토큰을 자동 갱신하여 끊김 없는 서비스 이용 경험을 제공
 
-###### text
+## 3. 트러블 슈팅
 
-###### image
-
-###### file
-
-###### notice
-
-##### 6-4-3. 입/퇴장 시 시스템 메시지 자동 생성
-
-##### 6-4-4. 매일 자정 채팅 기록 초기화
-
-#### 6-5. 좋아요 (필수:UI 토글)
-
-##### 6-5-1.하트 버튼 색상 변경
-
-##### 6-5-2. 선택 과제 : 관심 스터디 목록 조회
-
-#### 6-6. 프로필 기능
-
-##### 6-6-1. 준회원 -> 정회원 전환
-
-##### 6-6-2. 닉네임 중복 검사
-
-##### 6-6-3. 선호 지역 선택
-
-##### 6-6-4. 관심 태그 다중 선택
+| 핵심 사례 | 문제 상황 및 원인 분석 | 해결 방안 및 교훈 |
+| :--- | :--- | :--- |
+| **웹소켓 무한 재연결** | **[문제]** 네트워크 단절 시 재연결을 시도하나, 인증 실패 상황에서도 무의미한 재요청 반복 <br> **[원인]** `event.wasClean`이 `false`면 무조건 지수 백오프 재연결을 시도하는 구조적 결함 | **[해결]** `NO_RETRY_CODES(4001~4005)`를 정의하여 인증 에러 시 재연결 로직을 즉시 중단하도록 고도화 <br> **[교훈]** 예외 케이스의 정교한 분리를 통한 네트워크 자원 최적화 |
+| **배포 단계 타입 오류** | **[문제]** Netlify 배포 중 Exit Code 2와 함께 빌드 실패 발생 <br> **[원인]** 로컬(Dev Mode)에선 간과된 외부 라이브러리 속성(`hideColorLegend`)의 타입 불일치가 엄격한 빌드 단계에서 발견됨 | **[해결]** 오류 로그 분석 후 공식 문서를 참고하여 대안 Prop(`renderColorLegend`)으로 수정 및 사전 `npm run build` 검증 프로세스 도입 <br> **[교훈]** CI/CD 환경에서의 엄격한 타입 체크의 중요성 체감 |
+| **전역 상태 무시 현상** | **[문제]** Zustand 전역 상태에 로그인 정보가 없음에도 UI가 잘못 렌더링됨 <br> **[원인]** 전역 상태 호출 직후, 동일한 이름의 테스트용 변수가 하드코딩되어 상태값을 덮어쓰는 '변수 섀도잉' 발생 | **[해결]** 중복 선언된 하드코딩 변수를 제거하고 커스텀 훅이 반환하는 실제 상태값이 반영되도록 수정 <br> **[교훈]** 코드 리뷰를 통한 잔여 테스트 코드 관리 및 런타임 값 추적의 필요성 확인 |
+| **Git 히스토리 꼬임** | **[문제]** 작업 브랜치가 아닌 `develop` 브랜치에 직접 커밋이 올라갔으며, 타 팀원의 커밋과 섞여 단순 `reset`이 불가능함 <br> **[원인]** 브랜치 전환 확인 없이 작업 후 Push 수행 | **[해결]** `cherry-pick`으로 필요한 커밋만 목적 브랜치에 이식 후, `reset`과 병행하여 팀원의 작업을 보존하며 히스토리를 외과적으로 복구 <br> **[교훈]** Git 커밋 그래프에 대한 이해와 히스토리 수정 도구 활용 역량 습득 |
 
 ---
 
-### 8. 트러블 슈팅
+## 5단계: 마무리 (The Team)
 
-#### 8-1. JWT 자동 갱신 문제
-
-##### 401 에러 발생 시 refresh요청
-
-##### 동시 요청 race condition 방지
-
-#### 8-2. WebSocket 재연결 문제
-
-##### ping-pong 구현
-
-##### 연결 끊어질 경우 재시도 로직 적용
-
-#### 8-3. FormData 파일 업로드 이슈
-
-##### multipart/form-data 헤더 설정
-
-###### 이미지 자동 리사이징 대응
+## 1. 팀원 정보 및 회고
 
 ---
 
-### 9. 향후 개선 사항
-
-### 무한 스크롤 적용
-
-#### AI 프롬프트 고도화
-
-#### 테스트 코드 작성
-
-#### 성능 최적화(Reactmemo, Suspense)
-
-#### 접근성(A11y) 개선
-
----
-
-### 10. 팀원 정보 및 회고
-
-<img src="src/assets/EditorPhoto/E1.png" width="100" style="border-radius:50%; border:1px solid black">
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **강수민**
+
 **(팀장)** | <https://github.com/Ssumining> | <sumin6872@naver.com>
 
 **[ 역할 (Frontend) ]**
+- 공통 변수, 레이아웃 지정한 파일 생성
+- 개발 환경 세팅
+- 로그인 화면 UI 구현
+- 회원가입 화면 UI 구현
+- 이메일 인증 로직 구현
+- 비밀번호 재설정 로직 구현
+- 회원가입 로직 구현
+- 로그인 로직 구현
+- 로그아웃 로직 구현
+- 채팅 화면 UI 구현
+- 채팅 API 연결
+- 웹소켓 연결
+- 리팩토링 및 구조 개선 (중복 로직 제거, 디자인 스타일 일관성 개선)
 
--
--
--
-- **[ 소감 ]**
+**[ 소감 ]**
 
-  ***
+처음 팀장을 맡았을 때는 실력이 없는데 직책을 맡았다는 부담감과 이 프로젝트가 과연 마감일까지 제대로 완성할 수 있을지에 대한 불안감에 미리 사서 스트레스를 받았습니다. <br>
+그랬지만 시간이 지날 수록 팀원분들이 팀 협업 컨벤션에 따라 프로젝트를 진행해주시는 걸 보면서 프로젝트 완성에 관한 불안감을 괜히 가졌다는 생각이 들었습니다. <br>
+모든 팀원 분들이 결원 없이 학교와 현업에 집중하시는 와중에 프로젝트에 열심히 참여해주시려는 노력과 모르는 것을 바로바로 물어보시는 열정에 비교적 안정적이게 프로젝트를 마무리할 수 있어서 정말 값진 경험이 되었습니다. <br>
 
-<img src="src/assets/EditorPhoto/B1.jpg" width="100" style="border-radius:50%; border:1px solid black">
+개발자로서는 전공자임에도 불구하고 이 프로젝트가 배운 걸 모두 사용하는 제대로 된 첫 프로젝트였습니다. <br>
+하지만 부족한 지식으로 인해서 회원가입 이메일 인증하는 로직 및 ui 구현하는 부분이나 채팅에서 실시간으로 websocket 연결하는 부분 등 개인으로 하면서 어려운 부분이 프로젝트 하는 중에 항상 존재했습니다. <br>
+이를 AI와 해결하거나 팀원분들의 도움을 받으면서 점차 로직에 대해 이해가 되고 제 자신이 사소한 문제들을 스스로 해결할 수 있어지는 모습을 보면서 발전해가고 있음을 느꼈습니다. <br> 
+
+이번 프로젝트는 UI와 API가 제공되어서 비교적 쉽게 프로젝트를 완성했지만 이러한 UI와 API에 관한 괌심이 생겼고 직접 UI/UX 설계부터 백엔드 부분까지 공부하여 구현해 보고 싶은 욕심이 생겼습니다. <br>
+앞으로도 저는 코드만 작성하는 개발자가 아닌 사람들과 함께 하나의 프로젝트를 완성해가는 **친절한 개발자**가 되고 싶습니다.
+
+---
+
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **강수정**
-(팀원) | <https://github.com/sueaion> | <echomuse78@gmail.com>
+
+**(팀원)** | <https://github.com/sueaion> | <echomuse78@gmail.com>
 
 **[ 역할 (프론트엔드 개발 및 UI/UX 인터랙션 구현) ]**
 
@@ -601,53 +981,81 @@ npm run dev
 - 복합적인 UI 컴포넌트 및 레이아웃 구현
 - 하단 고정 액션바(공유, 좋아요, 참여 버튼) 제작
 - 다양한 조건에 따른 참가/탈퇴 버튼의 상태 분기 로직을 설계/ UI에 반영
-- 개발 환경 최적화 및 문제 해결: Vite(PostCSS) 환경에서 발생한 @import 순서 에러를 분석 CSS 선언 우선순위를 조정함으로써 빌드 오류를 해결
-- SVG 코드를 직접 사용하는 대신 프로젝트 공통 에셋(Base Icon)으로 연결
-- 진행 사항을 README 및 GitHub Wiki에 문서화
 
- **[ 소감 ]**
-"성능과 협업, 두 마리 토끼를 잡는 프론트엔드 개발의 즐거움"
+**[ 소감 ]**
 
-이번 프로젝트에서 **'스터디 상세 페이지'**라는 핵심 도메인을 담당하며, 단순히 화면을 그리는 것을 넘어 데이터의 흐름과 사용자 시나리오를 깊이 있게 고민해 볼 수 있었습니다.
+"성능과 협업, 두 마리 토끼를 잡는 프론트엔드 개발의 즐거움" <br>
+이번 프로젝트에서 **'스터디 상세 페이지'**라는 핵심 도메인을 담당하며, 단순히 화면을 그리는 것을 넘어 데이터의 흐름과 사용자 시나리오를 깊이 있게 고민해 볼 수 있었습니다. <br>
+특히 기억에 남는 점은 조건부 UI 설계 과정입니다. 정회원 여부나 인원 초과 상태에 따라 버튼의 활성화 상태가 달라지는 로직을 짜면서, 프론트엔드 개발자는 사용자가 마주할 모든 예외 상황을 미리 설계해야 한다는 책임감을 느꼈습니다. <br>
+또한, 개발 초기에 발생했던 PostCSS 빌드 에러를 해결하며 CSS 명세와 번들러의 동작 원리를 이해하는 소중한 경험을 했습니다. <br>
+혼자만의 개발에 그치지 않고, 팀원들의 코드를 리뷰하며 서로의 스타일을 배우고 README를 통해 작업 내용을 투명하게 공유하는 과정에서 **'함께 성장하는 개발'** 의 가치를 체감했습니다. <br>
+앞으로도 사용자에게는 매끄러운 경험을, 동료에게는 신뢰할 수 있는 코드를 주는 개발자가 되고 싶습니다. <br>
 
-특히 기억에 남는 점은 조건부 UI 설계 과정입니다. 정회원 여부나 인원 초과 상태에 따라 버튼의 활성화 상태가 달라지는 로직을 짜면서, 프론트엔드 개발자는 사용자가 마주할 모든 예외 상황을 미리 설계해야 한다는 책임감을 느꼈습니다. 또한, 개발 초기에 발생했던 PostCSS 빌드 에러를 해결하며 CSS 명세와 번들러의 동작 원리를 이해하는 소중한 경험을 했습니다.
+---
 
-혼자만의 개발에 그치지 않고, 팀원들의 코드를 리뷰하며 서로의 스타일을 배우고 README를 통해 작업 내용을 투명하게 공유하는 과정에서 **'함께 성장하는 개발'**의 가치를 체감했습니다. 앞으로도 사용자에게는 매끄러운 경험을, 동료에게는 신뢰할 수 있는 코드를 주는 개발자가 되고 싶습니다.
-
-  ***
-
-<img src="src/assets/EditorPhoto/E2.png" width="100" style="border-radius:50%; border:1px solid black">
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **강주현**
-(팀원) | <https://github.com/KJH1208> | <e-mail@ . >
+
+**(팀원)** | <https://github.com/KJH1208> | <guswnrkd12@gmail.com>
 
 **[ 역할 (Frontend) ]**
 
--
--
--
-- **[ 소감 ]**
+- 스터디 생성/수정 페이지 구현 
+- useStudyForm 훅 분리, 전체 폼 필드 유효성 검사, 썸네일 업로드, 삭제 모달 연동
+- 스터디 생성·수정·삭제 API 연동 및 상태코드별 에러 분기 처리
+- ChatGPT API 활용 AI 커리큘럼/소개글 자동 생성 
+- 순차적 AI 생성 파이프라인 설계 (커리큘럼 미존재 시 자동 체이닝)
+- 검색 페이지 신규 구현 (다중 필터(카테고리/난이도/지역/날짜))
+- 최초 가입자 전용 프로필 생성 페이지 구현 (닉네임 중복 체크, 마이스터디 API 연동)
+- 리팩토링 및 구조 개선 (중복 로직 제거, 디자인 스타일 일관성 개선)
 
-  ***
+**[ 소감 ]**
 
-<img src="src/assets/EditorPhoto/B2.png" width="100" style="border-radius:50%; border:1px solid black">
+전공자이긴 하지만 프론트엔드는 솔직히 낯선 영역이었습니다. 런케이션을 통해 하나씩 배워오면서 크고 작은 프로젝트들을 겪었고, 그렇게 쌓인 것들을 이번 파이널 프로젝트에서 써먹을 수 있었다는 게 개인적으로 가장 의미 있었습니다.
+
+그 중에서도 **AI 생성 기능**이 제일 힘들었습니다. 처음에는 어디서부터 시작해야 할지 감이 잘 안 잡혔는데, 커리큘럼 생성 결과를 컨텍스트로 주입해서 소개글까지 순차적으로 이어지는 파이프라인이 완성됐을 때는 진짜 뿌듯했습니다. **API 연동**도 막연하게 어렵게만 느껴졌는데, 기능들이 하나씩 연결되는 걸 보면서 생각보다 재밌다는 걸 느꼈습니다.
+
+6명이서 함께한 프로젝트는 처음이라 솔직히 서툰 부분도 많았습니다. 게다가 온라인으로만 진행하는 방식이라 처음엔 걱정이 꽤 많았는데, 다들 각자 바쁜 일상 속에서도 프로젝트에 성실하게 참여해줘서 생각보다 훨씬 잘 굴러갔습니다. 예상보다 더 많은 기능을 구현할 수 있었고, 완성도도 기대 이상으로 나온 것 같아 정말 다행이었습니다.
+
+물론 오류를 고치면 또 오류가 나오고, 끝이 없는 것 같아 지치는 순간도 분명 있었습니다. 그래도 결국 이렇게 마무리를 짓고 나니, 후련함과 뿌듯함이 동시에 밀려왔습니다. 서로 다른 속도와 맡은 파트를 맞춰가는 게 쉽지 않았지만, 협업이 왜 중요한지, 같이 만들어간다는 게 어떤 건지 이번에 제대로 느낀 것 같습니다.
+
+---
+
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **권하리**
-(팀원) | <https://github.com/psw89pxcj8-cyber> | <e-mail@ . >
+
+**(팀원)** | <https://github.com/psw89pxcj8-cyber> | <mdny2526@naver.com>
 
 **[ 역할 (Frontend) ]**
 
--
--
--
-- **[ 소감 ]**
+- 마이페이지 반응형 레이아웃 구현 (모바일 / 웹)
+- 마이스터디 페이지 구현
+- 신고 페이지 구현
+- 피그마 디자인 기반 UI 정합성 유지
 
-  ***
+**[ 소감 ]**
 
-<img src="src/assets/EditorPhoto/B3.png" width="100" style="border-radius:50%; border:1px solid black">
+비전공자로서 처음 도전한 파이널 프로젝트였기에, 시작부터 끝까지 쉬운 순간이 단 하나도 없었습니다. <br>
+React 컴포넌트 구조도, TypeScript 타입도, Git 협업 흐름도 모두 초보인 저에게 너무 어려웠고 코드 몇 줄을 이해하기 위해 몇 시간을 붙잡고 있던 날도 많았습니다. <br>
+그럼에도 포기하지 않을 수 있었던 건 팀원들 덕분이었습니다. <br>
+막히는 부분이 생길 때마다 도와주었던 팀원들과의 협업을 통해 혼자였다면 결코 완성하지 못했을 결과물을 만들어낼 수 있었습니다. <br>
+협업이란 단순히 역할을 나누는 것이 아니라, 서로의 부족한 부분을 채워가며 함께 성장하는 과정이라는 것을 이번 프로젝트를 통해 깨달았습니다. <br>
+특히 내가 직접 구현한 기능이 실제 화면에 반영되는 순간 큰 감동을 느꼈습니다. <br>
+처음엔 아무것도 없던 화면에 컴포넌트가 하나씩 쌓이고, 데이터가 연결되며 서비스의 형태를 갖춰가는 과정이 신기하고 뿌듯했습니다. <br>
+그 경험이 쌓일수록 코딩에 대한 두려움보다 재미가 더 크게 느껴지기 시작했습니다. <br>
+이번 프로젝트는 저에게 단순한 결과물 이상의 의미를 남겼습니다.  <br>
+부족함을 인정하고, 끝까지 완주했다는 사실 자체가 앞으로 나아갈 수 있는 자신감이 되었습니다. <br>
+아직도 부족한 점이 많지만, 이번 프로젝트는 앞으로 성장하는 발판이 될 것이라 믿습니다. <br>
+
+---
+
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **박외숙**
-(팀원) | <https://github.com/pahkys-prog> | <haney2001@naver.com>
+
+**(팀원)** | <https://github.com/pahkys-prog> | <haney2001@naver.com>
 
 **[ 역할 (Frontend) ]**
 
@@ -656,13 +1064,8 @@ npm run dev
 - 스터디 목록 반응형 그리드 레이아웃
 - 카테고리 필터 UI 및 목록 변경 로직
 - LocalStudy / OnlineStudy 페이지 구현
-- 스터디 카드 클릭 시 상세 페이지 라우팅 연결
-- 특히 메인 페이지의 배너 영역 구현에 가장 많은 시간을 투자했습니다.
-- Carousel 자동 전환
+- 메인 페이지 배너 구현
 - 페이지 인디케이터
-- 간단한 애니메이션 효과
-- 피그마 디자인과의 UI 정합성 유지
-- 스터디 카드 → 내 지역, 온라인 페이지 라우팅 연결
 
 **[ 소감 ]**
 
@@ -686,16 +1089,35 @@ Git 병합 과정에서 충돌이 발생하기도 했고, 누락된 파일이나
 
 ---
 
-<img src="src/assets/EditorPhoto/E3.png" width="100" style="border-radius:50%; border:1px solid black">
+<img src="사진 들어갈 곳" width="100" style="border-radius:50%; border:1px solid black">
 
 **최서원**
-(팀원) | <https://github.com/swlog> | <e-mail@ . >
+
+**(팀원)** | <https://github.com/swlog> | <e-mail@ . >
 
 **[ 역할 (Frontend) ]**
 
--
--
--
-- **[ 소감 ]**
+- 공통 UI / 인프라 구축
+- Header / Footer 글로벌 레이아웃 구성
+- 글로벌 모달 컴포넌트 구현
+- 파일 / 이미지 업로드 API 유틸리티화
+- 댓글 · 대댓글 시스템 (UI, CRUD)
+- 비밀 댓글 가시성 로직 구현 (작성자 · 스터디장만 열람)
+- 대댓글 @mention 기능 및 답글 인터랙션 구현
+- 알림 시스템 (Header 알림 드롭다운, 사용자 알림 인터랙션 상태 관리) 구현
+- 알림 조회 / 읽음 처리 API 연동
+- 리팩토링 및 구조 개선 (중복 로직 제거, 디자인 스타일 일관성 개선)
 
-  ***
+**[ 소감 ]**
+
+처음 댓글 기능을 맡았을 때는 단순한 CRUD 기능 정도라고 생각했습니다. 하지만 실제 구현을 시작해 보니 비밀 댓글 가시성, 대댓글 사용자 태그(@mention), 준회원 권한 처리 등 생각보다 고려해야 할 조건이 많았습니다. 특히 한 조건을 수정하면 다른 케이스가 깨지는 일이 반복되었습니다. 그래서 기능을 바로 구현하기보다 **먼저 사용자 시나리오와 분기 케이스를 정리한 뒤 로직을 구현하는 방식**으로 접근하게 되었습니다.
+
+공통 UI 작업에서도 비슷한 경험이 있었습니다. 처음에는 푸터를 로그인 여부(isLoggedIn) 기준으로 분기하도록 구현했습니다. 그러나 기획 문서를 다시 확인해 보니 해당 UI는 사용자 상태가 아니라 페이지 종류에 따라 표시되는 구조였습니다. 그래서 푸터 분기 기준을 사용자 상태 기반에서 페이지 경로(pathname) 기반으로 수정했습니다. 이를 통해 UI 로직을 구현할 때 **어떤 기준으로 화면이 결정되는지 먼저 파악**하는 것이 중요하다는 것을 느꼈습니다.
+
+스타일 작업 중에는 Tailwind CSS 설정 문제도 겪었습니다. text-sm을 적용했는데 피그마 디자인과 실제 화면의 수치가 맞지 않았습니다. 원인을 찾는 과정에서 tailwind.config.js에서 기본 토큰이 커스텀 값으로 오버라이드되어 있다는 것을 발견했습니다. 이 경험을 통해 스타일 문제가 발생했을 때 컴포넌트 코드뿐 아니라 프레임워크 설정 파일도 함께 확인해야 한다는 점을 알게 되었습니다.
+
+Git 협업 과정에서도 기억에 남는 일이 있었습니다. 잘못된 브랜치에 커밋을 올린 상태에서 다른 팀원의 커밋이 추가된 상황이 있었는데, 단순 reset을 사용하면 팀원의 작업이 사라질 수 있었습니다. 그래서 cherry-pick으로 커밋을 다른 브랜치로 옮긴 뒤 reset을 수행하고 이후 팀원의 커밋을 다시 복원하는 방식으로 문제를 해결했습니다.
+
+이번 프로젝트를 통해 코드가 혼자 작성하는 결과물이 아니라 협업을 통해 완성된다는 것을 체감했습니다. 공통 컴포넌트를 팀원이 재사용하기도 했고, 저는 팀원의 API 패턴을 참고해 기능을 구현하기도 했습니다. 앞으로는 기능 구현뿐 아니라 **다른 개발자가 이해하고 확장하기 쉬운 코드 구조를 만드는 것**도 중요하게 생각하며 개발하고 싶습니다.
+
+---

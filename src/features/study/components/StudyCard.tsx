@@ -49,8 +49,8 @@ const StudyCard = ({ study, large = false }: StudyCardProps) => {
       {/* 상단: 상태 뱃지 + 지역 태그 */}
       <div className="flex items-center justify-between px-[10px] h-[38px] shrink-0">
         <div className="flex items-center gap-1">
-          <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-400"}`} />
-          <span className={`text-sm font-bold md:text-lg md:font-normal ${STATUS_COLOR[study.status] ?? "text-gray-400"}`}>
+          <IconSpeaker className={`w-4 h-4 ${STATUS_COLOR[study.status] ?? "text-gray-500"}`} />
+          <span className={`text-sm font-bold md:text-lg md:font-normal ${STATUS_COLOR[study.status] ?? "text-gray-500"}`}>
             {study.status === "모집 중" ? "모집 중!" : study.status === "완료" ? "종료" : study.status}
           </span>
         </div>

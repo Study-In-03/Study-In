@@ -254,14 +254,14 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                                     onClick={() => setShowTooltip(false)}
                                     className="absolute top-3 right-3"
                                 >
-                                    <IconClose className="w-4 h-4 text-gray-400" />
+                                    <IconClose className="w-4 h-4 text-gray-500" />
                                 </button>
 
                                 {/* 제목 */}
-                                <p className="text-sm font-bold text-white mb-2">이메일이 수신되지 않나요? :(</p>
+                                <p className="text-sm font-bold text-background mb-2">이메일이 수신되지 않나요? :(</p>
 
                                 {/* 본문 */}
-                                <p className="text-xs text-white leading-relaxed">
+                                <p className="text-xs text-background leading-relaxed">
                                     - 이메일 주소가 정확히 입력되었는지 확인해 주세요.<br />
                                     - 스팸 메일함을 확인해 주세요.
                                 </p>

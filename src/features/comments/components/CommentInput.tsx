@@ -50,7 +50,7 @@ const CommentInput = ({
             if (e.target.value.length <= MAX_LENGTH) setContent(e.target.value);
           }}
           placeholder={placeholder}
-          className="flex-1 px-6 py-5 text-base text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none"
+          className="flex-1 px-6 py-5 text-base text-gray-900 placeholder:text-gray-500 resize-none focus:outline-none"
         />
         {/* 오른쪽 컨트롤 컬럼 */}
         <div className="w-[150px] flex flex-col border-l border-gray-300 shrink-0">
@@ -69,7 +69,7 @@ const CommentInput = ({
                 ) : (
                   <IconSquareCheck className="w-5 h-5 text-gray-300 flex-shrink-0" />
                 )}
-                <span className={`text-sm font-medium ${isSecret ? "text-primary" : "text-gray-400"}`}>
+                <span className={`text-sm font-medium ${isSecret ? "text-primary" : "text-gray-500"}`}>
                   비밀댓글
                 </span>
               </button>

@@ -60,7 +60,7 @@ function Pagination({
         p === "..." ? (
           <span
             key={`dot-${i}`}
-            className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm"
+            className="w-8 h-8 flex items-center justify-center text-gray-500 text-sm"
           >
             …
           </span>

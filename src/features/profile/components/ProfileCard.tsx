@@ -62,10 +62,10 @@ const ProfileCard = () => {
               <div className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full border border-gray-300 overflow-hidden flex items-center justify-center">
                 <UserProfileL className="w-full h-full" />
               </div>
-              <p className="text-base md:text-lg font-bold text-gray-400 text-center">(프로필 등록을 완료해주세요)</p>
+              <p className="text-base md:text-lg font-bold text-gray-500 text-center">(프로필 등록을 완료해주세요)</p>
             </div>
             <div className="w-full bg-gray-100 rounded-[10px] px-4 md:px-[30px] py-5 md:py-[30px] flex items-center justify-center min-h-[80px]">
-              <p className="text-sm text-gray-400 text-center">프로필 등록을 완료하면 스터디에 참여할 수 있어요!</p>
+              <p className="text-sm text-gray-500 text-center">프로필 등록을 완료하면 스터디에 참여할 수 있어요!</p>
             </div>
           </div>
 

@@ -101,7 +101,7 @@ const Notification = () => {
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(notification.notification_id) }}
-                    className="absolute right-[10px] top-[10px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-white text-xs leading-none"
+                    className="absolute right-[10px] top-[10px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-background text-xs leading-none"
                   >
                     ×
                   </button>
@@ -124,7 +124,7 @@ const Notification = () => {
                   </p>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(notification.notification_id) }}
-                    className="absolute right-[11px] top-[11px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-white text-xs leading-none"
+                    className="absolute right-[11px] top-[11px] w-[18px] h-[18px] rounded-full bg-gray-300 flex items-center justify-center z-10 text-background text-xs leading-none"
                   >
                     ×
                   </button>

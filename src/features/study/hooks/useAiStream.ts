@@ -22,15 +22,18 @@ export function useAiStream(
           curriculum = await generateAiTextStream(
             context,
             "schedule",
-            (partial) => onResult("schedule", partial),
+            (partial) => onResult("schedule", partial.slice(0, 500)),
           );
+          curriculum = curriculum.slice(0, 500);
+          onResult("schedule", curriculum);
         }
 
-        await generateAiTextStream(
+        const introduction = await generateAiTextStream(
           { ...context, curriculum },
           "introduction",
-          (partial) => onResult("introduction", partial),
+          (partial) => onResult("introduction", partial.slice(0, 1000)),
         );
+        onResult("introduction", introduction.slice(0, 1000));
       } catch {
         // 에러 시 조용히 실패
       } finally {

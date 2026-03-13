@@ -26,7 +26,7 @@ function buildMessages(context: AiContext, field: 'introduction' | 'schedule') {
       { role: 'system', content: '당신은 스터디 커리큘럼 설계 전문가입니다. 한국어로 답변해주세요.' },
       {
         role: 'user',
-        content: `${info}\n\n위 정보를 바탕으로 주차별(Week 1, Week 2...) 커리큘럼을 작성해주세요. 각 주차에 학습 주제와 목표를 포함해주세요.`,
+        content: `${info}\n\n위 정보를 바탕으로 주차별(Week 1, Week 2...) 커리큘럼을 작성해주세요. 각 주차에 학습 주제와 목표를 포함해주세요. 반드시 500자 이내로 작성해주세요.`,
       },
     ];
   }
@@ -39,7 +39,7 @@ function buildMessages(context: AiContext, field: 'introduction' | 'schedule') {
     { role: 'system', content: '당신은 스터디 소개글 작성 전문가입니다. 한국어로 답변해주세요.' },
     {
       role: 'user',
-      content: `${info}${curriculumSection}\n\n위 정보를 바탕으로 스터디 소개글을 작성해주세요.`,
+      content: `${info}${curriculumSection}\n\n위 정보를 바탕으로 스터디 소개글을 작성해주세요. 반드시 1000자 이내로 작성해주세요.`,
     },
   ];
 }

@@ -71,18 +71,18 @@
 
 | 회원가입 (Step 1~2) | 회원 등급 온보딩 | 마이페이지 |
 | :---: | :---: | :---: |
-| ![회원가입](https://github.com/user-attachments/assets/d014a71b-c37b-4a5b-820c-d2d743ad2690) | ![등급 시스템 시연](https://github.com/user-attachments/assets/a9ec5293-ee35-48c5-9353-74e5c0fee29b) | ![마이페이지](https://github.com/user-attachments/assets/7cb99733-21d7-48b6-b79f-7a0d978ba56f) |
-| [cite_start]**인증 기반 가입**<br>이메일 인증 및 비밀번호 설정을 통한<br>보안 가입 절차를 시연합니다. [cite: 20, 21] | [cite_start]**준회원 → 정회원 승급**<br>프로필 필수 정보 입력에 따른<br>권한 승급 과정을 보여줍니다. [cite: 27, 32] | [cite_start]**활동 및 정보 관리**<br>내 프로필 정보와 스터디 참여<br>내역을 한눈에 확인합니다. [cite: 64, 182] |
+| ![회원가입](https://github.com/user-attachments/assets/345c691b-e984-4538-8c00-1c3205ee4467) | ![등급 시스템 시연](https://github.com/user-attachments/assets/a9ec5293-ee35-48c5-9353-74e5c0fee29b) | ![마이페이지](https://github.com/user-attachments/assets/7cb99733-21d7-48b6-b79f-7a0d978ba56f) |
+| **인증 기반 가입** <br> 이메일 인증 및 비밀번호 설정을 통한 <br> 보안 가입 절차를 시연합니다. | **준회원 → 정회원 승급** <br> 프로필 필수 정보 입력에 따른<br>권한 승급 과정을 보여줍니다. | **활동 및 정보 관리** <br> 내 프로필 정보와 스터디 참여 <br> 내역을 한눈에 확인합니다. |
 
 | AI 커리큘럼 생성 | 스터디 검색 및 필터 | 실시간 채팅방 |
 | :---: | :---: | :---: |
 | ![AI 생성 시연](https://github.com/user-attachments/assets/76d0ded0-2971-4bc0-9501-2489b5130fc6) | ![검색 필터 시연](https://github.com/user-attachments/assets/3662cb61-f697-443a-8b85-37ff92aa9f2b) | ![채팅방](https://github.com/user-attachments/assets/e63db17c-a126-4ed0-8e46-c0985fabc36f) |
-| [cite_start]**AI 스트리밍 UI**<br>입력 데이터에 반응하여<br>커리큘럼이 실시간 생성됩니다. [cite: 50, 59] | [cite_start]**다중 조건 검색**<br>지역 및 주제별 상세 필터로<br>맞춤형 스터디를 탐색합니다. [cite: 40, 185] | [cite_start]**실시간 소통 환경**<br>WebSocket 기반의 텍스트 및<br>이미지/파일 공유를 시연합니다. [cite: 93, 102] |
+| **AI 스트리밍 UI** <br> 입력 데이터에 반응하여<br>커리큘럼이 실시간 생성됩니다. | **다중 조건 검색**<br>지역 및 주제별 상세 필터로 <br> 맞춤형 스터디를 탐색합니다. | **실시간 소통 환경** <br> WebSocket 기반의 텍스트 및<br>이미지/파일 공유를 시연합니다. |
 
 | 스터디 생성 (CRUD) | 소셜 및 상호작용 | 탈퇴하기 |
 | :---: | :---: | :---: |
 | ![스터디 생성](https://github.com/user-attachments/assets/1306e742-0b8a-446c-9840-e7adf17da9f3) | ![소셜 기능 시연](https://github.com/user-attachments/assets/0619ca42-20d0-4ea0-8972-281d240245c2) | ![탈퇴하기](https://github.com/user-attachments/assets/635cbc8b-465b-4826-b86a-d5100e78d75f) |
-| [cite_start]**스터디 라이프사이클**<br>스터디 모집 공고 생성 및<br>정보 수정 로직을 지원합니다. [cite: 45, 62] | [cite_start]**커뮤니티 활성화**<br>댓글 소통과 좋아요를 통한<br>북마크 기능을 보여줍니다. [cite: 71, 74] | [cite_start]**스터디 탈퇴 및 마감**<br>참가한 스터디의 탈퇴 처리와<br>시스템 메시지 연동을 확인합니다. [cite: 69, 70] |
+| **스터디 라이프사이클** br> 스터디 모집 공고 생성 및 <br> 정보 수정 로직을 지원합니다. | **커뮤니티 활성화** <br> 댓글 소통과 좋아요를 통한 <br> 북마크 기능을 보여줍니다. | **스터디 탈퇴 및 마감** <br> 참가한 스터디의 탈퇴 처리와<br>시스템 메시지 연동을 확인합니다. |
 
 ---
 
